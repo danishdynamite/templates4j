@@ -1363,7 +1363,7 @@ public class Interpreter {
 		return stack;
 	}
 
-	public static void registerCustomFunction(String name, UserFunction function) {
+	public static void registerUserFunction(String name, UserFunction function) {
 		short functionIdx = (short) Bytecode.instructions.length;
 		
 		List<Instruction> instructions = new ArrayList<Instruction>(Arrays.asList(Bytecode.instructions));
