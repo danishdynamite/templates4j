@@ -22,8 +22,8 @@ Usage
 -----
 
     <dependency>
-        <groupId>net.evilengineers.templates4all</groupId>
-        <artifactId>templates4all</artifactId>
+        <groupId>net.evilengineers.templates4j</groupId>
+        <artifactId>templates4j</artifactId>
         <version>1.0</version>
     </dependency>
 

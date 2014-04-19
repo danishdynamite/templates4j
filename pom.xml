@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>org.sonatype.oss</groupId>
+		<artifactId>oss-parent</artifactId>
+		<version>9</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.evilengineers.templates4j</groupId>
+	<artifactId>templates4j</artifactId>
+	<packaging>jar</packaging>
+
+	<version>1.0.0-SNAPSHOT</version>
+
+	<name>Templates4J</name>
+	<description>
+    </description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- 
+		<java5.home>${env.JAVA5_HOME}</java5.home>
+		<java6.home>${env.JAVA6_HOME}</java6.home>
+		<bootclasspath.java5>${java5.home}/lib/rt.jar</bootclasspath.java5>
+		<bootclasspath.java6>${java6.home}/lib/rt.jar</bootclasspath.java6>
+		<bootclasspath.compile>${bootclasspath.java5}</bootclasspath.compile>
+		<bootclasspath.testCompile>${bootclasspath.java6}</bootclasspath.testCompile>
+		 -->
+	</properties>
+
+	<url>http://github.com/danishdynamite/templates4j</url>
+	<developers>
+		<developer>
+			<name>Henrik Østerlund Gram</name>
+			<email>henrik.gram@evilengineers.net</email>
+			<timezone>CET</timezone>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>BSD licence</name>
+			<url>https://github.com/danishdynamite/templates4j/blob/master/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/danishdynamite/templates4j/issues</url>
+	</issueManagement>
+
+	<scm>
+		<url>git://github.com/danishdynamite/templates4j.git</url>
+		<connection>scm:git:git://github.com/danishdynamite/templates4j.git</connection>
+		<developerConnection>scm:git:git@github.com:danishdynamite/templates4j.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr-runtime</artifactId>
+			<version>3.5.2</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<profiles>
+		<profile>
+			<id>sonatype-oss-release</id>
+			<build>
+				<plugins>
+					<!-- 
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>default-compile</id>
+								<configuration>
+									<compilerArguments>
+										<bootclasspath>${bootclasspath.compile}</bootclasspath>
+									</compilerArguments>
+								</configuration>
+							</execution>
+							<execution>
+								<id>default-testCompile</id>
+								<configuration>
+									<compilerArguments>
+										<bootclasspath>${bootclasspath.testCompile}</bootclasspath>
+									</compilerArguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					 -->
+
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-shade-plugin</artifactId>
+						<version>2.2</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>shade</goal>
+								</goals>
+								<configuration>
+									<minimizeJar>true</minimizeJar>
+									<createDependencyReducedPom>false</createDependencyReducedPom>
+									<shadedArtifactAttached>true</shadedArtifactAttached>
+									<createSourcesJar>true</createSourcesJar>
+									<shadeSourcesContent>true</shadeSourcesContent>
+									<shadedClassifierName>complete</shadedClassifierName>
+									<relocations>
+										<relocation>
+											<pattern>org.antlr</pattern>
+											<shadedPattern>st4hidden.org.antlr</shadedPattern>
+										</relocation>
+									</relocations>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<build>
+		<defaultGoal>install</defaultGoal>
+
+		<!-- The root of the source code for StringTemplate -->
+		<sourceDirectory>src</sourceDirectory>
+
+		<!-- The root of the test source code for StringTemplate. -->
+		<testSourceDirectory>test</testSourceDirectory>
+
+		<!-- All the resources that should be on the classpath, when the junit 
+			tests are run. Here we need to include the test source code directory as 
+			the .st files loaded dynamically by the tests, are located underneath this 
+			tree. -->
+		<testResources>
+			<testResource>
+				<directory>test</directory>
+			</testResource>
+		</testResources>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr3-maven-plugin</artifactId>
+				<version>3.5.2</version>
+				<configuration>
+					<libDirectory>src/net/evilengineers/templates4j/compiler</libDirectory>
+					<sourceDirectory>src</sourceDirectory>
+					<verbose>true</verbose>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>antlr</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<sourceDirectory>src</sourceDirectory>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
+					<compilerArgs>
+						<arg>-Xlint</arg>
+						<arg>-Xlint:-serial</arg>
+					</compilerArgs>
+				</configuration>
+
+				<executions>
+					<execution>
+						<id>default-compile</id>
+						<configuration>
+							<source>1.7</source>
+							<target>1.7</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-testCompile</id>
+						<configuration>
+							<source>1.7</source>
+							<target>1.7</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<arguments>-Psonatype-oss-release ${release.arguments}</arguments>
+				</configuration>
+			</plugin>
+			 -->
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.17</version>
+				<configuration>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${basedir}/src</additionalClasspathElement>
+					</additionalClasspathElements>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<findbugsXmlOutput>true</findbugsXmlOutput>
+					<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+					<xmlOutput>true</xmlOutput>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<!-- override the version inherited from the parent -->
+				<version>2.2.1</version>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<!-- override the version inherited from the parent -->
+				<version>2.9.1</version>
+				<configuration>
+					<quiet>true</quiet>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<!-- override the version inherited from the parent -->
+				<version>1.5</version>
+			</plugin>
+		</plugins>
+	</build>
+</project>
