@@ -13,7 +13,7 @@ Often you'll find yourself needing to navigate your model in ways that the templ
 
 Let's say you would like to iterate over a list of objects present somewhere in a DOM-based model, you could do this by executing an XPath-query from your user-function which you'd call from the template like this:
 
-    <xpath(model, {//books/author[id='xxx']/parent::chapters}) : outputChapter()>
+    <xpath(model, {//book/author[id='xxx']/parent::chapters}) : outputChapter()>
 
 where model is your DOM model, xpath is your user-function, outputChapter is a another template and { ... } is an anonymous template evaluating to the XPath expression for the query. 
 
@@ -24,7 +24,7 @@ Usage
     <dependency>
         <groupId>net.evilengineers.templates4j</groupId>
         <artifactId>templates4j</artifactId>
-        <version>1.0</version>
+        <version>1.0.0</version>
     </dependency>
 
 The artifact is released in the OSS Sonatype repository: 
