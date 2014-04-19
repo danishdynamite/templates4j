@@ -27,6 +27,14 @@ Usage
         <version>1.0</version>
     </dependency>
 
+The artifact is released in the OSS Sonatype repository: 
+
+    <repository>
+        <id>sonatype-nexus</id>
+        <url>http://oss.sonatype.org/content/repositories/releases/</url>
+    </repository>
+
+
 History
 -------
 
