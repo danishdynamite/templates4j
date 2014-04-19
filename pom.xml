@@ -11,7 +11,7 @@
 	<artifactId>templates4j</artifactId>
 	<packaging>jar</packaging>
 
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 
 	<name>Templates4J</name>
 	<description>
