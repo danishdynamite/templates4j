@@ -66,8 +66,8 @@ public class STGroup {
 
     protected final List<STGroup> importsToClearOnUnload = Collections.synchronizedList(new ArrayList<STGroup>());
 
-    public char delimiterStartChar = '<'; // Use <expr> by default
-    public char delimiterStopChar = '>';
+    public String delimiterStart = "<"; // Use <expr> by default
+    public String delimiterStop = ">";
 
     /** Maps template name to {@link CompiledST} object. This map is synchronized. */
     protected Map<String, CompiledST> templates =
@@ -151,9 +151,9 @@ public class STGroup {
 
     public STGroup() { }
 
-    public STGroup(char delimiterStartChar, char delimiterStopChar) {
-        this.delimiterStartChar = delimiterStartChar;
-        this.delimiterStopChar = delimiterStopChar;
+    public STGroup(String delimiterStart, String delimiterStop) {
+        this.delimiterStart = delimiterStart;
+        this.delimiterStop = delimiterStop;
     }
 
     /** The primary means of getting an instance of a template from this
@@ -532,7 +532,7 @@ public class STGroup {
 			return;
 		}
 		if ( isTemplateFile ) {
-			g = new STGroup(delimiterStartChar, delimiterStopChar);
+			g = new STGroup(delimiterStart, delimiterStop);
 			g.setListener(this.getListener());
 			URL fileURL;
 			if ( Misc.urlExists(fileUnderRoot) ) fileURL = fileUnderRoot;
@@ -557,24 +557,24 @@ public class STGroup {
 		else if ( isGroupFile ) {
 			//System.out.println("look for fileUnderRoot: "+fileUnderRoot);
 			if ( Misc.urlExists(fileUnderRoot) ) {
-				g = new STGroupFile(fileUnderRoot, encoding, delimiterStartChar, delimiterStopChar);
+				g = new STGroupFile(fileUnderRoot, encoding, delimiterStart, delimiterStop);
 				g.setListener(this.getListener());
 			}
 			else {
-				g = new STGroupFile(fileName, delimiterStartChar, delimiterStopChar);
+				g = new STGroupFile(fileName, delimiterStart, delimiterStop);
 				g.setListener(this.getListener());
 			}
 		}
 		else if ( isGroupDir ) {
 //			System.out.println("try dir "+fileUnderRoot);
 			if ( Misc.urlExists(fileUnderRoot) ) {
-				g = new STGroupDir(fileUnderRoot, encoding, delimiterStartChar, delimiterStopChar);
+				g = new STGroupDir(fileUnderRoot, encoding, delimiterStart, delimiterStop);
 				g.setListener(this.getListener());
 			}
 			else {
 				// try in CLASSPATH
 //				System.out.println("try dir in CLASSPATH "+fileName);
-				g = new STGroupDir(fileName, delimiterStartChar, delimiterStopChar);
+				g = new STGroupDir(fileName, delimiterStart, delimiterStop);
 				g.setListener(this.getListener());
 			}
 		}

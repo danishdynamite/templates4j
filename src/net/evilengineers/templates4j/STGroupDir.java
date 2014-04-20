@@ -46,10 +46,10 @@ public class STGroupDir extends STGroup {
     public String groupDirName;
     public URL root;
 
-    public STGroupDir(String dirName) { this(dirName, '<', '>'); }
+    public STGroupDir(String dirName) { this(dirName, "<", ">"); }
 
-    public STGroupDir(String dirName, char delimiterStartChar, char delimiterStopChar) {
-        super(delimiterStartChar, delimiterStopChar);
+    public STGroupDir(String dirName, String delimiterStart, String delimiterStop) {
+        super(delimiterStart, delimiterStop);
         this.groupDirName = dirName;
 		File dir = new File(dirName);
 		if ( dir.exists() && dir.isDirectory() ) {
@@ -78,20 +78,20 @@ public class STGroupDir extends STGroup {
 	}
 
 	public STGroupDir(String dirName, String encoding) {
-        this(dirName, encoding, '<', '>');
+        this(dirName, encoding, "<", ">");
     }
 
     public STGroupDir(String dirName, String encoding,
-                      char delimiterStartChar, char delimiterStopChar)
+                      String delimiterStart, String delimiterStop)
     {
-        this(dirName, delimiterStartChar, delimiterStopChar);
+        this(dirName, delimiterStart, delimiterStop);
         this.encoding = encoding;
     }
 
 	public STGroupDir(URL root, String encoding,
-					  char delimiterStartChar, char delimiterStopChar)
+					  String delimiterStart, String delimiterStop)
 	{
-		super(delimiterStartChar, delimiterStopChar);
+		super(delimiterStart, delimiterStop);
 		this.groupDirName = new File(root.getFile()).getName();
 		this.root = root;
 		this.encoding = encoding;

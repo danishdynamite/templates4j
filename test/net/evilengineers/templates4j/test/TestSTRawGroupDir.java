@@ -13,7 +13,7 @@ public class TestSTRawGroupDir extends BaseTest {
 	@Test public void testSimpleGroup() throws Exception {
 		String dir = getRandomDir();
 		writeFile(dir, "a.st", "foo");
-		STGroup group = new STRawGroupDir(dir, '$', '$');
+		STGroup group = new STRawGroupDir(dir, "$", "$");
 		ST st = group.getInstanceOf("a");
 		String expected = "foo";
 		String result = st.render();
@@ -24,7 +24,7 @@ public class TestSTRawGroupDir extends BaseTest {
 		String dir = getRandomDir();
 		writeFile(dir, "a.st", "foo");
 		writeFile(dir, "b.st", "$name$");
-		STGroup group = new STRawGroupDir(dir, '$', '$');
+		STGroup group = new STRawGroupDir(dir, "$", "$");
 		ST st = group.getInstanceOf("a");
 		String expected = "foo";
 		String result = st.render();
@@ -53,7 +53,7 @@ public class TestSTRawGroupDir extends BaseTest {
 	@Test public void testSTRawGroupDir() {
 		String dir = getRandomDir();
 		writeFile(dir, "template.st", "$values:{foo|[$foo$]}$");
-		STGroup group = new STRawGroupDir(dir, '$', '$');
+		STGroup group = new STRawGroupDir(dir, "$", "$");
 		ST template = group.getInstanceOf("template");
 		List<String> values = new ArrayList<String>();
 		values.add("one");
@@ -67,7 +67,7 @@ public class TestSTRawGroupDir extends BaseTest {
 		String dir = getRandomDir();
 		writeFile(dir, "a.st", "$names:bold()$");
 		writeFile(dir, "bold.st", "<b>$it$</b>");
-		STGroup group = new STRawGroupDir(dir, '$', '$');
+		STGroup group = new STRawGroupDir(dir, "$", "$");
 		ST st = group.getInstanceOf("a");
 		List<String> names = new ArrayList<String>();
 		names.add("parrt");
@@ -122,7 +122,7 @@ public class TestSTRawGroupDir extends BaseTest {
 		writeFile(dir1, "footerRaw.st", footerRawTemplate);
 		writeFile(dir1, "veryLastLineRaw.st", veryLastLineTemplate);
 
-		STGroup group = new STRawGroupDir(dir1, '$', '$');
+		STGroup group = new STRawGroupDir(dir1, "$", "$");
 		ST st = group.getInstanceOf("mainRaw");
 		assertNotNull(st);
 		st.add("name", "John");

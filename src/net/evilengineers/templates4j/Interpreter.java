@@ -1297,8 +1297,8 @@ public class Interpreter {
 				// rather than setting x to the template for later
 				// eval.
 				String defArgTemplate = arg.defaultValueToken.getText();
-				if ( defArgTemplate.startsWith("{"+group.delimiterStartChar+"(") &&
-					defArgTemplate.endsWith(")"+group.delimiterStopChar+"}") ) {
+				if ( defArgTemplate.startsWith("{"+group.delimiterStart+"(") &&
+					defArgTemplate.endsWith(")"+group.delimiterStop+"}") ) {
 
 					invokedST.rawSetAttribute(arg.name, toString(out, new InstanceScope(scope, invokedST), defaultArgST));
 				}

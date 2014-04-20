@@ -163,8 +163,8 @@ public class ST {
      *  in it's own group since you're overriding a default; don't want to
      *  alter {@link STGroup#defaultGroup}.
      */
-    public ST(String template, char delimiterStartChar, char delimiterStopChar) {
-        this(new STGroup(delimiterStartChar, delimiterStopChar), template);
+    public ST(String template, String delimiterStart, String delimiterStop) {
+        this(new STGroup(delimiterStart, delimiterStop), template);
     }
 
     public ST(STGroup group, String template) {

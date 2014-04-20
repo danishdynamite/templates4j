@@ -300,7 +300,7 @@ public class TestImports extends BaseTest {
 		assertTrue(path.isFile());
 		URLClassLoader loader = new URLClassLoader(new URL[] { path.toURI().toURL() });
 		try {
-			STGroup group = new STGroupFile(loader.getResource("org/foo/templates/g.stg"), "UTF-8", '<', '>');
+			STGroup group = new STGroupFile(loader.getResource("org/foo/templates/g.stg"), "UTF-8", "<", ">");
 			ST st = group.getInstanceOf("b");
 			String result = st.render();
 			String expected = "subdir b";

@@ -45,10 +45,10 @@ public class STGroupFile extends STGroup {
     protected boolean alreadyLoaded = false;
 
     /** Load a file relative to current directory or from root or via CLASSPATH. */
-	public STGroupFile(String fileName) { this(fileName, '<', '>'); }
+	public STGroupFile(String fileName) { this(fileName, "<", ">"); }
 
-	public STGroupFile(String fileName, char delimiterStartChar, char delimiterStopChar) {
-		super(delimiterStartChar, delimiterStopChar);
+	public STGroupFile(String fileName, String delimiterStart, String delimiterStop) {
+		super(delimiterStart, delimiterStop);
 		if ( !fileName.endsWith(GROUP_FILE_EXTENSION) ) {
 			throw new IllegalArgumentException("Group file names must end in .stg: "+fileName);
 		}
@@ -75,20 +75,20 @@ public class STGroupFile extends STGroup {
 	}
 
 	public STGroupFile(String fullyQualifiedFileName, String encoding) {
-        this(fullyQualifiedFileName, encoding, '<', '>');
+        this(fullyQualifiedFileName, encoding, "<", ">");
     }
 
     public STGroupFile(String fullyQualifiedFileName, String encoding,
-                       char delimiterStartChar, char delimiterStopChar)
+                       String delimiterStart, String delimiterStop)
     {
-        this(fullyQualifiedFileName, delimiterStartChar, delimiterStopChar);
+        this(fullyQualifiedFileName, delimiterStart, delimiterStop);
         this.encoding = encoding;
     }
 
 	public STGroupFile(URL url, String encoding,
-					   char delimiterStartChar, char delimiterStopChar)
+					   String delimiterStart, String delimiterStop)
 	{
-		super(delimiterStartChar, delimiterStopChar);
+		super(delimiterStart, delimiterStop);
 		this.url = url;
 		this.encoding = encoding;
 		try {

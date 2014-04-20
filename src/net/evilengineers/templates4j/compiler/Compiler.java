@@ -33,6 +33,7 @@ import net.evilengineers.templates4j.STGroup;
 import net.evilengineers.templates4j.misc.ErrorType;
 
 import org.antlr.runtime.*;
+import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 
 import java.util.HashMap;
@@ -115,7 +116,7 @@ public class Compiler {
 			 templateToken.getType() == GroupParser.BIGSTRING_NO_NL )
 		{
 			lexer = new STLexer(group.errMgr, is, templateToken,
-						group.delimiterStartChar, group.delimiterStopChar) {
+						group.delimiterStart, group.delimiterStop) {
 				/** Throw out \n and indentation tokens inside BIGSTRING_NO_NL */
 				@Override
 				public Token nextToken() {
@@ -131,7 +132,7 @@ public class Compiler {
 		}
 		else {
 			lexer = new STLexer(group.errMgr, is, templateToken,
-								group.delimiterStartChar, group.delimiterStopChar);
+								group.delimiterStart, group.delimiterStop);
 		}
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		STParser p = new STParser(tokens, group.errMgr, templateToken);

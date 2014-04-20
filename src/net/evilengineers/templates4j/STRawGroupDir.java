@@ -17,20 +17,20 @@ public class STRawGroupDir extends STGroupDir {
 		super(dirName);
 	}
 
-	public STRawGroupDir(String dirName, char delimiterStartChar, char delimiterStopChar) {
-		super(dirName, delimiterStartChar, delimiterStopChar);
+	public STRawGroupDir(String dirName, String delimiterStart, String delimiterStop) {
+		super(dirName, delimiterStart, delimiterStop);
 	}
 
 	public STRawGroupDir(String dirName, String encoding) {
 		super(dirName, encoding);
 	}
 
-	public STRawGroupDir(String dirName, String encoding, char delimiterStartChar, char delimiterStopChar) {
-		super(dirName, encoding, delimiterStartChar, delimiterStopChar);
+	public STRawGroupDir(String dirName, String encoding, String delimiterStart, String delimiterStop) {
+		super(dirName, encoding, delimiterStart, delimiterStop);
 	}
 
-	public STRawGroupDir(URL root, String encoding, char delimiterStartChar, char delimiterStopChar) {
-		super(root, encoding, delimiterStartChar, delimiterStopChar);
+	public STRawGroupDir(URL root, String encoding, String delimiterStart, String delimiterStop) {
+		super(root, encoding, delimiterStart, delimiterStop);
 	}
 
 	@Override

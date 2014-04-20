@@ -125,9 +125,9 @@ public class STLexer implements TokenSource {
 
 
     /** The char which delimits the start of an expression. */
-    char delimiterStartChar = '<';
+    char[] delimiterStartChars;
     /** The char which delimits the end of an expression. */
-    char delimiterStopChar = '>';
+    char[] delimiterStopChars;
 
 	/**
 	 * This keeps track of the current mode of the lexer. Are we inside or
@@ -163,24 +163,40 @@ public class STLexer implements TokenSource {
      */
     List<Token> tokens = new ArrayList<Token>();
 
-	public STLexer(CharStream input) { this(STGroup.DEFAULT_ERR_MGR, input, null, '<', '>'); }
+	public STLexer(CharStream input) { this(STGroup.DEFAULT_ERR_MGR, input, null, "<", ">"); }
 
     public STLexer(ErrorManager errMgr, CharStream input, Token templateToken) {
-		this(errMgr, input, templateToken, '<', '>');
+		this(errMgr, input, templateToken, "<", ">");
 	}
 
 	public STLexer(ErrorManager errMgr,
+			   CharStream input,
+			   Token templateToken,
+			   char delimiterStart,
+			   char delimiterStop) {
+		this(errMgr, input, templateToken, new char[] { delimiterStart }, new char[] { delimiterStop });
+	}
+
+	public STLexer(ErrorManager errMgr,
+			   CharStream input,
+			   Token templateToken,
+			   String delimiterStart,
+			   String delimiterStop) {
+		this(errMgr, input, templateToken, delimiterStart.toCharArray(), delimiterStop.toCharArray());
+	}
+	
+	public STLexer(ErrorManager errMgr,
 				   CharStream input,
 				   Token templateToken,
-				   char delimiterStartChar,
-				   char delimiterStopChar)
+				   char[] delimiterStart,
+				   char[] delimiterStop)
 	{
 		this.errMgr = errMgr;
 		this.input = input;
 		c = (char)input.LA(1); // prime lookahead
 		this.templateToken = templateToken;
-		this.delimiterStartChar = delimiterStartChar;
-		this.delimiterStopChar = delimiterStopChar;
+		this.delimiterStartChars = delimiterStart;
+		this.delimiterStopChars = delimiterStop;
 	}
 
 	@Override
@@ -230,8 +246,8 @@ public class STLexer implements TokenSource {
             if ( c!=EOF ) return newToken(INDENT);
             return newToken(TEXT);
         }
-        if ( c==delimiterStartChar ) {
-            consume();
+        if ( lookingAtDelimiterStart(0) ) {
+        	consumeDelimiterStart(null);
             if ( c=='!' ) return COMMENT();
             if ( c=='\\' ) return ESCAPE(); // <\\> <\uFFFF> <\n> etc...
             scanningInsideExpr = true;
@@ -283,8 +299,8 @@ public class STLexer implements TokenSource {
                 case '|' : consume(); match('|'); return newToken(OR); // ||
 				case '{' : return subTemplate();
 				default:
-					if ( c==delimiterStopChar ) {
-						consume();
+					if ( lookingAtDelimiterStop(0)) {
+						consumeDelimiterStop(null);
 						scanningInsideExpr =false;
 						return newToken(RDELIM);
 					}
@@ -371,12 +387,12 @@ public class STLexer implements TokenSource {
                 NoViableAltException e = new NoViableAltException("",0,0,input);
                 errMgr.lexerError(input.getSourceName(), "invalid escaped char: '"+str(c)+"'", templateToken, e);
 				consume();
-				match(delimiterStopChar);
+				matchAndConsumeDelimiterStop();
 				return SKIP;
         }
         consume();
 		Token t = newToken(TEXT, text, input.getCharPositionInLine()-2);
-        match(delimiterStopChar);
+		matchAndConsumeDelimiterStop();
         return t;
     }
 
@@ -410,14 +426,52 @@ public class STLexer implements TokenSource {
         char uc = (char)Integer.parseInt(new String(chars), 16);
         Token t = newToken(TEXT, String.valueOf(uc), input.getCharPositionInLine()-6);
 		consume();
-		match(delimiterStopChar);
+		matchAndConsumeDelimiterStop();
 		return t;
+    }
+
+    private final boolean lookingAtDelimiterStart(int offset) {
+		for (int i = 0; i < delimiterStartChars.length; i++)
+			if (delimiterStartChars[i] != (char) input.LA(1 + i + offset))
+				return false;
+		return true;
+    }
+
+    private final void consumeDelimiterStart(StringBuilder buf) {
+		for (int i = 0; i < delimiterStartChars.length; i++) {
+			if (buf != null)
+				buf.append(c);
+			consume();
+		}
+    }
+
+    private final boolean lookingAtDelimiterStop(int offset) {
+		for (int i = 0; i < delimiterStopChars.length; i++)
+			if (delimiterStopChars[i] != (char) input.LA(1 + i + offset))
+				return false;
+   		return true;
+    }
+
+    private final void consumeDelimiterStop(StringBuilder buf) {
+		for (int i = 0; i < delimiterStopChars.length; i++) {
+			if (buf != null)
+				buf.append(c);
+			consume();
+		}
+    }
+    
+    private final void matchAndConsumeDelimiterStop() {
+        if (!lookingAtDelimiterStop(0)) {
+			NoViableAltException e = new NoViableAltException("",0,0,input);
+			errMgr.lexerError(input.getSourceName(), "expecting '"+new String(delimiterStopChars)+"', found '"+str(c)+"'", templateToken, e);
+		}
+		consumeDelimiterStop(null);
     }
 
     Token mTEXT() {
 		boolean modifiedText = false;
         StringBuilder buf = new StringBuilder();
-        while ( c != EOF && c != delimiterStartChar ) {
+        while ( c != EOF && !lookingAtDelimiterStart(0)) {
 			if ( c=='\r' || c=='\n') break;
 			if ( c=='}' && subtemplateDepth>0 ) break;
             if ( c=='\\' ) {
@@ -426,9 +480,12 @@ public class STLexer implements TokenSource {
                     modifiedText = true;
                     continue;
                 }
-                if ( input.LA(2)==delimiterStartChar ||
-					 input.LA(2)=='}' )
-				{
+                if ( lookingAtDelimiterStart(1) ) {
+                    modifiedText = true;
+                    consume(); // toss out \ char
+                    consumeDelimiterStart(buf);
+                    
+                } else if ( input.LA(2)=='}' ) {
                     modifiedText = true;
                     consume(); // toss out \ char
                     buf.append(c); consume();
@@ -515,7 +572,7 @@ public class STLexer implements TokenSource {
 
     Token COMMENT() {
         match('!');
-        while ( !(c=='!' && input.LA(2)==delimiterStopChar) ) {
+        while ( !(c=='!' && lookingAtDelimiterStop(1)) ) {
 			if (c==EOF) {
 				RecognitionException re =
 					new MismatchedTokenException((int)'!', input);
@@ -523,18 +580,19 @@ public class STLexer implements TokenSource {
 				re.charPositionInLine = input.getCharPositionInLine();
 				errMgr.lexerError(input.getSourceName(), "Nonterminated comment starting at " +
 					startLine+":"+startCharPositionInLine+": '!"+
-					delimiterStopChar+"' missing", templateToken, re);
+					new String(delimiterStopChars) +"' missing", templateToken, re);
 				break;
 			}
 			consume();
 		}
-        consume(); consume(); // grab !>
+        consume();
+        consumeDelimiterStop(null);
 		return newToken(COMMENT);
     }
 
     void LINEBREAK() {
         match('\\'); // only kill 2nd \ as ESCAPE() kills first one
-        match(delimiterStopChar);
+        matchAndConsumeDelimiterStop();
         while ( c==' ' || c=='\t' ) consume(); // scarf WS after <\\>
 		if ( c==EOF ) {
 			RecognitionException re = new RecognitionException(input);

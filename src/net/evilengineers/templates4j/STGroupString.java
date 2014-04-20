@@ -39,12 +39,12 @@ public class STGroupString extends STGroup {
 	public String text;
 	protected boolean alreadyLoaded = false;
 
-	public STGroupString(String text) { this("<string>", text, '<', '>'); }
+	public STGroupString(String text) { this("<string>", text, "<", ">"); }
 
-	public STGroupString(String sourceName, String text) { this(sourceName, text, '<', '>'); }
+	public STGroupString(String sourceName, String text) { this(sourceName, text, "<", ">"); }
 
-    public STGroupString(String sourceName, String text, char delimiterStartChar, char delimiterStopChar) {
-        super(delimiterStartChar, delimiterStopChar);
+    public STGroupString(String sourceName, String text, String delimiterStart, String delimiterStop) {
+        super(delimiterStart, delimiterStop);
 		this.sourceName = sourceName;
 		this.text = text;
     }

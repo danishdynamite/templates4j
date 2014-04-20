@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 public class TestDollarDelimiters extends BaseTest {
     @Test public void testAttr() throws Exception {
         String template = "hi $name$!";
-        ST st = new net.evilengineers.templates4j.ST(template, '$', '$');
+        ST st = new net.evilengineers.templates4j.ST(template, "$", "$");
         st.add("name", "Ter");
         String expected = "hi Ter!";
         String result = st.render();
@@ -49,7 +49,7 @@ public class TestDollarDelimiters extends BaseTest {
     }
 
     @Test public void testParallelMap() throws Exception {
-        STGroup group = new net.evilengineers.templates4j.STGroup('$', '$');
+        STGroup group = new net.evilengineers.templates4j.STGroup("$", "$");
         group.defineTemplate("test", "names,phones", "hi $names,phones:{n,p | $n$:$p$;}$");
         ST st = group.getInstanceOf("test");
         st.add("names", "Ter");
@@ -70,7 +70,7 @@ public class TestDollarDelimiters extends BaseTest {
         String b = "b() ::= <<bar>>\n";
         writeFile(dir, "a.st", a);
         writeFile(dir, "b.st", b);
-        STGroup group = new net.evilengineers.templates4j.STGroupDir(dir, '$', '$');
+        STGroup group = new net.evilengineers.templates4j.STGroupDir(dir, "$", "$");
         net.evilengineers.templates4j.ST st = group.getInstanceOf("a");
         String expected = " <bar> ";
         String result = st.render();
@@ -85,7 +85,7 @@ public class TestDollarDelimiters extends BaseTest {
                 "stat(name,value=\"99\") ::= \"x=$value$; // $name$\""+newline
                 ;
         writeFile(tmpdir, "group.stg", templates);
-        net.evilengineers.templates4j.STGroup group = new STGroupFile(tmpdir+"/group.stg", '$', '$');
+        net.evilengineers.templates4j.STGroup group = new STGroupFile(tmpdir+"/group.stg", "$", "$");
         net.evilengineers.templates4j.ST b = group.getInstanceOf("method");
         b.add("name", "foo");
         String expecting = "x=99; // foo";
@@ -155,7 +155,7 @@ public class TestDollarDelimiters extends BaseTest {
 		writeFile(dir, "GenerateHtml.stg", groupFile);
 		writeFile(dir, "html.st", htmlFile);
 
-		STGroup group = new STGroupFile(dir + "/GenerateHtml.stg", '$', '$');
+		STGroup group = new STGroupFile(dir + "/GenerateHtml.stg", "$", "$");
 
 		// test html template directly
 		ST st = group.getInstanceOf("html");
@@ -193,7 +193,7 @@ public class TestDollarDelimiters extends BaseTest {
 		writeFile(dir, "GenerateHtml.stg", groupFile);
 		writeFile(dir, "HtmlTemplates.stg", htmlFile);
 
-		STGroup group = new STGroupFile(dir + "/GenerateHtml.stg", '$', '$');
+		STGroup group = new STGroupFile(dir + "/GenerateHtml.stg", "$", "$");
 
 		// test html template directly
 		ST st = group.getInstanceOf("html");
@@ -232,7 +232,7 @@ public class TestDollarDelimiters extends BaseTest {
 		writeFile(dir, "GenerateHtml.stg", groupFile);
 		writeFile(dir, "html.st", htmlFile);
 
-		STGroup group = new STGroupFile(dir + "/GenerateHtml.stg", '<', '>');
+		STGroup group = new STGroupFile(dir + "/GenerateHtml.stg", "<", ">");
 
 		// test html template directly
 		ST st = group.getInstanceOf("html");

@@ -190,8 +190,8 @@ groupName returns [String name]
 delimiters
     :	'delimiters' a=STRING ',' b=STRING
      	{
-     	group.delimiterStartChar=$a.getText().charAt(1);
-        group.delimiterStopChar=$b.getText().charAt(1);
+     	group.delimiterStart=$a.getText().substring(1,$a.getText().length() - 1);
+        group.delimiterStop=$b.getText().substring(1,$b.getText().length() - 1);
         }
     ;
 
@@ -382,7 +382,7 @@ ANONYMOUS_TEMPLATE
     	{
 		Token templateToken = new CommonToken(input, ANONYMOUS_TEMPLATE, 0, getCharIndex(), getCharIndex());
 		STLexer lexer =
-			new STLexer(group.errMgr, input, templateToken, group.delimiterStartChar, group.delimiterStopChar);
+			new STLexer(group.errMgr, input, templateToken, group.delimiterStart, group.delimiterStop);
 		lexer.subtemplateDepth = 1;
 		Token t = lexer.nextToken();
 		while ( lexer.subtemplateDepth>=1 || t.getType()!=STLexer.RCURLY ) {
