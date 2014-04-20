@@ -19,14 +19,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- 
-		<java5.home>${env.JAVA5_HOME}</java5.home>
-		<java6.home>${env.JAVA6_HOME}</java6.home>
-		<bootclasspath.java5>${java5.home}/lib/rt.jar</bootclasspath.java5>
-		<bootclasspath.java6>${java6.home}/lib/rt.jar</bootclasspath.java6>
-		<bootclasspath.compile>${bootclasspath.java5}</bootclasspath.compile>
-		<bootclasspath.testCompile>${bootclasspath.java6}</bootclasspath.testCompile>
-		 -->
+		<java.version>1.7</java.version>
 	</properties>
 
 	<url>http://github.com/danishdynamite/templates4j</url>
@@ -104,6 +97,7 @@
 					</plugin>
 					 -->
 
+					<!--
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-shade-plugin</artifactId>
@@ -131,6 +125,7 @@
 							</execution>
 						</executions>
 					</plugin>
+					-->
 				</plugins>
 			</build>
 		</profile>
@@ -139,21 +134,17 @@
 	<build>
 		<defaultGoal>install</defaultGoal>
 
-		<!-- The root of the source code for StringTemplate -->
-		<sourceDirectory>src</sourceDirectory>
-
-		<!-- The root of the test source code for StringTemplate. -->
-		<testSourceDirectory>test</testSourceDirectory>
-
 		<!-- All the resources that should be on the classpath, when the junit 
 			tests are run. Here we need to include the test source code directory as 
 			the .st files loaded dynamically by the tests, are located underneath this 
 			tree. -->
+		<!--
 		<testResources>
 			<testResource>
 				<directory>test</directory>
 			</testResource>
 		</testResources>
+		-->
 
 		<plugins>
 			<plugin>
@@ -174,8 +165,8 @@
 				<artifactId>antlr3-maven-plugin</artifactId>
 				<version>3.5.2</version>
 				<configuration>
-					<libDirectory>src/net/evilengineers/templates4j/compiler</libDirectory>
-					<sourceDirectory>src</sourceDirectory>
+					<libDirectory>src/main/java/net/evilengineers/templates4j/compiler</libDirectory>
+					<sourceDirectory>src/main/java</sourceDirectory>
 					<verbose>true</verbose>
 				</configuration>
 				<executions>
@@ -192,7 +183,6 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<sourceDirectory>src</sourceDirectory>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
 					<compilerArgs>
@@ -200,7 +190,6 @@
 						<arg>-Xlint:-serial</arg>
 					</compilerArgs>
 				</configuration>
-
 				<executions>
 					<execution>
 						<id>default-compile</id>
@@ -235,9 +224,6 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.17</version>
 				<configuration>
-					<additionalClasspathElements>
-						<additionalClasspathElement>${basedir}/src</additionalClasspathElement>
-					</additionalClasspathElements>
 				</configuration>
 			</plugin>
 

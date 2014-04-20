@@ -33,7 +33,6 @@ import net.evilengineers.templates4j.STGroup;
 import net.evilengineers.templates4j.misc.ErrorType;
 
 import org.antlr.runtime.*;
-import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 
 import java.util.HashMap;
