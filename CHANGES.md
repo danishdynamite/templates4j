@@ -4,6 +4,8 @@
   that doesn't result in you having to escape your actual content making it much less readable.  Now you can use delimiters such as <# and #> or longer, 
   reducing the need to ever use escape sequences.  (Henrik Gram)
 
+* Restructured project to maven default layout.  (Henrik Gram)
+
 ### 1.0.0 / 20014-04-18
 
 Initial release:
