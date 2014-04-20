@@ -1,3 +1,9 @@
+### 1.0.1 / in-progress
+
+* Added support for multi-character expression-delimiters.  It has often proved difficult finding good single-character start- and stop-delimiters 
+  that doesn't result in you having to escape your actual content making it much less readable.  Now you can use delimiters such as <# and #> or longer, 
+  reducing the need to ever use escape sequences.  (Henrik Gram)
+
 ### 1.0.0 / 20014-04-18
 
 Initial release:
