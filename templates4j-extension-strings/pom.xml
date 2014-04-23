@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>net.evilengineers.templates4j</groupId>
+		<artifactId>templates4j-parent</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
+	</parent>
+
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>templates4j-extension-strings</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Templates4J extensions for strings</name>
+	<description>
+    </description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>1.7</java.version>
+		<antlr.version>4.2.3-SNAPSHOT</antlr.version>
+	</properties>
+
+	<url>http://github.com/danishdynamite/templates4j</url>
+	<developers>
+		<developer>
+			<name>Henrik Østerlund Gram</name>
+			<email>henrik.gram@evilengineers.net</email>
+			<timezone>CET</timezone>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>BSD licence</name>
+			<url>https://github.com/danishdynamite/templates4j/blob/master/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/danishdynamite/templates4j/issues</url>
+	</issueManagement>
+
+	<scm>
+		<url>git://github.com/danishdynamite/templates4j.git</url>
+		<connection>scm:git:git://github.com/danishdynamite/templates4j.git</connection>
+		<developerConnection>scm:git:git@github.com:danishdynamite/templates4j.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.evilengineers.templates4j</groupId>
+			<artifactId>templates4j-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.3</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>1.7</source>
+						<target>1.7</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

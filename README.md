@@ -38,4 +38,9 @@ The artifact is released in the OSS Sonatype repository:
 History
 -------
 
-This project could not have existed if it wasn't for the nice work by the authors of StringTemplate4, but as the features I found necessary in my work were not accepted and because there seems to be a general demand for them, I forked the project and extended it myself.  The new projectname is to avoid confusion and possible conflict with the original engine and signals a desire to make it extensible enough to be useful for just about everyone. 
+This project could not have existed if it wasn't for the nice work by the authors of StringTemplate4, but as the features I found necessary in my work were not accepted and because there seems to be a general demand for them, I forked the project and extended it myself.  The new projectname is to avoid confusion and possible conflict with the original engine.
+
+The `templates4j-core` sub-project started its life as a fork of `StringTemplate4 ver. 4.0.8` code. 
+The `templates4j-mvn-plugin` sub-project was written from scratch. 
+
+All are covered by a BSD-license. 

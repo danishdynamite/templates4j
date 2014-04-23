@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>9</version>
+		<groupId>net.evilengineers.templates4j</groupId>
+		<artifactId>templates4j-parent</artifactId>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.evilengineers.templates4j</groupId>
-	<artifactId>templates4j-parent</artifactId>
-	<packaging>pom</packaging>
+	<artifactId>templates4j-core</artifactId>
+	<packaging>jar</packaging>
 
-	<version>1.0.1-SNAPSHOT</version>
-
-	<name>Templates4J</name>
-
-	<modules>
-		<module>templates4j-core</module>
-		<module>templates4j-extension-antlr</module>
-		<module>templates4j-extension-java</module>
-		<module>templates4j-extension-strings</module>
-		<module>templates4j-maven-plugin</module>
-	</modules>
+	<name>Templates4J core</name>
+	<description>
+    </description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -57,21 +48,21 @@
 		<tag>HEAD</tag>
 	</scm>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>net.evilengineers.templates4j</groupId>
-				<artifactId>templates4j-core</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>net.evilengineers.templates4j</groupId>
-				<artifactId>templates4j-extension-antlr</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	
+	<dependencies>
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr-runtime</artifactId>
+			<version>3.5.2</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -85,6 +76,54 @@
 						</manifest>
 					</archive>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr3-maven-plugin</artifactId>
+				<version>3.5.2</version>
+				<configuration>
+					<libDirectory>src/main/java/net/evilengineers/templates4j/compiler</libDirectory>
+					<sourceDirectory>src/main/java</sourceDirectory>
+					<verbose>true</verbose>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>antlr</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
+					<compilerArgs>
+						<arg>-Xlint</arg>
+						<arg>-Xlint:-serial</arg>
+					</compilerArgs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>default-compile</id>
+						<configuration>
+							<source>${java.version}</source>
+							<target>${java.version}</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>default-testCompile</id>
+						<configuration>
+							<source>${java.version}</source>
+							<target>${java.version}</target>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
