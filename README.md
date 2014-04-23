@@ -9,6 +9,8 @@ It aims to be backwards compatible with ST4-grammar.
 User Functions
 --------------
 
+*Since 1.0.0*
+
 Often you'll find yourself needing to navigate your model in ways that the template engine does not support natively.  This is especially true for ST4, so I've introduced a way to supply user-defined functions that are callable from the template itself.  These are called in the same manner as the few built-in functions (strlen, trunc, etc..), but they can accept multiple arguments, each of which can be an expression itself. 
 
 Let's say you would like to iterate over a list of objects present somewhere in a DOM-based model, you could do this by executing an XPath-query from your user-function which you'd call from the template like this:
@@ -16,6 +18,16 @@ Let's say you would like to iterate over a list of objects present somewhere in 
     <xpath(model, {//book/author[id='xxx']/parent::chapters}) : outputChapter()>
 
 where model is your DOM model, xpath is your user-function, outputChapter is a another template and { ... } is an anonymous template evaluating to the XPath expression for the query. 
+
+
+Multi-character delimiters
+--------------------------
+
+*Since 1.0.1*
+
+The engine uses a start- and end-delimiter to locate the expressions in your template.  Previously, these were limited to a single character, but that has now been generalized so you can use strings of two or more characters as delimiters as needed.  This allows you to more easily select delimiters that wont conflict with your template content, making the use of backslash-escaping unnecessary resulting in more readable templates. 
+
+To use, just specify `delimiters "<#", "#>"` in your .stg files, or manually supply them to the constructor of the STGroup or subclasses thereof. 
 
 
 Usage
