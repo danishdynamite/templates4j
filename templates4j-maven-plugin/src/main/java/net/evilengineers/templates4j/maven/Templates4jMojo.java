@@ -1,6 +1,7 @@
 package net.evilengineers.templates4j.maven;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -15,6 +16,7 @@ import net.evilengineers.templates4j.extension.antlr.FilterList;
 import net.evilengineers.templates4j.extension.antlr.ParseTreeModelAdapter;
 import net.evilengineers.templates4j.spi.UserFunction;
 
+import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.LexerInterpreter;
@@ -87,6 +89,7 @@ public class Templates4jMojo extends AbstractMojo {
 
 		info("== Starting ==");
 		info(project.toString());
+		info("Encoding: " + encoding);
 		info("Grammar: " + grammarFile.getAbsolutePath());
 		info("Template: " + templateFile.getAbsolutePath());
 		info((inputFile.isDirectory() ? "Inputdirectory: " : "Inputfile: ") + inputFile.getAbsolutePath());
@@ -155,7 +158,7 @@ public class Templates4jMojo extends AbstractMojo {
 		
 		try {
 			info("Creating lexer.");
-			LexerInterpreter lexEngine = grammer.createLexerInterpreter(new ANTLRFileStream(inputFile.getAbsolutePath(), encoding));
+			LexerInterpreter lexEngine = grammer.createLexerInterpreter(new ANTLRInputStream(IOUtil.toString(new FileInputStream(inputFile.getAbsolutePath()), encoding)));
 			ParserInterpreter parser = grammer.createParserInterpreter(new CommonTokenStream(lexEngine));
 			parser.addParseListener(new ParseTreeListener() {
 				@Override
@@ -165,7 +168,7 @@ public class Templates4jMojo extends AbstractMojo {
 				@Override
 				public void visitErrorNode(ErrorNode node) {
 					error("Parser error at: " + node);
-					ctx.addMessage(null, 1, 1, "Parser error at: " + node, BuildContext.SEVERITY_ERROR, null);
+					ctx.addMessage(inputFile, node.getSymbol().getLine(), node.getSymbol().getCharPositionInLine(), "Parser error at: " + node, BuildContext.SEVERITY_ERROR, null);
 				}
 				
 				@Override
@@ -195,7 +198,7 @@ public class Templates4jMojo extends AbstractMojo {
 					writeToFile(outputFile, data);
 				} else {
 					error("No filemarkers present in the template output and no outputFile was not specified.");
-					ctx.addMessage(null, 1, 1, "No filemarkers present in the template output and no outputFile was not specified.", BuildContext.SEVERITY_ERROR, null);
+					ctx.addMessage(templateFile, 1, 1, "No filemarkers present in the template output and no outputFile was not specified.", BuildContext.SEVERITY_ERROR, null);
 					return;
 				}
 			} else {
@@ -212,7 +215,7 @@ public class Templates4jMojo extends AbstractMojo {
 					if (filename.contains("/")) {
 						dir = new File(outputDirectory, filename.substring(0, filename.lastIndexOf("/")));
 						dir.mkdirs();
-						filename = filename.substring(filename.indexOf("/") + 1);
+						filename = filename.substring(filename.lastIndexOf("/") + 1);
 					}
 					info("Will write to: " + dir.getAbsolutePath() + "  filename: " + filename);
 	
@@ -263,7 +266,7 @@ public class Templates4jMojo extends AbstractMojo {
 	}
 	
 	private void writeToFile(File file, String content) throws IOException {
-		OutputStreamWriter os = new OutputStreamWriter(ctx.newFileOutputStream(file));
+		OutputStreamWriter os = new OutputStreamWriter(ctx.newFileOutputStream(file), "UTF-8");
 		try {
 			os.write(content);
 			os.flush();
