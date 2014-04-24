@@ -128,6 +128,7 @@ scope {
 	if ( name!=null && name.startsWith(Compiler.SUBTEMPLATE_PREFIX) ) {
 	    $impl.addArg(new FormalArgument("i"));
 	    $impl.addArg(new FormalArgument("i0"));
+	    $impl.addArg(new FormalArgument("iLast"));
     }
 	$impl.template = template; // always forget the entire template; char indexes are relative to it
 }
@@ -234,6 +235,7 @@ subtemplate returns [String name, int nargs]
 			sub.template = "";
 			sub.addArg(new FormalArgument("i"));
 			sub.addArg(new FormalArgument("i0"));
+			sub.addArg(new FormalArgument("iLast"));
 			sub.isAnonSubtemplate = true;
 	        sub.templateDefStartToken = $SUBTEMPLATE.token;
             sub.ast = $SUBTEMPLATE;

@@ -64,7 +64,7 @@ public class Interpreter {
 	private static Map<Short, UserFunction> customFuncs = new HashMap<Short, UserFunction>();
 	
 	public static final Set<String> predefinedAnonSubtemplateAttributes =
-		new HashSet<String>() { { add("i"); add("i0"); } };
+		new HashSet<String>() { { add("i"); add("i0"); add("iLast"); } };
 
 	/** Operand stack, grows upwards. */
 	Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
@@ -850,6 +850,7 @@ public class Interpreter {
 				if ( st.impl.isAnonSubtemplate ) {
 					st.rawSetAttribute("i0", 0);
 					st.rawSetAttribute("i", 1);
+					st.rawSetAttribute("iLast", true);
 				}
 				operands[++sp] = st;
 			}
@@ -876,6 +877,7 @@ public class Interpreter {
 			if ( st.impl.isAnonSubtemplate ) {
 				st.rawSetAttribute("i0", i0);
 				st.rawSetAttribute("i", i);
+				st.rawSetAttribute("iLast", !iter.hasNext());
 			}
 			mapped.add(st);
 			i0++;
@@ -938,6 +940,7 @@ public class Interpreter {
 			ST embedded = group.createStringTemplateInternally(prototype);
 			embedded.rawSetAttribute("i0", i);
 			embedded.rawSetAttribute("i", i+1);
+			embedded.rawSetAttribute("iLast", false);
 			for (int a = 0; a < numExprs; a++) {
 				Iterator<?> it = (Iterator<?>) exprs.get(a);
 				if ( it!=null && it.hasNext() ) {
@@ -953,6 +956,8 @@ public class Interpreter {
 			results.add(embedded);
 			i++;
 		}
+		if (results.size() > 0)
+			((ST) results.get(results.size() - 1)).rawSetAttribute("iLast", true);
 		return results;
 	}
 
