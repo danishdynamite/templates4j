@@ -44,8 +44,6 @@ import java.util.*;
 public class CompiledST implements Cloneable {
     public String name;
 
-    public Coordinate positionInFile;
-
 	/**
 	 * Every template knows where it is relative to the group that loaded it.
 	 * The prefix is the relative path from the root. {@code "/prefix/name"} is

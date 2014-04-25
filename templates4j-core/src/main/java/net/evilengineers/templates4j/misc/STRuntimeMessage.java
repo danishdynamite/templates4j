@@ -27,8 +27,6 @@
  */
 package net.evilengineers.templates4j.misc;
 
-import java.util.List;
-
 import net.evilengineers.templates4j.*;
 
 /** Used to track errors that occur in the ST interpreter. */
@@ -89,26 +87,6 @@ public class STRuntimeMessage extends STMessage {
             buf.append("]");
         }
         if ( loc!=null ) buf.append(" "+loc);
-        if (ip >= 0 && self.impl != null && self.impl.positionInFile != null && loc != null) {
-            loc.line += self.impl.positionInFile.line;
-            buf.append(" [FILE:" + loc + "]");
-        } else if (ip >= 0 && self.impl != null && self.impl.isAnonSubtemplate) {
-        	buf.append(" ANON: " + self.impl.getTemplateRange() + " Q:" + Misc.getLineCharPosition(self.impl.template, self.impl.getTemplateRange().a));
-        	
-        	Coordinate pos = null;
-        	for (ST st : Interpreter.getEnclosingInstanceStack(scope, true)) {
-        		if (!st.getName().startsWith("/_sub")) {
-        			pos = st.impl.positionInFile;
-        			System.err.println("%%% setting pos to: " + pos);
-        		}
-        	}
-        	if (pos != null) {
-	        	loc.line += pos.line;
-	            buf.append(" [FILE:" + loc + "]");
-        	} else {
-        		buf.append(" [pos not found]");
-        	}
-        }
         buf.append(" "+super.toString());
         return buf.toString();
     }

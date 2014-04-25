@@ -400,34 +400,6 @@ public class STGroup {
 		}
 	}
 
-    public void defineTemplateOrRegion(
-		String fullyQualifiedTemplateName,
-		String regionSurroundingTemplateName,
-        Token templateToken,
-		String template,
-        Token nameToken,
-        Coordinate positionInFile,
-        List<FormalArgument> args)
-    {
-        try {
-            if ( regionSurroundingTemplateName!=null ) {
-                defineRegion(regionSurroundingTemplateName, nameToken, template, templateToken);
-            }
-            else {
-            	CompiledST t = defineTemplate(fullyQualifiedTemplateName, nameToken, args, template, templateToken);
-                t.positionInFile = positionInFile;
-                System.err.println("################## " + nameToken);
-                System.err.println("############ " + templateToken.getLine());
-                System.err.println("############ " + positionInFile);
-                t.positionInFile.line = templateToken.getLine();
-            }
-		}
-		catch (STException e) {
-			// after getting syntax error in a template, we emit msg
-			// and throw exception to blast all the way out to here.
-		}
-	}
-
 	public void rawDefineTemplate(String name, CompiledST code, Token defT) {
 		CompiledST prev = rawGetTemplate(name);
 		if ( prev!=null ) {
