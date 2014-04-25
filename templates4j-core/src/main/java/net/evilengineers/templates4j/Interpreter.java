@@ -582,8 +582,8 @@ public class Interpreter {
 					continue;
 				}
 
-				if (attrs == null || !attrs.containsKey(formalArgument.getKey())) {
-//					argumentCountMismatch = true;
+				if (attrs == null) {
+					argumentCountMismatch = true;
 					break;
 				}
 			}
