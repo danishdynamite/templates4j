@@ -207,7 +207,8 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			if (printSyntaxTree)
 				info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, Arrays.asList(parser.getRuleNames())));
 			
-			template.add("tree", grammarParseTree);
+			template.add("caller", this);
+			template.add("parsetree", grammarParseTree);
 			
 			String data = template.render();
 	
@@ -298,6 +299,14 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 		}
 	}	
 
+	public File getTemplateFile() {
+		return templateFile;
+	}
+	
+	public File getInputFile() {
+		return inputFile;
+	}
+	
 	private final void error(CharSequence s, Throwable t) {
 		if (t == null) {
 			log.error(name + ": " + s);
@@ -327,14 +336,22 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 
 	@Override
 	public void compileTimeError(STMessage msg) {
+		// Try to find location in msg
 		int line = 1;
 		int pos = 1;
-		Matcher m = Pattern.compile(".* (\\d+):(\\d+).*").matcher(msg.toString());
-		if (m.matches()) {
+		Matcher m = Pattern.compile("FILE:(\\d+):(\\d+)").matcher(msg.toString());
+		if (m.find()) {
 			line = Integer.parseInt(m.group(1));
-			pos = Integer.parseInt(m.group(2));
+			pos = Integer.parseInt(m.group(2)) + 1;
+		} else {
+			m = Pattern.compile("(\\d+):(\\d+)").matcher(msg.toString());
+			if (m.find()) {
+				line = Integer.parseInt(m.group(1));
+				pos = Integer.parseInt(m.group(2)) + 1;
+			}
 		}
-		throw new SomethingWentWrongException(templateFile, line + 1, pos + 1, "Compiletime error: " + msg, msg.cause);
+		
+		throw new SomethingWentWrongException(templateFile, line, pos, "Compiletime error: " + msg, msg.cause);
 	}
 
 	@Override
@@ -342,6 +359,7 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 		if (msg.cause != null && msg.cause.getMessage() != null && msg.cause instanceof SomethingWentWrongException) {
 			throw (SomethingWentWrongException) msg.cause;
 		} else {
+			// 'Unwrap' nested exception messages
 			String s = msg.toString();
 			String search = "SomethingWentWrongException: ";
 			int i = s.lastIndexOf(search);
@@ -350,7 +368,22 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			search = "Runtime error: ";
 			if (s.startsWith(search))
 				s = s.substring(search.length());
-			throw new SomethingWentWrongException(templateFile, 1, 1, "Runtime error: " + s, msg.cause);
+			
+			// Try to find location in msg
+			int line = 1;
+			int pos = 1;
+			Matcher m = Pattern.compile("FILE:(\\d+):(\\d+)").matcher(s);
+			if (m.find()) {
+				line = Integer.parseInt(m.group(1));
+				pos = Integer.parseInt(m.group(2)) + 1;
+			} else {
+				m = Pattern.compile("(\\d+):(\\d+)").matcher(s);
+				if (m.find()) {
+					line = Integer.parseInt(m.group(1));
+					pos = Integer.parseInt(m.group(2)) + 1;
+				}
+			}
+			throw new SomethingWentWrongException(templateFile, line, pos, "Runtime error: " + s, msg.cause);
 		}
 	}
 
@@ -386,6 +419,8 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	}
 	
 	public class SomethingWentWrongException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+		
 		private File file;
 		private int line;
 		private int pos;

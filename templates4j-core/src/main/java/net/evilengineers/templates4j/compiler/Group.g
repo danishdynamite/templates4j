@@ -236,7 +236,7 @@ templateDef[String prefix]
 				enclosingTemplateName = prefix + enclosingTemplateName;
 			}
 			group.defineTemplateOrRegion(templateName, enclosingTemplateName, templateToken,
-										 template, $name, $formalArgs.args);
+										 template, $name, Misc.getLineCharPosition(template, n), $formalArgs.args);
 		}
 	    }
 	|   alias=ID '::=' target=ID  {group.defineTemplateAlias($alias, $target);}
