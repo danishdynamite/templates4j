@@ -84,5 +84,28 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr4-maven-plugin</artifactId>
+				<version>4.2.2</version>
+				<configuration>
+					<sourceDirectory>src/main/resources</sourceDirectory>
+					<outputDirectory>${project.build.directory}/generated-sources/antlr4</outputDirectory>
+					<encoding>UTF-8</encoding>
+					<visitor>true</visitor>
+					<listener>true</listener>
+					<verbose>true</verbose>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>antlr4</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 </project>
