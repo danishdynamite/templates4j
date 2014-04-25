@@ -37,13 +37,13 @@ public final class AntlrUtils {
 		for (int i = 0; i < t.getChildCount(); i++) {
 			if (inlined) {
 				if (i > 0)
-					buf.append("\t");
+					buf.append(" ");
 				buf.append(toStringTree(t.getChild(i), ruleNames, indent + 1));
 				inlined = true;
 			} else {
 				buf.append("\n");
 				for (int k = 0; k < indent + 1; k++)
-					buf.append("\t");
+					buf.append(" ");
 				buf.append(toStringTree(t.getChild(i), ruleNames, indent + 1));
 				inlined = false;
 			}
@@ -52,7 +52,7 @@ public final class AntlrUtils {
 		if (!inlined) {
 			buf.append("\n");
 			for (int k = 0; k < indent; k++)
-				buf.append("\t");
+				buf.append("    ");
 		}
 		buf.append(")");
 		return buf.toString();

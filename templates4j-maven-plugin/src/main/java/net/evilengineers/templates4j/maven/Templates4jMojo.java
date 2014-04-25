@@ -1,31 +1,43 @@
 package net.evilengineers.templates4j.maven;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Arrays;
+import java.util.BitSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.evilengineers.templates4j.Interpreter;
 import net.evilengineers.templates4j.ST;
+import net.evilengineers.templates4j.STErrorListener;
 import net.evilengineers.templates4j.STGroup;
 import net.evilengineers.templates4j.STGroupFile;
 import net.evilengineers.templates4j.extension.antlr.AntlrUtils;
 import net.evilengineers.templates4j.extension.antlr.FilterList;
 import net.evilengineers.templates4j.extension.antlr.ParseTreeModelAdapter;
+import net.evilengineers.templates4j.misc.STMessage;
 import net.evilengineers.templates4j.spi.UserFunction;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.Tool;
+import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.LexerInterpreter;
+import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserInterpreter;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.atn.ATNConfigSet;
+import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.antlr.v4.tool.ANTLRMessage;
+import org.antlr.v4.tool.ANTLRToolListener;
 import org.antlr.v4.tool.Grammar;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -42,7 +54,7 @@ import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.Scanner;
 
 @Mojo(name="execute-templates", defaultPhase=LifecyclePhase.GENERATE_SOURCES, threadSafe=false, requiresDependencyResolution=ResolutionScope.COMPILE, requiresProject=true, instantiationStrategy = InstantiationStrategy.PER_LOOKUP)
-public class Templates4jMojo extends AbstractMojo {
+public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, STErrorListener, ANTLRErrorListener {
 	
 	protected String name = "[Template4J-plugin]";
 	
@@ -83,83 +95,92 @@ public class Templates4jMojo extends AbstractMojo {
 	protected Boolean printSyntaxTree;
 
 	protected Log log;
-
+	
 	public void execute() throws MojoExecutionException {
-		log = getLog();
-
-		info("== Starting ==");
-		info(project.toString());
-		info("Encoding: " + encoding);
-		info("Grammar: " + grammarFile.getAbsolutePath());
-		info("Template: " + templateFile.getAbsolutePath());
-		info((inputFile.isDirectory() ? "Inputdirectory: " : "Inputfile: ") + inputFile.getAbsolutePath());
-		info("Outputdirectory: " + outputDirectory.getAbsolutePath());
-		if (outputFile != null)
-			info("Outputfile: " + outputFile.getAbsolutePath());
-
-		// Add output directory as a compile source root (must be done before anything else to get Eclipse to play nice)
-		project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
-
-		// Figure out if we should do anything
-		if (!isRebuildRequired())
-			return;
-		
-		for (String existingSourceRoots : project.getCompileSourceRoots())
-			info("Existing compile-source-root: " + existingSourceRoots);
-
-		// Ensure output directory exists
-		if (!outputDirectory.exists())
-			outputDirectory.mkdirs();
-
-		ctx.removeMessages(grammarFile);
-		ctx.removeMessages(templateFile);
-		ctx.removeMessages(inputFile);
-
-		// Read grammar
-		final Grammar grammer = Grammar.load(grammarFile.getAbsolutePath());
-		info("Read grammar from: " + grammarFile.getName());
-
-		// Setup the template interpreter
-		Interpreter.trace = traceTemplateInterpreter;
-		for (UserFunction fn : Interpreter.autoregisterUserFunctions())
-			info("Autoregistered user-function: " + fn.getName() + " -> " + fn);
-		
-		// Read template / templategroup
-		STGroup templateGroup;
-		ST template;
 		try {
+			
+			log = getLog();
+	
+			info("== Starting ==");
+			info(project.toString());
+			info("Encoding: " + encoding);
+			info("Grammar: " + grammarFile.getAbsolutePath());
+			info("Template: " + templateFile.getAbsolutePath());
+			info((inputFile.isDirectory() ? "Inputdirectory: " : "Inputfile: ") + inputFile.getAbsolutePath());
+			info("Outputdirectory: " + outputDirectory.getAbsolutePath());
+			if (outputFile != null)
+				info("Outputfile: " + outputFile.getAbsolutePath());
+	
+			// Add output directory as a compile source root (must be done before anything else to get Eclipse to play nice)
+			project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
+	
+			// Figure out if we should do anything
+			if (!isRebuildRequired())
+				return;
+			
+			for (String existingSourceRoots : project.getCompileSourceRoots())
+				info("Existing compile-source-root: " + existingSourceRoots);
+	
+			// Ensure output directory exists
+			if (!outputDirectory.exists())
+				outputDirectory.mkdirs();
+	
+			ctx.removeMessages(grammarFile);
+			ctx.removeMessages(templateFile);
+			ctx.removeMessages(inputFile);
+	
+			// Read grammar
+			Tool antrl = new Tool();
+			antrl.addListener(this);
+			final Grammar grammer = antrl.loadGrammar(grammarFile.getAbsolutePath());
+			info("Read grammar from: " + grammarFile.getName());
+	
+			// Setup the template interpreter
+			Interpreter.trace = traceTemplateInterpreter;
+			for (UserFunction fn : Interpreter.autoregisterUserFunctions())
+				info("Autoregistered user-function: " + fn.getName() + " -> " + fn);
+			
+			// Read template / templategroup
+			STGroup templateGroup;
+			ST template;
 			if (templateFile.getAbsolutePath().endsWith(".stg")) {
 				templateGroup = new STGroupFile(templateFile.getAbsolutePath(), encoding);
+				templateGroup.setListener(this);
 				info("Read template group from: " + templateFile.getName());
 				template = templateGroup.getInstanceOf(templateName);
 				if (template != null) {
 					info("Found requested template.");
 				} else {
-					error("Did not find template: " + templateName + " in group.");
-					ctx.addMessage(null, 1, 1, "Did not find template: " + templateName, BuildContext.SEVERITY_ERROR, null);
-					return;
+					throw new SomethingWentWrongException(templateFile, 1, 1, "Did not find template \"" + templateName + "\" in the template group: " + templateFile.getName());
 				}
 				
 			} else if (templateFile.getAbsolutePath().endsWith(".st")) {
 				templateGroup = new STGroup();
+				templateGroup.setListener(this);
 				
-				template = new ST(templateGroup, IOUtil.toString(new FileReader(templateFile)));
+				String contents;
+				try {
+					contents = IOUtil.toString(new FileReader(templateFile));
+				} catch (IOException e) {
+					throw new SomethingWentWrongException(templateFile, 1, 1, "Unable to load template from: " + templateFile.getAbsolutePath(), e);	
+				}
+				template = new ST(templateGroup, contents);
 				info("Read template file: " + templateFile.getName());
 			} else {
-				error("Unknown template extension for file: " + templateFile.getAbsolutePath());
-				ctx.addMessage(null, 1, 1, "Unknown template extension for file: " + templateFile.getAbsolutePath(), BuildContext.SEVERITY_ERROR, null);
-				return;
+				throw new SomethingWentWrongException(templateFile, 1, 1, "Unknown template extension for file: " + templateFile.getName());
 			}
-		} catch (Exception e) {
-			error("Failed to read template from: " + templateFile.getAbsolutePath(), e);
-			ctx.addMessage(null, 1, 1, "Failed to read template from: " + templateFile.getAbsolutePath(), BuildContext.SEVERITY_ERROR, e);
-			return;
-		}
-		
-		try {
+			
 			info("Creating lexer.");
-			LexerInterpreter lexEngine = grammer.createLexerInterpreter(new ANTLRInputStream(IOUtil.toString(new FileInputStream(inputFile.getAbsolutePath()), encoding)));
+			LexerInterpreter lexEngine;
+			try {
+				lexEngine = grammer.createLexerInterpreter(new ANTLRFileStream(inputFile.getAbsolutePath(), encoding));
+			} catch (IOException e) {
+				throw new SomethingWentWrongException(inputFile, 1, 1, "Error reading inputfile: " + e.getMessage(), e);
+			}
+			
+			info("Creating parser.");
 			ParserInterpreter parser = grammer.createParserInterpreter(new CommonTokenStream(lexEngine));
+			parser.addErrorListener(this);
 			parser.addParseListener(new ParseTreeListener() {
 				@Override
 				public void visitTerminal(TerminalNode node) {
@@ -167,8 +188,6 @@ public class Templates4jMojo extends AbstractMojo {
 				
 				@Override
 				public void visitErrorNode(ErrorNode node) {
-					error("Parser error at: " + node);
-					ctx.addMessage(inputFile, node.getSymbol().getLine(), node.getSymbol().getCharPositionInLine(), "Parser error at: " + node, BuildContext.SEVERITY_ERROR, null);
 				}
 				
 				@Override
@@ -191,53 +210,56 @@ public class Templates4jMojo extends AbstractMojo {
 			template.add("tree", grammarParseTree);
 			
 			String data = template.render();
-
-			int offsetStartMarker = data.indexOf(TemplateMarkerFunction.getFileStartMarker());
-			if (offsetStartMarker < 0) {
-				if (outputFile != null) {
-					writeToFile(outputFile, data);
-				} else {
-					error("No filemarkers present in the template output and no outputFile was not specified.");
-					ctx.addMessage(templateFile, 1, 1, "No filemarkers present in the template output and no outputFile was not specified.", BuildContext.SEVERITY_ERROR, null);
-					return;
-				}
-			} else {
-				do {
-					int offsetEndMarker = data.indexOf(TemplateMarkerFunction.getFileEndMarker(), offsetStartMarker);
-					if (offsetEndMarker < 0)
-						throw new IOException("End of filemarker not found.  Should never happen.");
-					
-					String filename = data.substring(offsetStartMarker + TemplateMarkerFunction.getFileStartMarker().length(), offsetEndMarker);
 	
-					// Properly process directory part of filename
-					info("Found file marker for: " + filename);
-					File dir = outputDirectory;
-					if (filename.contains("/")) {
-						dir = new File(outputDirectory, filename.substring(0, filename.lastIndexOf("/")));
-						dir.mkdirs();
-						filename = filename.substring(filename.lastIndexOf("/") + 1);
+			try {
+				int offsetStartMarker = data.indexOf(TemplateMarkerFunction.getFileStartMarker());
+				if (offsetStartMarker < 0) {
+					if (outputFile != null) {
+						writeToFile(outputFile, data);
+					} else {
+						throw new SomethingWentWrongException(templateFile, 1, 1, "No filemarkers present in the template output and no outputFile was not specified.");
 					}
-					info("Will write to: " + dir.getAbsolutePath() + "  filename: " + filename);
-	
-					// Find local EOF, which is the start of the next filemarker
-					offsetStartMarker = data.indexOf(TemplateMarkerFunction.getFileStartMarker(), offsetEndMarker);
-					if (offsetStartMarker < 0)
-						offsetStartMarker = data.length();
-					
-					File outputFile = new File(dir, filename);				
-					writeToFile(outputFile, data.substring(offsetEndMarker + TemplateMarkerFunction.getFileEndMarker().length(), offsetStartMarker));
-					ctx.refresh(outputFile);
-				} while (offsetStartMarker < data.length());
-			}
-		} catch (IOException e) {
-			ctx.addMessage(null, 1, 1, "Unexpected exception", BuildContext.SEVERITY_ERROR, e);
-			return;
-		}
+				} else {
+					do {
+						int offsetEndMarker = data.indexOf(TemplateMarkerFunction.getFileEndMarker(), offsetStartMarker);
+						String filename = data.substring(offsetStartMarker + TemplateMarkerFunction.getFileStartMarker().length(), offsetEndMarker);
 		
-		info("Refreshing " + outputDirectory.getAbsoluteFile());
-		ctx.refresh(outputDirectory.getAbsoluteFile());
-
-		info("Done!");
+						// Properly process directory part of filename
+						info("Found file marker for: " + filename);
+						File dir = outputDirectory;
+						if (filename.contains("/")) {
+							dir = new File(outputDirectory, filename.substring(0, filename.lastIndexOf("/")));
+							dir.mkdirs();
+							filename = filename.substring(filename.lastIndexOf("/") + 1);
+						}
+						info("Will write to: " + dir.getAbsolutePath() + "  filename: " + filename);
+		
+						// Find local EOF, which is the start of the next filemarker
+						offsetStartMarker = data.indexOf(TemplateMarkerFunction.getFileStartMarker(), offsetEndMarker);
+						if (offsetStartMarker < 0)
+							offsetStartMarker = data.length();
+						
+						File outputFile = new File(dir, filename);				
+						writeToFile(outputFile, data.substring(offsetEndMarker + TemplateMarkerFunction.getFileEndMarker().length(), offsetStartMarker));
+						ctx.refresh(outputFile);
+					} while (offsetStartMarker < data.length());
+				}
+			} catch (IOException e) {
+				throw new SomethingWentWrongException(templateFile, 1, 1, "Error writing outputfile: ", e);
+			}
+			
+			info("Refreshing " + outputDirectory.getAbsoluteFile());
+			ctx.refresh(outputDirectory.getAbsoluteFile());
+	
+			info("Done!!");
+			
+		} catch (SomethingWentWrongException e) {
+			if (e.getCause() != null && e.getCause() instanceof SomethingWentWrongException) 
+				e = (SomethingWentWrongException) e.getCause();
+			
+			error((e.getFile() != null ? ("[" + e.getFile().getName() + "]: ") : "") + e.getMessage(), e.getCause());
+			ctx.addMessage(e.getFile(), e.getLine(), e.getPos(), e.getMessage(), BuildContext.SEVERITY_ERROR, e.getCause());
+		}
 	}
 	
 	private boolean isRebuildRequired() {
@@ -276,15 +298,119 @@ public class Templates4jMojo extends AbstractMojo {
 		}
 	}	
 
-	private final void info(CharSequence s) {
+	private final void error(CharSequence s, Throwable t) {
+		if (t == null) {
+			log.error(name + ": " + s);
+		} else {
+			log.error(name + ": " + s, t);
+		}
+	}
+
+	@Override
+	public final void info(String s) {
 		log.info(name + ": " + s);
 	}
 
-	private final void error(CharSequence s) {
-		log.error(name + ": " + s);
+	@Override
+	public final void error(ANTLRMessage msg) {
+		String s = msg.getMessageTemplate(false).render();
+		throw new SomethingWentWrongException(msg.fileName != null ? new File(msg.fileName) : null, msg.line, msg.charPosition + 1, s, msg.getCause());
 	}
 
-	private final void error(CharSequence s, Throwable t) {
-		log.error(name + ": " + s, t);
+	@Override
+	public final void warning(ANTLRMessage msg) {
+		String s = msg.getMessageTemplate(false).render();
+		log.warn(name + ": " + s);
+		if (msg.fileName != null)
+			ctx.addMessage(new File(msg.fileName), msg.line, msg.charPosition, s, BuildContext.SEVERITY_WARNING, msg.getCause());
+	}
+
+	@Override
+	public void compileTimeError(STMessage msg) {
+		int line = 1;
+		int pos = 1;
+		Matcher m = Pattern.compile(".* (\\d+):(\\d+).*").matcher(msg.toString());
+		if (m.matches()) {
+			line = Integer.parseInt(m.group(1));
+			pos = Integer.parseInt(m.group(2));
+		}
+		throw new SomethingWentWrongException(templateFile, line + 1, pos + 1, "Compiletime error: " + msg, msg.cause);
+	}
+
+	@Override
+	public void runTimeError(STMessage msg) {
+		if (msg.cause != null && msg.cause.getMessage() != null && msg.cause instanceof SomethingWentWrongException) {
+			throw (SomethingWentWrongException) msg.cause;
+		} else {
+			String s = msg.toString();
+			String search = "SomethingWentWrongException: ";
+			int i = s.lastIndexOf(search);
+			if (i >= 0)
+				s = s.substring(i + search.length());
+			search = "Runtime error: ";
+			if (s.startsWith(search))
+				s = s.substring(search.length());
+			throw new SomethingWentWrongException(templateFile, 1, 1, "Runtime error: " + s, msg.cause);
+		}
+	}
+
+	@Override
+	public void IOError(STMessage msg) {
+		if (msg.cause != null && msg.cause.getMessage() != null) {
+			throw new SomethingWentWrongException(templateFile, 1, 1, "I/O error: " + msg.cause.getMessage(), msg.cause);
+		} else {
+			throw new SomethingWentWrongException(templateFile, 1, 1, "I/O error: " + msg, msg.cause);
+		}
+	}
+
+	@Override
+	public void internalError(STMessage msg) {
+		throw new SomethingWentWrongException(templateFile, 1, 1, "Internal error: " + msg, msg.cause);
+	}
+
+	@Override
+	public void reportAmbiguity(Parser parser, DFA dfa, int startIndex, int stopIndex, boolean exact, BitSet ambigAlts, ATNConfigSet configs) {
+	}
+
+	@Override
+	public void reportAttemptingFullContext(Parser parser, DFA dfa, int startIndex, int stopIndex, BitSet ambigAlts, ATNConfigSet configs) {
+	}
+
+	@Override
+	public void reportContextSensitivity(Parser parser, DFA dfa, int startIndex, int stopIndex, int prediction, ATNConfigSet configs) {
+	}
+
+	@Override
+	public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
+		throw new SomethingWentWrongException(inputFile, line, charPositionInLine + 1, "Syntax error: " + msg, e);
+	}
+	
+	public class SomethingWentWrongException extends RuntimeException {
+		private File file;
+		private int line;
+		private int pos;
+		
+		public SomethingWentWrongException(File file, int line, int pos, String msg) {
+			this(file, line, pos, msg, null);
+		}
+		
+		public SomethingWentWrongException(File file, int line, int pos, String msg, Throwable e) {
+			super(msg, e);
+			this.file = file;
+			this.line = line;
+			this.pos = pos;
+		}
+
+		public File getFile() {
+			return file;
+		}
+
+		public int getLine() {
+			return line;
+		}
+
+		public int getPos() {
+			return pos;
+		}
 	}
 }
