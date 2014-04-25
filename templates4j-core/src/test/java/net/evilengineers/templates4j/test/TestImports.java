@@ -155,7 +155,7 @@ public class TestImports extends BaseTest {
 
 		writeTestFile(
 			"URL url = new STGroup().getURL(\"org/foo/templates/main.stg\");\n" +
-			"STGroup group = new STGroupFile(url,\"UTF-8\",'<','>');\n" +
+			"STGroup group = new STGroupFile(url,\"UTF-8\",\"<\",\">\");\n" +
 			"ST st = group.getInstanceOf(\"a\");\n"+
 			"String result = st.render();\n",
 			root);
