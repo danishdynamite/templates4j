@@ -174,7 +174,7 @@ public class Interpreter {
 		byte[] code = self.impl.instrs;        // which code block are we executing
 		int ip = 0;
 		while ( ip < self.impl.codeSize ) {
-			/*if ( trace || debug )*/ trace(scope, ip);
+			if ( trace || debug ) trace(scope, ip);
 			short opcode = code[ip];
 			//count[opcode]++;
 			scope.ip = ip;
