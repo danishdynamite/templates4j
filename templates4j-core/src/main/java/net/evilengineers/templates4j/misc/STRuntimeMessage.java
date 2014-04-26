@@ -65,20 +65,20 @@ public class STRuntimeMessage extends STMessage {
     /** Given an IP (code location), get it's range in source template then
      *  return it's template line:col.
      */
-    public String getSourceLocation() {
+    public Coordinate getSourceLocation() {
         if ( ip<0 || self.impl==null ) return null;
         Interval I = self.impl.sourceMap[ip];
         if ( I==null ) return null;
         // get left edge and get line/col
         int i = I.a;
         Coordinate loc = Misc.getLineCharPosition(self.impl.template, i);
-        return loc.toString();
+        return loc;
     }
 
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        String loc = getSourceLocation();
+        Coordinate loc = getSourceLocation();
         if ( self!=null ) {
             buf.append("context [");
             if ( interp!=null ) {
