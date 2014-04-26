@@ -207,7 +207,8 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			if (printSyntaxTree)
 				info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, Arrays.asList(parser.getRuleNames())));
 			
-			template.add("tree", grammarParseTree);
+			template.add("caller", this);
+			template.add("parsetree", grammarParseTree);
 			
 			String data = template.render();
 	
@@ -298,6 +299,14 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 		}
 	}	
 
+	public File getTemplateFile() {
+		return templateFile;
+	}
+	
+	public File getInputFile() {
+		return inputFile;
+	}
+	
 	private final void error(CharSequence s, Throwable t) {
 		if (t == null) {
 			log.error(name + ": " + s);
@@ -386,6 +395,8 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	}
 	
 	public class SomethingWentWrongException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+		
 		private File file;
 		private int line;
 		private int pos;
