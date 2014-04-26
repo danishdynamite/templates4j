@@ -12,17 +12,17 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.Tree;
 
 public final class AntlrUtils {
-	public static String toStringTree(Tree t, List<String> ruleNames) {
-		return toStringTree(t, ruleNames, 0);
+	public static String toStringTree(Tree t, String[] ruleNames, String[] tokenNames) {
+		return toStringTree(t, ruleNames, tokenNames, 0);
 	}
 
-	public static String toStringTree(Tree t, List<String> ruleNames, int indent) {
-		String s = Utils.escapeWhitespace(getNodeText(t, ruleNames), false);
+	public static String toStringTree(Tree t, String[] ruleNames, String[] tokenNames, int indent) {
+		String s = Utils.escapeWhitespace(getNodeText(t, ruleNames, tokenNames), false);
 		if (t.getChildCount() == 0)
 			return s;
 		StringBuilder buf = new StringBuilder();
 		buf.append("(");
-		s = Utils.escapeWhitespace(getNodeText(t, ruleNames), false);
+		s = Utils.escapeWhitespace(getNodeText(t, ruleNames, tokenNames), false);
 		buf.append(s);
 		buf.append(" ");
 
@@ -38,13 +38,13 @@ public final class AntlrUtils {
 			if (inlined) {
 				if (i > 0)
 					buf.append(" ");
-				buf.append(toStringTree(t.getChild(i), ruleNames, indent + 1));
+				buf.append(toStringTree(t.getChild(i), ruleNames, tokenNames, indent + 1));
 				inlined = true;
 			} else {
 				buf.append("\n");
 				for (int k = 0; k < indent + 1; k++)
-					buf.append(" ");
-				buf.append(toStringTree(t.getChild(i), ruleNames, indent + 1));
+					buf.append("    ");
+				buf.append(toStringTree(t.getChild(i), ruleNames, tokenNames, indent + 1));
 				inlined = false;
 			}
 		}
@@ -58,19 +58,17 @@ public final class AntlrUtils {
 		return buf.toString();
 	}
 
-	public static String getNodeText(Tree t, List<String> ruleNames) {
+	public static String getNodeText(Tree t, String[] ruleNames, String[] tokenNames) {
 		if (ruleNames != null) {
 			if (t instanceof RuleNode) {
 				int ruleIndex = ((RuleNode) t).getRuleContext().getRuleIndex();
-				String ruleName = ruleNames.get(ruleIndex);
-				return ruleName;
+				return ruleNames[ruleIndex];
 			} else if (t instanceof ErrorNode) {
 				return t.toString();
 			} else if (t instanceof TerminalNode) {
 				Token symbol = ((TerminalNode) t).getSymbol();
 				if (symbol != null) {
-					String s = symbol.getText();
-					return s;
+					return "'" + symbol.getText() + "'";
 				}
 			}
 		}

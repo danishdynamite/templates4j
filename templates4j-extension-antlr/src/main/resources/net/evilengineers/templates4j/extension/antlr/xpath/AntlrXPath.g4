@@ -2,15 +2,20 @@ grammar AntlrXPath;
 
 /* Grammar rules */
 
-query: wildcardSelector? (axisSelector | normalSelector)+;
+query: absoluteQuery | relativeQuery;
 
-wildcardSelector: '//' element;
-normalSelector: '/' element;
-axisSelector: '/' axisSpecifier element?;
+absoluteQuery: (Next queryElement)+
+             | Any queryElement (Next queryElement)*;
+
+relativeQuery: queryElement (Next queryElement)*;
+
+queryElement: axisSpecifier? name ('[' condition ']')?
+			| axisSpecifier;
+
 axisSpecifier: axisName '::';
 axisName: 'parent';
 
-element: Identifier ('[' condition ']')?;
+name: Name;
 
 condition: function '()' operator StringLiteral;
 operator: '=';
@@ -19,10 +24,11 @@ function: 'text';
 
 /* Lexer tokens */
 
-Identifier: Char (Char | Numeric)*;
+Name: Char (Char | Numeric)*;
 StringLiteral: '\'' StringCharacters? '\'';
+Any: '//';
+Next: '/';
 
-/* fragments */
 fragment
 StringCharacters: StringCharacter+;
 

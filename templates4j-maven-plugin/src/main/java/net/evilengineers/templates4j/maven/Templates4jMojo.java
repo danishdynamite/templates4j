@@ -17,6 +17,7 @@ import net.evilengineers.templates4j.STGroupFile;
 import net.evilengineers.templates4j.extension.antlr.AntlrUtils;
 import net.evilengineers.templates4j.extension.antlr.FilterList;
 import net.evilengineers.templates4j.extension.antlr.ParseTreeModelAdapter;
+import net.evilengineers.templates4j.extension.antlr.XPathQueryFunction;
 import net.evilengineers.templates4j.misc.STMessage;
 import net.evilengineers.templates4j.spi.UserFunction;
 
@@ -140,6 +141,8 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			for (UserFunction fn : Interpreter.autoregisterUserFunctions())
 				info("Autoregistered user-function: " + fn.getName() + " -> " + fn);
 			
+			Interpreter.registerUserFunction("xpath", new XPathQueryFunction());
+
 			// Read template / templategroup
 			STGroup templateGroup;
 			ST template;
@@ -205,7 +208,7 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			
 			ParseTree grammarParseTree = parser.parse(grammarNameRoot != null ? grammer.getRule(grammarNameRoot).index : 0);
 			if (printSyntaxTree)
-				info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, Arrays.asList(parser.getRuleNames())));
+				info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, parser.getRuleNames(), parser.getTokenNames()));
 			
 			template.add("caller", this);
 			template.add("parsetree", grammarParseTree);
