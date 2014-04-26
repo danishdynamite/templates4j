@@ -212,7 +212,7 @@ public class TestRegions extends BaseTest {
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		group.load();
-		String expected = "g.stg 3:2: redefinition of region /a.r"+newline;
+		String expected = "g.stg 4:2: redefinition of region /a.r"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}

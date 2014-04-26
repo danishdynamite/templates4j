@@ -186,7 +186,8 @@ public class TestIndentation extends BaseTest {
 				"\t  z=4;"+newline+
 				"\t}"+newline+
 				"}";
-		assertEquals(expecting, t.render());
+		String result = t.render();
+		assertEquals(expecting, result);
 	}
 
 	@Test public void testIndentedIFWithValueExpr() throws Exception {

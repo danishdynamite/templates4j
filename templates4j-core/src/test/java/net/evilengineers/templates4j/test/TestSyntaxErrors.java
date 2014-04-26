@@ -117,8 +117,8 @@ public class TestSyntaxErrors extends BaseTest {
 			assert false;
 		}
 		String result = errors.toString();
-		String expected = "test 1:2: invalid escaped char: '<EOF>'" + newline +
-						  "test 1:2: expecting '>', found '<EOF>'"+newline;
+		String expected = "test 2:2: invalid escaped char: '<EOF>'" + newline +
+						  "test 2:2: expecting '>', found '<EOF>'"+newline;
 		assertEquals(expected, result);
 	}
 

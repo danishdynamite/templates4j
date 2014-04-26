@@ -86,7 +86,7 @@ public class TestIndirectionAndEarlyEval extends BaseTest {
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		ST st = group.getInstanceOf("main");
-		assertEquals("t.stg 2:34: mismatched input '...' expecting RPAREN" + newline, errors.toString());
+		assertEquals("t.stg 3:34: mismatched input '...' expecting RPAREN" + newline, errors.toString());
 		assertNull(st);
 	}
 

@@ -325,7 +325,6 @@ public class STGroup {
 		if ( fullyQualifiedTemplateName.indexOf('.')>=0 ) {
 			throw new IllegalArgumentException("cannot have '.' in template names");
 		}
-        template = Misc.trimOneStartingNewline(template);
         template = Misc.trimOneTrailingNewline(template);
 		// compile, passing in templateName as enclosing name for any embedded regions
         CompiledST code = compile(getFileName(), fullyQualifiedTemplateName, args, template, templateToken);
@@ -333,7 +332,6 @@ public class STGroup {
         rawDefineTemplate(fullyQualifiedTemplateName, code, nameT);
 		code.defineArgDefaultValueTemplates(this);
         code.defineImplicitlyDefinedTemplates(this); // define any anonymous subtemplates
-
         return code;
     }
 

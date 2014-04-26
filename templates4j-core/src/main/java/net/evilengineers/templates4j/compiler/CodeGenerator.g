@@ -73,6 +73,7 @@ import net.evilengineers.templates4j.*;
 	Token templateToken;			// overall template token
 	String template;  				// overall template text
 	ErrorManager errMgr;
+	boolean skippedLeadingNewline;
 	public CodeGenerator(TreeNodeStream input, ErrorManager errMgr, String name, String template, Token templateToken) {
 		this(input, new RecognizerSharedState());
 		this.errMgr = errMgr;
@@ -159,7 +160,13 @@ singleElement
 		}
 		}
 
-	|	NEWLINE {emit($NEWLINE, Bytecode.INSTR_NEWLINE);}
+	|	NEWLINE 
+		{
+		if ($template::state.ip > 0 || skippedLeadingNewline) 
+			emit($NEWLINE, Bytecode.INSTR_NEWLINE); 
+		else 
+			skippedLeadingNewline = true; 
+		}
 	;
 
 compoundElement[CommonTree indent]
