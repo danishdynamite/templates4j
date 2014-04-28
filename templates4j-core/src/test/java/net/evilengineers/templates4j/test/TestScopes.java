@@ -37,7 +37,7 @@ public class TestScopes extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		ST st = group.getInstanceOf("t");
-		String result = st.render();
+		st.render();
 
 		String expectedError = "context [/t] 1:1 passed 0 arg(s) to template /u with 1 declared arg(s)"+newline;
 		assertEquals(expectedError, errors.toString());
@@ -51,7 +51,7 @@ public class TestScopes extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		ST st = group.getInstanceOf("t");
-		String result = st.render();
+		st.render();
 
 		String expectedError = "context [/t] 1:1 attribute x isn't defined"+newline;
 		assertEquals(expectedError, errors.toString());

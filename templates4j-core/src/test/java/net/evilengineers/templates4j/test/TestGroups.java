@@ -343,8 +343,10 @@ public class TestGroups extends BaseTest {
 
     @Test public void testDefaultArgumentManuallySet() throws Exception {
         class Field {
-            public String name = "parrt";
-            public int n = 0;
+            @SuppressWarnings("unused")
+			public String name = "parrt";
+            @SuppressWarnings("unused")
+			public int n = 0;
 			@Override
             public String toString() {
                 return "Field";
@@ -368,8 +370,10 @@ public class TestGroups extends BaseTest {
 
     @Test public void testDefaultArgumentSeesVarFromDynamicScoping() throws Exception {
         class Field {
-            public String name = "parrt";
-            public int n = 0;
+            @SuppressWarnings("unused")
+			public String name = "parrt";
+            @SuppressWarnings("unused")
+			public int n = 0;
 			@Override
             public String toString() {
                 return "Field";
@@ -392,8 +396,10 @@ public class TestGroups extends BaseTest {
 
     @Test public void testDefaultArgumentImplicitlySet2() throws Exception {
         class Field {
-            public String name = "parrt";
-            public int n = 0;
+            @SuppressWarnings("unused")
+			public String name = "parrt";
+            @SuppressWarnings("unused")
+			public int n = 0;
 			@Override
             public String toString() {
                 return "Field";

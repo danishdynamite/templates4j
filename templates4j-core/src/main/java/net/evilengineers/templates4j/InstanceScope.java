@@ -30,7 +30,6 @@ package net.evilengineers.templates4j;
 
 import net.evilengineers.templates4j.debug.EvalTemplateEvent;
 import net.evilengineers.templates4j.debug.InterpEvent;
-import net.evilengineers.templates4j.gui.STViz;
 
 import java.util.ArrayList;
 import java.util.List;

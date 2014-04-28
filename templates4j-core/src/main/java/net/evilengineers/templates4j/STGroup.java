@@ -29,7 +29,6 @@ package net.evilengineers.templates4j;
 
 import net.evilengineers.templates4j.compiler.*;
 import net.evilengineers.templates4j.compiler.Compiler;
-import net.evilengineers.templates4j.gui.STViz;
 import net.evilengineers.templates4j.misc.*;
 
 import org.antlr.runtime.*;

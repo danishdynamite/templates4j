@@ -26,7 +26,7 @@ public class TestBuggyDefaultValueRaisesNPETest extends BaseTest {
 		group.setListener(errors);
 
 		ST st = group.getInstanceOf("main");
-		String s = st.render();
+		st.render();
 
 		// Check the errors. This contained an "NullPointerException" before
 		Assert.assertEquals(
