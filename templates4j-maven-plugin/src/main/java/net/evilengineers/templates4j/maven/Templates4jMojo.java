@@ -98,7 +98,6 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	
 	public void execute() throws MojoExecutionException {
 		try {
-			
 			log = getLog();
 	
 			info("== Starting ==");
@@ -305,6 +304,10 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	
 	public File getInputFile() {
 		return inputFile;
+	}
+	
+	public MavenProject getProject() {
+		return project;
 	}
 	
 	private final void error(CharSequence s, Throwable t) {
