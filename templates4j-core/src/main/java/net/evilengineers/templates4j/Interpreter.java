@@ -31,7 +31,6 @@ import net.evilengineers.templates4j.compiler.*;
 import net.evilengineers.templates4j.compiler.Bytecode.Instruction;
 import net.evilengineers.templates4j.compiler.Compiler;
 import net.evilengineers.templates4j.debug.*;
-import net.evilengineers.templates4j.gui.STViz;
 import net.evilengineers.templates4j.misc.*;
 import net.evilengineers.templates4j.spi.UserFunction;
 

@@ -31,21 +31,12 @@ import net.evilengineers.templates4j.compiler.CompiledST;
 import net.evilengineers.templates4j.compiler.FormalArgument;
 import net.evilengineers.templates4j.debug.AddAttributeEvent;
 import net.evilengineers.templates4j.debug.ConstructionEvent;
-import net.evilengineers.templates4j.debug.EvalTemplateEvent;
 import net.evilengineers.templates4j.debug.InterpEvent;
-import net.evilengineers.templates4j.gui.STViz;
 import net.evilengineers.templates4j.misc.Aggregate;
-import net.evilengineers.templates4j.misc.ErrorBuffer;
-import net.evilengineers.templates4j.misc.ErrorManager;
 import net.evilengineers.templates4j.misc.MultiMap;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -427,40 +418,16 @@ public class ST {
 		return interp.exec(out, scope);
 	}
 
-	public int write(STWriter out, STErrorListener listener) {
-		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
-											 new ErrorManager(listener),
-											 false);
-		InstanceScope scope = new InstanceScope(null, this);
-		return interp.exec(out, scope);
-	}
-
-	public int write(STWriter out, Locale locale, STErrorListener listener) {
+	/*public int write(STWriter out, Locale locale, STErrorListener listener) {
 		Interpreter interp = new Interpreter(groupThatCreatedThisInstance,
 											 locale,
 											 new ErrorManager(listener),
 											 false);
 		InstanceScope scope = new InstanceScope(null, this);
 		return interp.exec(out, scope);
-	}
+	}*/
 
-	public int write(File outputFile, STErrorListener listener) throws IOException {
-		return write(outputFile, listener, "UTF-8", Locale.getDefault(), STWriter.NO_WRAP);
-	}
-
-	public int write(File outputFile, STErrorListener listener, String encoding)
-		throws IOException
-	{
-		return write(outputFile, listener, encoding, Locale.getDefault(), STWriter.NO_WRAP);
-	}
-
-	public int write(File outputFile, STErrorListener listener, String encoding, int lineWidth)
-		throws IOException
-	{
-		return write(outputFile, listener, encoding, Locale.getDefault(), lineWidth);
-	}
-
-	public int write(File outputFile,
+	/*public int write(File outputFile,
 					 STErrorListener listener,
 					 String encoding,
 					 Locale locale,
@@ -482,7 +449,7 @@ public class ST {
 		finally {
 			if (bw != null) bw.close();
 		}
-	}
+	}*/
 
 	public String render() { return render(Locale.getDefault()); }
 
@@ -499,7 +466,7 @@ public class ST {
     }
 
 	// LAUNCH A WINDOW TO INSPECT TEMPLATE HIERARCHY
-
+    /*
     public STViz inspect() { return inspect(Locale.getDefault()); }
 
     public STViz inspect(int lineWidth) {
@@ -527,7 +494,7 @@ public class ST {
 							  interp.getExecutionTrace(), errors.errors);
 		viz.open();
 		return viz;
-	}
+	}*/
 
 	// TESTING SUPPORT
 

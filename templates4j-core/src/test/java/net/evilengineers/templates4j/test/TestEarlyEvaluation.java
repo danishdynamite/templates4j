@@ -3,7 +3,6 @@ package net.evilengineers.templates4j.test;
 import net.evilengineers.templates4j.ST;
 import net.evilengineers.templates4j.STGroup;
 import net.evilengineers.templates4j.STGroupFile;
-import net.evilengineers.templates4j.gui.STViz;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -69,7 +68,7 @@ public class TestEarlyEvaluation extends BaseTest {
 
 		// Calling inspect led to an java.lang.ArrayIndexOutOfBoundsException in
 		// 4.0.2
-		STViz viz = st.inspect();
+		/*STViz viz = st.inspect();
 		if (interactive) {
 			viz.waitForClose();
 		}
@@ -77,7 +76,7 @@ public class TestEarlyEvaluation extends BaseTest {
 			waitUntilAnyWindowIsVisible(4000);
 			viz.viewFrame.dispose();
 			waitUntilAllWindowsAreClosed();
-		}
+		}*/
 	}
 
 	/**
@@ -101,7 +100,7 @@ public class TestEarlyEvaluation extends BaseTest {
 
 		// When <f(...)> is invoked only once inspect throws no Exception in
 		// 4.0.2
-		STViz viz = st.inspect();
+		/*STViz viz = st.inspect();
 		if (interactive) {
 			viz.waitForClose();
 		}
@@ -109,7 +108,7 @@ public class TestEarlyEvaluation extends BaseTest {
 			waitUntilAnyWindowIsVisible(4000);
 			viz.viewFrame.dispose();
 			waitUntilAllWindowsAreClosed();
-		}
+		}*/
 	}
 
 
@@ -140,7 +139,7 @@ public class TestEarlyEvaluation extends BaseTest {
 		// works fine. Also removing the " || other" and keeping the early eval
 		// works fine with inspect.
 
-		STViz viz = st.inspect();
+		/*STViz viz = st.inspect();
 		if (interactive) {
 			viz.waitForClose();
 		}
@@ -148,7 +147,7 @@ public class TestEarlyEvaluation extends BaseTest {
 			waitUntilAnyWindowIsVisible(4000);
 			viz.viewFrame.dispose();
 			waitUntilAllWindowsAreClosed();
-		}
+		}*/
 	}
 
 	@Test
