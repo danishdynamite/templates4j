@@ -68,7 +68,7 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	@Parameter(property="project", required=true)
 	protected MavenProject project;
 	
-	@Parameter(property="grammarFile", required=true)
+	@Parameter(property="grammarFile", required=false)
 	protected File grammarFile;
 
 	@Parameter(property="grammarNameRoot", required=false)
@@ -80,13 +80,13 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	@Parameter(property="templateName", required=false)
 	protected String templateName;
 	
-	@Parameter(property="inputFile", required=true)
+	@Parameter(property="inputFile", required=false)
 	protected File inputFile;
 
 	@Parameter(property="outputFile", required=false)
 	protected File outputFile;
 
-	@Parameter(property="outputDirectory", required=true)
+	@Parameter(property="outputDirectory", required=false)
 	protected File outputDirectory;
 
 	@Parameter(property="traceTemplateInterpreter", required=true, defaultValue="false")
@@ -104,13 +104,24 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			info("== Starting ==");
 			info(project.toString());
 			info("Encoding: " + encoding);
-			info("Grammar: " + grammarFile.getAbsolutePath());
 			info("Template: " + templateFile.getAbsolutePath());
-			info((inputFile.isDirectory() ? "Inputdirectory: " : "Inputfile: ") + inputFile.getAbsolutePath());
-			info("Outputdirectory: " + outputDirectory.getAbsolutePath());
+			if (grammarFile != null)
+				info("Grammar: " + grammarFile.getAbsolutePath());
+			if (inputFile != null)
+				info((inputFile.isDirectory() ? "Inputdirectory: " : "Inputfile: ") + inputFile.getAbsolutePath());
+			if (outputDirectory != null)
+				info("Outputdirectory: " + outputDirectory.getAbsolutePath());
 			if (outputFile != null)
 				info("Outputfile: " + outputFile.getAbsolutePath());
 	
+			if (outputDirectory == null) {
+				if (outputFile != null) {
+					outputDirectory = outputFile.getParentFile();
+				} else {
+					error("Neither outputDirectory nor outputFile was specified.", null);
+				}
+			}
+			
 			// Add output directory as a compile source root (must be done before anything else to get Eclipse to play nice)
 			project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
 	
@@ -125,22 +136,28 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			if (!outputDirectory.exists())
 				outputDirectory.mkdirs();
 	
-			ctx.removeMessages(grammarFile);
 			ctx.removeMessages(templateFile);
-			ctx.removeMessages(inputFile);
+			if (grammarFile != null)
+				ctx.removeMessages(grammarFile);
+			if (inputFile != null)
+				ctx.removeMessages(inputFile);
 	
 			// Read grammar
-			Tool antrl = new Tool();
-			antrl.addListener(this);
-			final Grammar grammer = antrl.loadGrammar(grammarFile.getAbsolutePath());
-			info("Read grammar from: " + grammarFile.getName());
-	
+			Grammar grammer = null;
+			if (grammarFile != null) {
+				Tool antrl = new Tool();
+				antrl.addListener(this);
+				grammer = antrl.loadGrammar(grammarFile.getAbsolutePath());
+				info("Read grammar from: " + grammarFile.getName());
+			}
+			
 			// Setup the template interpreter
 			Interpreter.trace = traceTemplateInterpreter;
 			for (UserFunction fn : Interpreter.autoregisterUserFunctions())
 				info("Autoregistered user-function: " + fn.getName() + " -> " + fn);
 			
 			Interpreter.registerUserFunction("xpath", new XPathQueryFunction());
+			Interpreter.registerUserFunction("xpath:generateLogClass", new XPathQueryFunction());
 
 			// Read template / templategroup
 			STGroup templateGroup;
@@ -172,45 +189,48 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 				throw new SomethingWentWrongException(templateFile, 1, 1, "Unknown template extension for file: " + templateFile.getName());
 			}
 			
-			info("Creating lexer.");
-			LexerInterpreter lexEngine;
-			try {
-				lexEngine = grammer.createLexerInterpreter(new ANTLRFileStream(inputFile.getAbsolutePath(), encoding));
-			} catch (IOException e) {
-				throw new SomethingWentWrongException(inputFile, 1, 1, "Error reading inputfile: " + e.getMessage(), e);
+			if (grammer != null) {
+				info("Creating lexer.");
+				LexerInterpreter lexEngine;
+				try {
+					lexEngine = grammer.createLexerInterpreter(new ANTLRFileStream(inputFile.getAbsolutePath(), encoding));
+				} catch (IOException e) {
+					throw new SomethingWentWrongException(inputFile, 1, 1, "Error reading inputfile: " + e.getMessage(), e);
+				}
+				
+				info("Creating parser.");
+				ParserInterpreter parser = grammer.createParserInterpreter(new CommonTokenStream(lexEngine));
+				parser.addErrorListener(this);
+				parser.addParseListener(new ParseTreeListener() {
+					@Override
+					public void visitTerminal(TerminalNode node) {
+					}
+					
+					@Override
+					public void visitErrorNode(ErrorNode node) {
+					}
+					
+					@Override
+					public void exitEveryRule(ParserRuleContext ctx) {
+					}
+					
+					@Override
+					public void enterEveryRule(ParserRuleContext ctx) { 
+					}
+				});
+			
+				// Register model adapters
+				templateGroup.registerModelAdaptor(ParserRuleContext.class, new ParseTreeModelAdapter(parser));
+				templateGroup.registerModelAdaptor(FilterList.class, new ParseTreeModelAdapter(parser));
+				
+				ParseTree grammarParseTree = parser.parse(grammarNameRoot != null ? grammer.getRule(grammarNameRoot).index : 0);
+				if (printSyntaxTree)
+					info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, parser.getRuleNames(), parser.getTokenNames()));
+				
+				template.add("parsetree", grammarParseTree);
 			}
 			
-			info("Creating parser.");
-			ParserInterpreter parser = grammer.createParserInterpreter(new CommonTokenStream(lexEngine));
-			parser.addErrorListener(this);
-			parser.addParseListener(new ParseTreeListener() {
-				@Override
-				public void visitTerminal(TerminalNode node) {
-				}
-				
-				@Override
-				public void visitErrorNode(ErrorNode node) {
-				}
-				
-				@Override
-				public void exitEveryRule(ParserRuleContext ctx) {
-				}
-				
-				@Override
-				public void enterEveryRule(ParserRuleContext ctx) { 
-				}
-			});
-	
-			// Register model adapters
-			templateGroup.registerModelAdaptor(ParserRuleContext.class, new ParseTreeModelAdapter(parser));
-			templateGroup.registerModelAdaptor(FilterList.class, new ParseTreeModelAdapter(parser));
-			
-			ParseTree grammarParseTree = parser.parse(grammarNameRoot != null ? grammer.getRule(grammarNameRoot).index : 0);
-			if (printSyntaxTree)
-				info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, parser.getRuleNames(), parser.getTokenNames()));
-			
 			template.add("caller", this);
-			template.add("parsetree", grammarParseTree);
 			
 			String data = template.render();
 	
@@ -267,9 +287,11 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	
 	private boolean isRebuildRequired() {
 		if (ctx.isIncremental()) {
-			if (ctx.hasDelta(grammarFile) || ctx.hasDelta(templateFile) || (inputFile.isFile() && ctx.hasDelta(inputFile))) {
+			if ((grammarFile != null && ctx.hasDelta(grammarFile)) 
+					|| ctx.hasDelta(templateFile) 
+					|| (inputFile != null && inputFile.isFile() && ctx.hasDelta(inputFile))) {
 				return true;
-			} else if (inputFile.isDirectory()) {
+			} else if (inputFile != null && inputFile.isDirectory()) {
 				Scanner scanner = ctx.newScanner(inputFile, true);
 				info("Scanning...");
 				scanner.scan();
