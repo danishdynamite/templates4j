@@ -2,6 +2,7 @@ package net.evilengineers.templates4j.extension.antlr;
 
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.ParserInterpreter;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import net.evilengineers.templates4j.extension.antlr.xpath.AntlrXPathLexer;
@@ -9,6 +10,11 @@ import net.evilengineers.templates4j.extension.antlr.xpath.AntlrXPathParser;
 import net.evilengineers.templates4j.spi.UserFunction;
 
 public class XPathQueryFunction extends UserFunction {
+	
+	public XPathQueryFunction(ParserInterpreter interpreter) {
+		
+	}
+	
 	@Override
 	public String getName() {
 		return "xpath";

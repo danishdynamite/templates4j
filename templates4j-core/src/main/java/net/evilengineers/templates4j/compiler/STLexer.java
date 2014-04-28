@@ -122,6 +122,7 @@ public class STLexer implements TokenSource {
 	public static final int TRUE=35;
 	public static final int FALSE=36;
 	public static final int COMMENT=37;
+	public static final int DOUBLECOLON=38;
 
 
     /** The char which delimits the start of an expression. */
@@ -279,7 +280,13 @@ public class STLexer implements TokenSource {
 					}
 					return newToken(DOT);
                 case ',' : consume(); return newToken(COMMA);
-				case ':' : consume(); return newToken(COLON);
+				case ':' : 
+					consume();
+					if (input.LA(1)==':') {
+						match(':');
+						return newToken(DOUBLECOLON);
+					}
+					return newToken(COLON);
 				case ';' : consume(); return newToken(SEMI);
                 case '(' : consume(); return newToken(LPAREN);
                 case ')' : consume(); return newToken(RPAREN);

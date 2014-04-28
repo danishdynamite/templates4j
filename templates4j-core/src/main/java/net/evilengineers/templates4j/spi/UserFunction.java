@@ -29,7 +29,7 @@ public abstract class UserFunction {
 	public Object doExecute(Object[] args) {
 		for (int i = 0; i < args.length && i < params.length; i++) {
 			if (!params[i].isAssignableFrom(args[i].getClass())) {
-				throw new IllegalArgumentException("Argument #" + i + " of type: " + args[i].getClass() + " is not assignable to method parameter of type: " + params[i].getClass());
+				throw new IllegalArgumentException("Argument #" + (i+1) + " of type: " + args[i].getClass() + " is not assignable to method parameter of type: " + params[i]);
 			}
 		}
 		try {

@@ -142,13 +142,31 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			if (inputFile != null)
 				ctx.removeMessages(inputFile);
 	
-			// Read grammar
+			// Read grammar and create parser
 			Grammar grammer = null;
+			ParserInterpreter parser = null;
+			ParseTree grammarParseTree = null;
 			if (grammarFile != null) {
 				Tool antrl = new Tool();
 				antrl.addListener(this);
 				grammer = antrl.loadGrammar(grammarFile.getAbsolutePath());
 				info("Read grammar from: " + grammarFile.getName());
+
+				info("Creating lexer.");
+				LexerInterpreter lexEngine;
+				try {
+					lexEngine = grammer.createLexerInterpreter(new ANTLRFileStream(inputFile.getAbsolutePath(), encoding));
+				} catch (IOException e) {
+					throw new SomethingWentWrongException(inputFile, 1, 1, "Error reading inputfile: " + e.getMessage(), e);
+				}
+				
+				info("Creating parser.");
+				parser = grammer.createParserInterpreter(new CommonTokenStream(lexEngine));
+				parser.addErrorListener(this);
+			
+				grammarParseTree = parser.parse(grammarNameRoot != null ? grammer.getRule(grammarNameRoot).index : 0);
+				if (printSyntaxTree)
+					info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, parser.getRuleNames(), parser.getTokenNames()));
 			}
 			
 			// Setup the template interpreter
@@ -156,8 +174,7 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			for (UserFunction fn : Interpreter.autoregisterUserFunctions())
 				info("Autoregistered user-function: " + fn.getName() + " -> " + fn);
 			
-			Interpreter.registerUserFunction("xpath", new XPathQueryFunction());
-			Interpreter.registerUserFunction("xpath:generateLogClass", new XPathQueryFunction());
+			Interpreter.registerUserFunction("antlr4::xpath", new XPathQueryFunction(parser));
 
 			// Read template / templategroup
 			STGroup templateGroup;
@@ -189,48 +206,13 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 				throw new SomethingWentWrongException(templateFile, 1, 1, "Unknown template extension for file: " + templateFile.getName());
 			}
 			
-			if (grammer != null) {
-				info("Creating lexer.");
-				LexerInterpreter lexEngine;
-				try {
-					lexEngine = grammer.createLexerInterpreter(new ANTLRFileStream(inputFile.getAbsolutePath(), encoding));
-				} catch (IOException e) {
-					throw new SomethingWentWrongException(inputFile, 1, 1, "Error reading inputfile: " + e.getMessage(), e);
-				}
-				
-				info("Creating parser.");
-				ParserInterpreter parser = grammer.createParserInterpreter(new CommonTokenStream(lexEngine));
-				parser.addErrorListener(this);
-				parser.addParseListener(new ParseTreeListener() {
-					@Override
-					public void visitTerminal(TerminalNode node) {
-					}
-					
-					@Override
-					public void visitErrorNode(ErrorNode node) {
-					}
-					
-					@Override
-					public void exitEveryRule(ParserRuleContext ctx) {
-					}
-					
-					@Override
-					public void enterEveryRule(ParserRuleContext ctx) { 
-					}
-				});
-			
-				// Register model adapters
-				templateGroup.registerModelAdaptor(ParserRuleContext.class, new ParseTreeModelAdapter(parser));
-				templateGroup.registerModelAdaptor(FilterList.class, new ParseTreeModelAdapter(parser));
-				
-				ParseTree grammarParseTree = parser.parse(grammarNameRoot != null ? grammer.getRule(grammarNameRoot).index : 0);
-				if (printSyntaxTree)
-					info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, parser.getRuleNames(), parser.getTokenNames()));
-				
-				template.add("parsetree", grammarParseTree);
-			}
+			// Register model adapters
+			templateGroup.registerModelAdaptor(ParserRuleContext.class, new ParseTreeModelAdapter(parser));
+			templateGroup.registerModelAdaptor(FilterList.class, new ParseTreeModelAdapter(parser));
 			
 			template.add("caller", this);
+			if (grammarParseTree != null)
+				template.add("parsetree", grammarParseTree);
 			
 			String data = template.render();
 	

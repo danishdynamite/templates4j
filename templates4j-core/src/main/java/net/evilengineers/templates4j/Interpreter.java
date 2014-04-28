@@ -188,7 +188,11 @@ public class Interpreter {
 					errMgr.runTimeError(this, scope, ErrorType.EXPECTING_LIST, Bytecode.instructions[opcode].name, operands[sp].getClass().getName());
 					operands[sp] = null;
 				} else {
-					operands[sp] = fn.doExecute(((ArrayList<?>) operands[sp]).toArray());
+					Object[] args = ((ArrayList<?>) operands[sp]).toArray();
+					for (int i = 0; i < args.length; i++)
+						if (args[i] instanceof ST)
+							args[i] = toString(out, scope, operands[sp]);
+					operands[sp] = fn.doExecute(args);
 				}
 				prevOpcode = opcode;
 				continue;

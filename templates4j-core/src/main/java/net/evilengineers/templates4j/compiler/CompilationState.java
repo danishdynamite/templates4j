@@ -100,7 +100,7 @@ public class CompilationState {
 	}
 
 	public void func(Token templateToken, CommonTree ns, CommonTree fn) {
-		Short funcBytecode = Compiler.funcs.get(ns.getText() + ":" + fn.getText());
+		Short funcBytecode = Compiler.funcs.get(ns.getText() + "::" + fn.getText());
 		if ( funcBytecode==null ) {
 			errMgr.compileTimeError(ErrorType.NO_SUCH_FUNCTION, templateToken, fn.token);
 			emit(fn, Bytecode.INSTR_POP);

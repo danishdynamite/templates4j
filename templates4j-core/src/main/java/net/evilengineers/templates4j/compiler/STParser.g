@@ -221,8 +221,7 @@ memberExpr
 
 includeExpr
 options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
-	:	{Compiler.funcs.containsKey(input.LT(1).getText() + ":" + input.LT(3).getText())}? // predefined namespace:function
-		ns=ID ':' fn=ID '(' implicitList ')'			-> ^(EXEC_FUNC_NS $ns $fn implicitList)
+	:	ns=ID '::' fn=ID '(' implicitList ')'	-> ^(EXEC_FUNC_NS $ns $fn implicitList)
 	|	{Compiler.funcs.containsKey(input.LT(1).getText())}? // predefined function
 		ID '(' implicitList ')'					-> ^(EXEC_FUNC ID implicitList)
 	|	'super' '.' ID '(' args ')'				-> ^(INCLUDE_SUPER ID args?)
