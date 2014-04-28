@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -311,6 +311,14 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	
 	public MavenProject getProject() {
 		return project;
+	}
+	
+	public Date getBuildTime() {
+		if (getProject().getProjectBuildingRequest() != null && getProject().getProjectBuildingRequest().getBuildStartTime() != null)
+			return getProject().getProjectBuildingRequest().getBuildStartTime();
+
+		// The data above is not available during an m2e-build, so lets provide a reasonable default: 
+		return new Date();
 	}
 	
 	private final void error(CharSequence s, Throwable t) {
