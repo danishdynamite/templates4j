@@ -38,7 +38,7 @@ options {
 }
 
 tokens {
-	EXPR; OPTIONS; PROP; PROP_IND; INCLUDE; INCLUDE_IND; EXEC_FUNC; INCLUDE_SUPER;
+	EXPR; OPTIONS; PROP; PROP_IND; INCLUDE; INCLUDE_IND; EXEC_FUNC; EXEC_FUNC_NS; INCLUDE_SUPER;
 	INCLUDE_SUPER_REGION; INCLUDE_REGION; TO_STR; LIST; MAP; ZIP; SUBTEMPLATE; ARGS;
 	ELEMENTS; REGION; NULL; INDENTED_EXPR;
 	}
@@ -221,7 +221,9 @@ memberExpr
 
 includeExpr
 options {k=2;} // prevent full LL(*), which fails, falling back on k=1; need k=2
-	:	{Compiler.funcs.containsKey(input.LT(1).getText())}? // predefined function
+	:	{Compiler.funcs.containsKey(input.LT(1).getText() + ":" + input.LT(3).getText())}? // predefined namespace:function
+		ns=ID ':' fn=ID '(' implicitList ')'			-> ^(EXEC_FUNC_NS $ns $fn implicitList)
+	|	{Compiler.funcs.containsKey(input.LT(1).getText())}? // predefined function
 		ID '(' implicitList ')'					-> ^(EXEC_FUNC ID implicitList)
 	|	'super' '.' ID '(' args ')'				-> ^(INCLUDE_SUPER ID args?)
 	|	ID '(' args ')'							-> ^(INCLUDE ID args?)

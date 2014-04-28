@@ -99,6 +99,17 @@ public class CompilationState {
 		}
 	}
 
+	public void func(Token templateToken, CommonTree ns, CommonTree fn) {
+		Short funcBytecode = Compiler.funcs.get(ns.getText() + ":" + fn.getText());
+		if ( funcBytecode==null ) {
+			errMgr.compileTimeError(ErrorType.NO_SUCH_FUNCTION, templateToken, fn.token);
+			emit(fn, Bytecode.INSTR_POP);
+		}
+		else {
+			emit(fn, funcBytecode);
+		}
+	}
+
 	public void emit(short opcode) { emit(null,opcode); }
 
 	public void emit(CommonTree opAST, short opcode) {
