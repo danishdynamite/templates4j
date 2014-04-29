@@ -61,22 +61,24 @@ public class DateRenderer implements AttributeRenderer {
 		Date d;
 		if (formatString == null)
 			formatString = "short";
-		if (o instanceof Calendar)
+		if (o instanceof Calendar) {
 			d = ((Calendar) o).getTime();
-		else
+		} else {
 			d = (Date) o;
+		}
 		Integer styleI = formatToInt.get(formatString);
 		DateFormat f;
-		if (styleI == null)
+		if (styleI == null) {
 			f = new SimpleDateFormat(formatString, locale);
-		else {
+		} else {
 			int style = styleI.intValue();
-			if (formatString.startsWith("date:"))
+			if (formatString.startsWith("date:")) {
 				f = DateFormat.getDateInstance(style, locale);
-			else if (formatString.startsWith("time:"))
+			} else if (formatString.startsWith("time:")) {
 				f = DateFormat.getTimeInstance(style, locale);
-			else
+			} else {
 				f = DateFormat.getDateTimeInstance(style, style, locale);
+			}
 		}
 		return f.format(d);
 	}

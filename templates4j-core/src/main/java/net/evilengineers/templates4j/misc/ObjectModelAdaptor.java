@@ -39,6 +39,7 @@ import java.util.Map;
 
 public class ObjectModelAdaptor implements ModelAdapter {
 	protected static final Member INVALID_MEMBER;
+	
 	static {
 		Member invalidMember;
 		try {
@@ -52,34 +53,28 @@ public class ObjectModelAdaptor implements ModelAdapter {
 		INVALID_MEMBER = invalidMember;
 	}
 
-	protected static final Map<Class<?>, Map<String, Member>> membersCache =
-		new HashMap<Class<?>, Map<String, Member>>();
+	protected static final Map<Class<?>, Map<String, Member>> membersCache = new HashMap<Class<?>, Map<String, Member>>();
 
 	@Override
-	public synchronized Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
-		throws STNoSuchPropertyException
-	{
+	public synchronized Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName) throws STNoSuchPropertyException {
 		if (o == null) {
 			throw new NullPointerException("o");
 		}
 
 		Class<?> c = o.getClass();
 
-		if ( property==null ) {
+		if (property == null)
 			return throwNoSuchProperty(c, propertyName, null);
-		}
 
 		Member member = findMember(c, propertyName);
-		if ( member!=null ) {
+		if (member != null) {
 			try {
 				if (member instanceof Method) {
-					return ((Method)member).invoke(o);
+					return ((Method) member).invoke(o);
+				} else if (member instanceof Field) {
+					return ((Field) member).get(o);
 				}
-				else if (member instanceof Field) {
-					return ((Field)member).get(o);
-				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				throwNoSuchProperty(c, propertyName, e);
 			}
 		}
@@ -88,12 +83,11 @@ public class ObjectModelAdaptor implements ModelAdapter {
 	}
 
 	protected static Member findMember(Class<?> clazz, String memberName) {
-		if (clazz == null) {
+		if (clazz == null)
 			throw new NullPointerException("clazz");
-		}
-		if (memberName == null) {
+		
+		if (memberName == null)
 			throw new NullPointerException("memberName");
-		}
 
 		synchronized (membersCache) {
 			Map<String, Member> members = membersCache.get(clazz);
@@ -103,16 +97,14 @@ public class ObjectModelAdaptor implements ModelAdapter {
 				if (member != null) {
 					return member != INVALID_MEMBER ? member : null;
 				}
-			}
-			else {
+			} else {
 				members = new HashMap<String, Member>();
 				membersCache.put(clazz, members);
 			}
 
 			// try getXXX and isXXX properties, look up using reflection
-			String methodSuffix = Character.toUpperCase(memberName.charAt(0)) +
-				memberName.substring(1, memberName.length());
-			
+			String methodSuffix = Character.toUpperCase(memberName.charAt(0)) + memberName.substring(1, memberName.length());
+
 			member = tryGetMethod(clazz, "get" + methodSuffix);
 			if (member == null) {
 				member = tryGetMethod(clazz, "is" + methodSuffix);
@@ -137,12 +129,10 @@ public class ObjectModelAdaptor implements ModelAdapter {
 			if (method != null) {
 				method.setAccessible(true);
 			}
-
 			return method;
 		} catch (NoSuchMethodException ex) {
 		} catch (SecurityException ex) {
 		}
-
 		return null;
 	}
 
@@ -152,12 +142,10 @@ public class ObjectModelAdaptor implements ModelAdapter {
 			if (field != null) {
 				field.setAccessible(true);
 			}
-
 			return field;
 		} catch (NoSuchFieldException ex) {
 		} catch (SecurityException ex) {
 		}
-
 		return null;
 	}
 

@@ -31,30 +31,37 @@ import net.evilengineers.templates4j.*;
 
 /** Used to track errors that occur in the ST interpreter. */
 public class STRuntimeMessage extends STMessage {
-	/** Which interpreter was executing?  If {@code null}, can be IO error or
-	 *  bad URL etc...
+	/**
+	 * Which interpreter was executing? If {@code null}, can be IO error or bad
+	 * URL etc...
 	 */
 	final Interpreter interp;
-    /** Where error occurred in bytecode memory. */
-    public final int ip;
+	/** Where error occurred in bytecode memory. */
+	public final int ip;
 	public final InstanceScope scope;
-	//List<ST> enclosingStack;
 
-    public STRuntimeMessage(Interpreter interp, ErrorType error, int ip) {
+	// List<ST> enclosingStack;
+
+	public STRuntimeMessage(Interpreter interp, ErrorType error, int ip) {
 		this(interp, error, ip, null);
 	}
-    public STRuntimeMessage(Interpreter interp, ErrorType error, int ip, InstanceScope scope) {
-		this(interp, error,ip,scope,null);
+
+	public STRuntimeMessage(Interpreter interp, ErrorType error, int ip, InstanceScope scope) {
+		this(interp, error, ip, scope, null);
 	}
-    public STRuntimeMessage(Interpreter interp, ErrorType error, int ip, InstanceScope scope, Object arg) {
-        this(interp, error, ip, scope, null, arg, null);
-    }
-    public STRuntimeMessage(Interpreter interp, ErrorType error, int ip, InstanceScope scope, Throwable e, Object arg) {
-        this(interp, error, ip, scope, e, arg, null);
-    }
+
+	public STRuntimeMessage(Interpreter interp, ErrorType error, int ip, InstanceScope scope, Object arg) {
+		this(interp, error, ip, scope, null, arg, null);
+	}
+
+	public STRuntimeMessage(Interpreter interp, ErrorType error, int ip, InstanceScope scope, Throwable e, Object arg) {
+		this(interp, error, ip, scope, e, arg, null);
+	}
+
 	public STRuntimeMessage(Interpreter interp, ErrorType error, int ip, InstanceScope scope, Throwable e, Object arg, Object arg2) {
 		this(interp, error, ip, scope, e, arg, arg2, null);
 	}
+
 	public STRuntimeMessage(Interpreter interp, ErrorType error, int ip, InstanceScope scope, Throwable e, Object arg, Object arg2, Object arg3) {
 		super(error, scope != null ? scope.st : null, e, arg, arg2, arg3);
 		this.interp = interp;
@@ -62,32 +69,36 @@ public class STRuntimeMessage extends STMessage {
 		this.scope = scope;
 	}
 
-    /** Given an IP (code location), get it's range in source template then
-     *  return it's template line:col.
-     */
-    public Coordinate getSourceLocation() {
-        if ( ip<0 || self.impl==null ) return null;
-        Interval I = self.impl.getSourceMap()[ip];
-        if ( I==null ) return null;
-        // get left edge and get line/col
-        int i = I.a;
-        Coordinate loc = Misc.getLineCharPosition(self.impl.getTemplate(), i);
-        return loc;
-    }
+	/**
+	 * Given an IP (code location), get it's range in source template then
+	 * return it's template line:col.
+	 */
+	public Coordinate getSourceLocation() {
+		if (ip < 0 || self.impl == null)
+			return null;
+		Interval I = self.impl.getSourceMap()[ip];
+		if (I == null)
+			return null;
+		// get left edge and get line/col
+		int i = I.a;
+		Coordinate loc = Misc.getLineCharPosition(self.impl.getTemplate(), i);
+		return loc;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder buf = new StringBuilder();
-        Coordinate loc = getSourceLocation();
-        if ( self!=null ) {
-            buf.append("context [");
-            if ( interp!=null ) {
-				buf.append( Interpreter.getEnclosingInstanceStackString(scope) );
+	@Override
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		Coordinate loc = getSourceLocation();
+		if (self != null) {
+			buf.append("context [");
+			if (interp != null) {
+				buf.append(Interpreter.getEnclosingInstanceStackString(scope));
 			}
-            buf.append("]");
-        }
-        if ( loc!=null ) buf.append(" "+loc);
-        buf.append(" "+super.toString());
-        return buf.toString();
-    }
+			buf.append("]");
+		}
+		if (loc != null)
+			buf.append(" " + loc);
+		buf.append(" " + super.toString());
+		return buf.toString();
+	}
 }

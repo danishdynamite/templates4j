@@ -41,7 +41,6 @@ import java.util.Set;
  * @author Sam Harwell
  */
 public class TypeRegistry<V> implements Map<Class<?>, V> {
-
 	private final Map<Class<?>, V> backingStore = new HashMap<Class<?>, V>();
 	private final Map<Class<?>, Class<?>> cache = new HashMap<Class<?>, Class<?>>();
 
@@ -62,19 +61,20 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
 			return false;
 		}
 
-		return get((Class<?>)key) != null;
+		return get((Class<?>) key) != null;
 	}
 
 	@SuppressWarnings("unchecked")
 	public boolean containsValue(Object value) {
-		return values().contains((V)value);
+		return values().contains((V) value);
 	}
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @throws AmbiguousMatchException if the registry contains more than value
-	 * mapped to a maximally-specific type from which {@code key} is derived.
+	 * 
+	 * @throws AmbiguousMatchException
+	 *             if the registry contains more than value mapped to a
+	 *             maximally-specific type from which {@code key} is derived.
 	 */
 	public V get(Object key) {
 		V value = backingStore.get(key);
@@ -86,8 +86,7 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
 		if (redirect != null) {
 			if (redirect == Void.TYPE) {
 				return null;
-			}
-			else {
+			} else {
 				return backingStore.get(redirect);
 			}
 		}
@@ -96,7 +95,7 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
 			return null;
 		}
 
-		Class<?> keyClass = (Class<?>)key;
+		Class<?> keyClass = (Class<?>) key;
 		List<Class<?>> candidates = new ArrayList<Class<?>>();
 		for (Class<?> clazz : backingStore.keySet()) {
 			if (clazz.isAssignableFrom(keyClass)) {
@@ -107,12 +106,10 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
 		if (candidates.isEmpty()) {
 			cache.put(keyClass, Void.TYPE);
 			return null;
-		}
-		else if (candidates.size() == 1) {
+		} else if (candidates.size() == 1) {
 			cache.put(keyClass, candidates.get(0));
 			return backingStore.get(candidates.get(0));
-		}
-		else {
+		} else {
 			for (int i = 0; i < candidates.size() - 1; i++) {
 				if (candidates.get(i) == null) {
 					continue;
@@ -122,8 +119,7 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
 					if (candidates.get(i).isAssignableFrom(candidates.get(j))) {
 						candidates.set(i, null);
 						break;
-					}
-					else if (candidates.get(j).isAssignableFrom(candidates.get(i))) {
+					} else if (candidates.get(j).isAssignableFrom(candidates.get(i))) {
 						candidates.set(j, null);
 					}
 				}
@@ -171,7 +167,7 @@ public class TypeRegistry<V> implements Map<Class<?>, V> {
 			return null;
 		}
 
-		Class<?> clazz = (Class<?>)key;
+		Class<?> clazz = (Class<?>) key;
 		V previous = get(clazz);
 		if (backingStore.remove(clazz) != null) {
 			handleAlteration(clazz);

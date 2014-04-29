@@ -31,9 +31,16 @@ package net.evilengineers.templates4j.misc;
  *  template patterns (for debugging).
  */
 public class Interval {
-    public int a;
-    public int b;
-    public Interval(int a, int b) { this.a=a; this.b=b; }
+	public int a;
+	public int b;
+
+	public Interval(int a, int b) {
+		this.a = a;
+		this.b = b;
+	}
+
 	@Override
-    public String toString() { return a+".."+b; }    
+	public String toString() {
+		return a + ".." + b;
+	}
 }

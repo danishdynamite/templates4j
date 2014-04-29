@@ -34,7 +34,7 @@ import java.util.*;
 public class MultiMap<K, V> extends LinkedHashMap<K, List<V>> {
 	public void map(K key, V value) {
 		List<V> elementsForKey = get(key);
-		if ( elementsForKey==null ) {
+		if (elementsForKey == null) {
 			elementsForKey = new ArrayList<V>();
 			super.put(key, elementsForKey);
 		}

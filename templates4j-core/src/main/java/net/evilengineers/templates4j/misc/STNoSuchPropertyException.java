@@ -35,6 +35,7 @@ import net.evilengineers.templates4j.compiler.STException;
 public class STNoSuchPropertyException extends STException {
 	public Object o;
 	public String propertyName;
+
 	public STNoSuchPropertyException(Exception e, Object o, String propertyName) {
 		super(null, e);
 		this.o = o;
@@ -43,7 +44,10 @@ public class STNoSuchPropertyException extends STException {
 
 	@Override
 	public String getMessage() {
-		if ( o!=null ) return "object "+o.getClass()+" has no "+propertyName+" property";
-		else return "no such property: "+propertyName;
+		if (o != null) {
+			return "object " + o.getClass() + " has no " + propertyName + " property";
+		} else {
+			return "no such property: " + propertyName;
+		}
 	}
 }

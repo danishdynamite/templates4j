@@ -39,55 +39,51 @@ import java.net.*;
  *  or an import.
  */
 public class STGroupFile extends STGroup {
-    public String fileName;
-    public URL url;
+	public String fileName;
+	public URL url;
 
-    protected boolean alreadyLoaded = false;
+	protected boolean alreadyLoaded = false;
 
-    /** Load a file relative to current directory or from root or via CLASSPATH. */
-	public STGroupFile(String fileName) { this(fileName, "<", ">"); }
+	/** Load a file relative to current directory or from root or via CLASSPATH. */
+	public STGroupFile(String fileName) {
+		this(fileName, "<", ">");
+	}
 
 	public STGroupFile(String fileName, String delimiterStart, String delimiterStop) {
 		super(delimiterStart, delimiterStop);
-		if ( !fileName.endsWith(GROUP_FILE_EXTENSION) ) {
-			throw new IllegalArgumentException("Group file names must end in .stg: "+fileName);
-		}
-		//try {
+		if (!fileName.endsWith(GROUP_FILE_EXTENSION))
+			throw new IllegalArgumentException("Group file names must end in .stg: " + fileName);
+		
 		File f = new File(fileName);
-		if ( f.exists() ) {
+		if (f.exists()) {
 			try {
 				url = f.toURI().toURL();
+			} catch (MalformedURLException e) {
+				throw new STException("can't load group file " + fileName, e);
 			}
-			catch (MalformedURLException e) {
-				throw new STException("can't load group file "+fileName, e);
-			}
-			if ( verbose ) System.out.println("STGroupFile(" + fileName + ") == file "+f.getAbsolutePath());
-		}
-		else { // try in classpath
+			if (verbose)
+				System.out.println("STGroupFile(" + fileName + ") == file " + f.getAbsolutePath());
+		} else {
 			url = getURL(fileName);
-			if ( url==null ) {
-				throw new IllegalArgumentException("No such group file: "+
-													   fileName);
+			if (url == null) {
+				throw new IllegalArgumentException("No such group file: " + fileName);
 			}
-			if ( verbose ) System.out.println("STGroupFile(" + fileName + ") == url "+url);
+			if (verbose)
+				System.out.println("STGroupFile(" + fileName + ") == url " + url);
 		}
 		this.fileName = fileName;
 	}
 
 	public STGroupFile(String fullyQualifiedFileName, String encoding) {
-        this(fullyQualifiedFileName, encoding, "<", ">");
-    }
+		this(fullyQualifiedFileName, encoding, "<", ">");
+	}
 
-    public STGroupFile(String fullyQualifiedFileName, String encoding,
-                       String delimiterStart, String delimiterStop)
-    {
-        this(fullyQualifiedFileName, delimiterStart, delimiterStop);
-        this.encoding = encoding;
-    }
+	public STGroupFile(String fullyQualifiedFileName, String encoding, String delimiterStart, String delimiterStop) {
+		this(fullyQualifiedFileName, delimiterStart, delimiterStop);
+		this.encoding = encoding;
+	}
 
-	public STGroupFile(URL url, String encoding,
-					   String delimiterStart, String delimiterStop)
-	{
+	public STGroupFile(URL url, String encoding, String delimiterStart, String delimiterStop) {
 		super(delimiterStart, delimiterStop);
 		this.url = url;
 		this.encoding = encoding;
@@ -107,15 +103,17 @@ public class STGroupFile extends STGroup {
 
 	@Override
 	public boolean isDictionary(String name) {
-		if ( !alreadyLoaded ) load();
+		if (!alreadyLoaded)
+			load();
 		return super.isDictionary(name);
 	}
 
 	@Override
-    public boolean isDefined(String name) {
-        if ( !alreadyLoaded ) load();
-        return super.isDefined(name);
-    }
+	public boolean isDefined(String name) {
+		if (!alreadyLoaded)
+			load();
+		return super.isDefined(name);
+	}
 
 	@Override
 	public synchronized void unload() {
@@ -125,42 +123,50 @@ public class STGroupFile extends STGroup {
 
 	@Override
 	protected CompiledST load(String name) {
-        if ( !alreadyLoaded ) load();
-        return rawGetTemplate(name);
-    }
+		if (!alreadyLoaded)
+			load();
+		return rawGetTemplate(name);
+	}
 
 	@Override
-    public void load() {
-        if ( alreadyLoaded ) return;
-        alreadyLoaded = true; // do before actual load to say we're doing it
+	public void load() {
+		if (alreadyLoaded)
+			return;
+		alreadyLoaded = true; // do before actual load to say we're doing it
 		// no prefix since this group file is the entire group, nothing lives
 		// beneath it.
-		if ( verbose ) System.out.println("loading group file "+url.toString());
-        loadGroupFile("/", url.toString());
-		if ( verbose ) System.out.println("found "+templates.size()+" templates in "+url.toString()+" = "+templates.keySet());
-    }
+		if (verbose)
+			System.out.println("loading group file " + url.toString());
+		loadGroupFile("/", url.toString());
+		if (verbose)
+			System.out.println("found " + templates.size() + " templates in " + url.toString() + " = " + templates.keySet());
+	}
 
 	@Override
-    public String show() {
-        if ( !alreadyLoaded ) load();
-        return super.show();
-    }
+	public String show() {
+		if (!alreadyLoaded)
+			load();
+		return super.show();
+	}
 
 	@Override
-    public String getName() { return Misc.getFileNameNoSuffix(fileName); }
+	public String getName() {
+		return Misc.getFileNameNoSuffix(fileName);
+	}
+
 	@Override
-	public String getFileName() { return fileName; }
+	public String getFileName() {
+		return fileName;
+	}
 
 	@Override
 	public URL getRootDirURL() {
-		//System.out.println("url of "+fileName+" is "+url.toString());
+		// System.out.println("url of "+fileName+" is "+url.toString());
 		String parent = Misc.stripLastPathElement(url.toString());
 		try {
 			return new URL(parent);
-		}
-		catch (MalformedURLException mue) {
-			errMgr.runTimeError(null, null, ErrorType.INVALID_TEMPLATE_NAME,
-								mue, parent);
+		} catch (MalformedURLException mue) {
+			errMgr.runTimeError(null, null, ErrorType.INVALID_TEMPLATE_NAME, mue, parent);
 		}
 		return null;
 	}

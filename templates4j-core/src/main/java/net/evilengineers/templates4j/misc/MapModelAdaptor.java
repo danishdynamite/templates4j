@@ -36,20 +36,23 @@ import java.util.Map;
 
 public class MapModelAdaptor implements ModelAdapter {
 	@Override
-	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
-		throws STNoSuchPropertyException
-	{
+	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName) throws STNoSuchPropertyException {
 		Object value;
-		Map<?, ?> map = (Map<?, ?>)o;
-		if ( property==null ) value = map.get(STGroup.DEFAULT_KEY);
-		else if ( property.equals("keys") ) value = map.keySet();
-		else if ( property.equals("values") ) value = map.values();
-		else if ( map.containsKey(property) ) value = map.get(property);
-		else if ( map.containsKey(propertyName) ) { // if can't find the key, try toString version
+		Map<?, ?> map = (Map<?, ?>) o;
+		if (property == null) {
+			value = map.get(STGroup.DEFAULT_KEY);
+		} else if (property.equals("keys")) {
+			value = map.keySet();
+		} else if (property.equals("values")) {
+			value = map.values();
+		} else if (map.containsKey(property)) {
+			value = map.get(property);
+		} else if (map.containsKey(propertyName)) { // if can't find the key, try toString version
 			value = map.get(propertyName);
+		} else {
+			value = map.get(STGroup.DEFAULT_KEY); // not found, use default
 		}
-		else value = map.get(STGroup.DEFAULT_KEY); // not found, use default
-		if ( value == STGroup.DICT_KEY ) {
+		if (value == STGroup.DICT_KEY) {
 			value = property;
 		}
 		return value;

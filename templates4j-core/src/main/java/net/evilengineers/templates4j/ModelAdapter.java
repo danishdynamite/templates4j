@@ -49,10 +49,10 @@ public interface ModelAdapter {
 	 * Lookup property name in {@code o} and return its value.
 	 * <p>
 	 * {@code property} is normally a {@code String} but doesn't have to be.
-	 * E.g., if {@code o} is {@link Map}, {@code property} could be
-	 * any key type. If we need to convert to {@code String}, then it's done by
-	 * {@code ST} and passed in here.</p>
+	 * E.g., if {@code o} is {@link Map}, {@code property} could be any key
+	 * type. If we need to convert to {@code String}, then it's done by
+	 * {@code ST} and passed in here.
+	 * </p>
 	 */
-	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
-		throws STNoSuchPropertyException;
+	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName) throws STNoSuchPropertyException;
 }

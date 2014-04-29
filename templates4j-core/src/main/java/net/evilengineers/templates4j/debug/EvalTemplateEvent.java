@@ -30,7 +30,7 @@ package net.evilengineers.templates4j.debug;
 import net.evilengineers.templates4j.InstanceScope;
 
 public class EvalTemplateEvent extends InterpEvent {
-    public EvalTemplateEvent(InstanceScope scope, int exprStartChar, int exprStopChar) {
-        super(scope, exprStartChar, exprStopChar);
-    }
+	public EvalTemplateEvent(InstanceScope scope, int exprStartChar, int exprStopChar) {
+		super(scope, exprStartChar, exprStopChar);
+	}
 }

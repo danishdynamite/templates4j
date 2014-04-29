@@ -49,13 +49,13 @@ public class ArrayIterator implements Iterator<Object> {
 
 	@Override
 	public boolean hasNext() {
-		return (i+1)<n && n>0;
+		return (i + 1) < n && n > 0;
 	}
 
 	@Override
 	public Object next() {
 		i++; // move to next element
-		if ( i >= n ) {
+		if (i >= n) {
 			throw new NoSuchElementException();
 		}
 		return Array.get(array, i);

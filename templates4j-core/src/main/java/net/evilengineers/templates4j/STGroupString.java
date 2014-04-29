@@ -39,37 +39,45 @@ public class STGroupString extends STGroup {
 	public String text;
 	protected boolean alreadyLoaded = false;
 
-	public STGroupString(String text) { this("<string>", text, "<", ">"); }
+	public STGroupString(String text) {
+		this("<string>", text, "<", ">");
+	}
 
-	public STGroupString(String sourceName, String text) { this(sourceName, text, "<", ">"); }
+	public STGroupString(String sourceName, String text) {
+		this(sourceName, text, "<", ">");
+	}
 
-    public STGroupString(String sourceName, String text, String delimiterStart, String delimiterStop) {
-        super(delimiterStart, delimiterStop);
+	public STGroupString(String sourceName, String text, String delimiterStart, String delimiterStop) {
+		super(delimiterStart, delimiterStop);
 		this.sourceName = sourceName;
 		this.text = text;
-    }
+	}
 
 	@Override
 	public boolean isDictionary(String name) {
-		if ( !alreadyLoaded ) load();
+		if (!alreadyLoaded)
+			load();
 		return super.isDictionary(name);
 	}
 
 	@Override
 	public boolean isDefined(String name) {
-		if ( !alreadyLoaded ) load();
-        return super.isDefined(name);
-    }
+		if (!alreadyLoaded)
+			load();
+		return super.isDefined(name);
+	}
 
 	@Override
 	protected CompiledST load(String name) {
-		if ( !alreadyLoaded ) load();
-        return rawGetTemplate(name);
-    }
+		if (!alreadyLoaded)
+			load();
+		return rawGetTemplate(name);
+	}
 
 	@Override
-    public void load() {
-		if (alreadyLoaded) return;
+	public void load() {
+		if (alreadyLoaded)
+			return;
 		alreadyLoaded = true;
 		GroupParser parser = null;
 		try {
@@ -78,15 +86,15 @@ public class STGroupString extends STGroup {
 			GroupLexer lexer = new GroupLexer(fs);
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			parser = new GroupParser(tokens);
-			// no prefix since this group file is the entire group, nothing lives
-			// beneath it.
+			// no prefix since this group file is the entire group, nothing lives beneath it.
 			parser.group(this, "/");
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			errMgr.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, "<string>");
 		}
 	}
 
 	@Override
-	public String getFileName() { return "<string>"; }
+	public String getFileName() {
+		return "<string>";
+	}
 }

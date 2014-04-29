@@ -31,8 +31,8 @@ import net.evilengineers.templates4j.misc.STMessage;
 
 /** How to handle messages. */
 public interface STErrorListener {
-    public void compileTimeError(STMessage msg);
-    public void runTimeError(STMessage msg);
-    public void IOError(STMessage msg);
-    public void internalError(STMessage msg);
+	public void compileTimeError(STMessage msg);
+	public void runTimeError(STMessage msg);
+	public void IOError(STMessage msg);
+	public void internalError(STMessage msg);
 }

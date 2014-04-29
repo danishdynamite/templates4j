@@ -49,21 +49,21 @@ public class STLexerMessage extends STMessage {
 
 	@Override
 	public String toString() {
-		RecognitionException re = (RecognitionException)cause;
+		RecognitionException re = (RecognitionException) cause;
 		int line = re.line;
 		int charPos = re.charPositionInLine;
-		if ( templateToken!=null ) {
+		if (templateToken != null) {
 			int templateDelimiterSize = 1;
-			if ( templateToken.getType()== GroupParser.BIGSTRING ) {
+			if (templateToken.getType() == GroupParser.BIGSTRING) {
 				templateDelimiterSize = 2;
 			}
 			line += templateToken.getLine() - 1;
 			charPos += templateToken.getCharPositionInLine() + templateDelimiterSize;
 		}
-		String filepos = line+":"+charPos;
-		if ( srcName!=null ) {
-			return srcName+" "+filepos+": "+String.format(error.message, msg);
-		}
-		return filepos+": "+String.format(error.message, msg);
+		String filepos = line + ":" + charPos;
+		if (srcName != null)
+			return srcName + " " + filepos + ": " + String.format(error.message, msg);
+		
+		return filepos + ": " + String.format(error.message, msg);
 	}
 }

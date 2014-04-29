@@ -41,63 +41,65 @@ import java.util.Locale;
  * </ul>
  */
 public class StringRenderer implements AttributeRenderer {
-    // trim(s) and strlen(s) built-in funcs; these are format options
-    @Override
-    public String toString(Object o, String formatString, Locale locale) {
-        String s = (String)o;
-        if ( formatString==null ) return s;
-        if ( formatString.equals("upper") ) return s.toUpperCase(locale);
-        if ( formatString.equals("lower") ) return s.toLowerCase(locale);
-        if ( formatString.equals("cap") ) {
-            return (s.length() > 0) ? Character.toUpperCase(s.charAt(0))+s.substring(1) : s;
-        }
-        if ( formatString.equals("url-encode") ) {
+	// trim(s) and strlen(s) built-in funcs; these are format options
+	@Override
+	public String toString(Object o, String formatString, Locale locale) {
+		String s = (String) o;
+		if (formatString == null)
+			return s;
+		if (formatString.equals("upper"))
+			return s.toUpperCase(locale);
+		if (formatString.equals("lower"))
+			return s.toLowerCase(locale);
+		if (formatString.equals("cap")) {
+			return (s.length() > 0) ? Character.toUpperCase(s.charAt(0)) + s.substring(1) : s;
+		}
+		if (formatString.equals("url-encode")) {
 			try {
 				return URLEncoder.encode(s, "UTF-8");
 			} catch (UnsupportedEncodingException ex) {
 				// UTF-8 is standard, should always be available
 			}
-        }
-        if ( formatString.equals("xml-encode") ) {
-            return escapeHTML(s);
-        }
-        return String.format(locale, formatString, s);
-    }
+		}
+		if (formatString.equals("xml-encode"))
+			return escapeHTML(s);
+		return String.format(locale, formatString, s);
+	}
 
-    public static String escapeHTML(String s) {
-        if ( s==null ) {
-            return null;
-        }
-        StringBuilder buf = new StringBuilder( s.length() );
-        int len = s.length();
-        for (int i=0; i<len; i++) {
-            char c = s.charAt(i);
-            switch ( c ) {
-                case '&' :
-                    buf.append("&amp;");
-                    break;
-                case '<' :
-                    buf.append("&lt;");
-                    break;
-                case '>' :
-                    buf.append("&gt;");
-                    break;
-                case '\r':
-                case '\n':
-                case '\t':
-                    buf.append(c);
-                    break;
-                default:
-                    boolean control = c < ' '; // 32
-                    boolean aboveASCII = c > 126;
-                    if ( control || aboveASCII ) {
-                        buf.append("&#");
-                        buf.append((int)c);
-                        buf.append(";");
-                    }
-                    else buf.append(c);
-            }
-        }
-        return buf.toString();
-    }
+	public static String escapeHTML(String s) {
+		if (s == null)
+			return null;
+		StringBuilder buf = new StringBuilder(s.length());
+		int len = s.length();
+		for (int i = 0; i < len; i++) {
+			char c = s.charAt(i);
+			switch (c) {
+			case '&':
+				buf.append("&amp;");
+				break;
+			case '<':
+				buf.append("&lt;");
+				break;
+			case '>':
+				buf.append("&gt;");
+				break;
+			case '\r':
+			case '\n':
+			case '\t':
+				buf.append(c);
+				break;
+			default:
+				boolean control = c < ' '; // 32
+				boolean aboveASCII = c > 126;
+				if (control || aboveASCII) {
+					buf.append("&#");
+					buf.append((int) c);
+					buf.append(";");
+				} else {
+					buf.append(c);
+				}
+			}
+		}
+		return buf.toString();
+	}
 }

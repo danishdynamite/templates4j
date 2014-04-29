@@ -34,9 +34,7 @@ public class STRawGroupDir extends STGroupDir {
 	}
 
 	@Override
-	public CompiledST loadTemplateFile(String prefix, String unqualifiedFileName,
-									   CharStream templateStream)
-	{
+	public CompiledST loadTemplateFile(String prefix, String unqualifiedFileName, CharStream templateStream) {
 		String template = templateStream.substring(0, templateStream.size() - 1);
 		String templateName = Misc.getFileNameNoSuffix(unqualifiedFileName);
 		String fullyQualifiedTemplateName = prefix + templateName;

@@ -46,69 +46,82 @@ import java.util.*;
 public class STGroup {
 	public static final String GROUP_FILE_EXTENSION;
 	public static final String TEMPLATE_FILE_EXTENSION;
+	
 	static {
 		GROUP_FILE_EXTENSION = ".stg";
 		TEMPLATE_FILE_EXTENSION = ".st";
 	}
 
-    /** When we use key as a value in a dictionary, this is how we signify. */
-    public static final String DICT_KEY = "key";
-    public static final String DEFAULT_KEY = "default";
+	/** When we use key as a value in a dictionary, this is how we signify. */
+	public static final String DICT_KEY = "key";
+	public static final String DEFAULT_KEY = "default";
 
-    /** The encoding to use for loading files. Defaults to UTF-8. */
-    public String encoding = "UTF-8";
+	/** The encoding to use for loading files. Defaults to UTF-8. */
+	public String encoding = "UTF-8";
 
-    /** Every group can import templates/dictionaries from other groups.
-     *  The list must be synchronized (see {@link STGroup#importTemplates}).
-     */
-    protected final List<STGroup> imports = Collections.synchronizedList(new ArrayList<STGroup>());
+	/**
+	 * Every group can import templates/dictionaries from other groups. The list
+	 * must be synchronized (see {@link STGroup#importTemplates}).
+	 */
+	protected final List<STGroup> imports = Collections.synchronizedList(new ArrayList<STGroup>());
 
-    protected final List<STGroup> importsToClearOnUnload = Collections.synchronizedList(new ArrayList<STGroup>());
+	protected final List<STGroup> importsToClearOnUnload = Collections.synchronizedList(new ArrayList<STGroup>());
 
-    public String delimiterStart = "<"; // Use <expr> by default
-    public String delimiterStop = ">";
+	public String delimiterStart = "<"; // Use <expr> by default
+	public String delimiterStop = ">";
 
-    /** Maps template name to {@link CompiledST} object. This map is synchronized. */
-    protected Map<String, CompiledST> templates =
-		Collections.synchronizedMap(new LinkedHashMap<String, CompiledST>());
+	/**
+	 * Maps template name to {@link CompiledST} object. This map is
+	 * synchronized.
+	 */
+	protected Map<String, CompiledST> templates = Collections.synchronizedMap(new LinkedHashMap<String, CompiledST>());
 
-    /** Maps dictionary names to {@link Map} objects representing the dictionaries
-     *  defined by the user like {@code typeInitMap ::= ["int":"0"]}.
-     */
-    protected Map<String, Map<String,Object>> dictionaries =
-        Collections.synchronizedMap(new HashMap<String, Map<String,Object>>());
+	/**
+	 * Maps dictionary names to {@link Map} objects representing the
+	 * dictionaries defined by the user like {@code typeInitMap ::= ["int":"0"]}.
+	 */
+	protected Map<String, Map<String, Object>> dictionaries = Collections.synchronizedMap(new HashMap<String, Map<String, Object>>());
 
-    /** A dictionary that allows people to register a renderer for
-     *  a particular kind of object for any template evaluated relative to this
-     *  group.  For example, a date should be formatted differently depending
-     *  on the locale.  You can set {@code Date.class} to an object whose
-     *  {@code toString(Object)} method properly formats a {@link Date} attribute
-     *  according to locale.  Or you can have a different renderer object
-     *  for each locale.
-     *  <p>
-	 *  Order of addition is recorded and matters.  If more than one
-	 *  renderer works for an object, the first registered has priority.</p>
-	 *  <p>
-	 *  Renderer associated with type {@code t} works for object {@code o} if</p>
-	 *  <pre>
-	 *  t.isAssignableFrom(o.getClass()) // would assignment t = o work?
-	 *  </pre>
-	 *  So it works if {@code o} is subclass or implements {@code t}.
-	 *  <p>
-     *  This structure is synchronized.</p>
-     */
-    protected Map<Class<?>, AttributeRenderer> renderers;
-
-    /** A dictionary that allows people to register a model adaptor for
-     *  a particular kind of object (subclass or implementation). Applies
-	 *  for any template evaluated relative to this group.
+	/**
+	 * A dictionary that allows people to register a renderer for a particular
+	 * kind of object for any template evaluated relative to this group. For
+	 * example, a date should be formatted differently depending on the locale.
+	 * You can set {@code Date.class} to an object whose {@code toString(Object)}
+	 * method properly formats a {@link Date} attribute according to locale. Or
+	 * you can have a different renderer object for each locale.
 	 * <p>
-	 *  ST initializes with model adaptors that know how to pull
-	 *  properties out of {@link Object}s, {@link Map}s, and {@link ST}s.</p>
+	 * Order of addition is recorded and matters. If more than one renderer
+	 * works for an object, the first registered has priority.
+	 * </p>
 	 * <p>
-	 *  The last one you register gets priority; do least to most specific.</p>
+	 * Renderer associated with type {@code t} works for object {@code o} if
+	 * </p>
+	 * 
+	 * <pre>
+	 * t.isAssignableFrom(o.getClass()) // would assignment t = o work?
+	 * </pre>
+	 * 
+	 * So it works if {@code o} is subclass or implements {@code t}.
+	 * <p>
+	 * This structure is synchronized.
+	 * </p>
+	 */
+	protected Map<Class<?>, AttributeRenderer> renderers;
+
+	/**
+	 * A dictionary that allows people to register a model adaptor for a
+	 * particular kind of object (subclass or implementation). Applies for any
+	 * template evaluated relative to this group.
+	 * <p>
+	 * ST initializes with model adaptors that know how to pull properties out
+	 * of {@link Object}s, {@link Map}s, and {@link ST}s.
+	 * </p>
+	 * <p>
+	 * The last one you register gets priority; do least to most specific.
+	 * </p>
 	 */
 	protected final Map<Class<?>, ModelAdapter> adaptors;
+	
 	{
 		TypeRegistry<ModelAdapter> registry = new TypeRegistry<ModelAdapter>();
 		registry.put(Object.class, new ObjectModelAdaptor());
@@ -118,10 +131,11 @@ public class STGroup {
 		adaptors = Collections.synchronizedMap(registry);
 	}
 
-    /** Used to indicate that the template doesn't exist.
-     *  Prevents duplicate group file loads and unnecessary file checks.
-     */
-    protected static final CompiledST NOT_FOUND_ST = new CompiledST();
+	/**
+	 * Used to indicate that the template doesn't exist. Prevents duplicate
+	 * group file loads and unnecessary file checks.
+	 */
+	protected static final CompiledST NOT_FOUND_ST = new CompiledST();
 
 	public static final ErrorManager DEFAULT_ERR_MGR = new ErrorManager();
 
@@ -134,72 +148,71 @@ public class STGroup {
 	 */
 	public static boolean trackCreationEvents = false;
 
-	/** v3 compatibility; used to iterate across {@link Map#values()} instead of
-	 *  v4's default {@link Map#keySet()}.
-	 *  But to convert ANTLR templates, it's too hard to find without
-	 *  static typing in templates.
+	/**
+	 * v3 compatibility; used to iterate across {@link Map#values()} instead of
+	 * v4's default {@link Map#keySet()}. But to convert ANTLR templates, it's
+	 * too hard to find without static typing in templates.
 	 */
 	public boolean iterateAcrossValues = false;
 
 	public static STGroup defaultGroup = new STGroup();
 
-	/** The {@link ErrorManager} for entire group; all compilations and executions.
-	 *  This gets copied to parsers, walkers, and interpreters.
+	/**
+	 * The {@link ErrorManager} for entire group; all compilations and
+	 * executions. This gets copied to parsers, walkers, and interpreters.
 	 */
 	public ErrorManager errMgr = STGroup.DEFAULT_ERR_MGR;
 
-    public STGroup() { }
+	public STGroup() {
+	}
 
-    public STGroup(String delimiterStart, String delimiterStop) {
-        this.delimiterStart = delimiterStart;
-        this.delimiterStop = delimiterStop;
-    }
+	public STGroup(String delimiterStart, String delimiterStop) {
+		this.delimiterStart = delimiterStart;
+		this.delimiterStop = delimiterStop;
+	}
 
-    /** The primary means of getting an instance of a template from this
-     *  group. Names must be absolute, fully-qualified names like {@code /a/b}.
-     */
-    public ST getInstanceOf(String name) {
-		if ( name==null ) return null;
-		if ( verbose ) System.out.println(getName()+".getInstanceOf("+name+")");
-		if ( name.charAt(0)!='/' ) name = "/"+name;
-        CompiledST c = lookupTemplate(name);
-        if ( c!=null ) {
+	/**
+	 * The primary means of getting an instance of a template from this group.
+	 * Names must be absolute, fully-qualified names like {@code /a/b}.
+	 */
+	public ST getInstanceOf(String name) {
+		if (name == null)
+			return null;
+		if (verbose)
+			System.out.println(getName() + ".getInstanceOf(" + name + ")");
+		if (name.charAt(0) != '/')
+			name = "/" + name;
+		CompiledST c = lookupTemplate(name);
+		if (c != null)
 			return createStringTemplate(c);
-        }
-        return null;
-    }
+		return null;
+	}
 
-    protected ST getEmbeddedInstanceOf(Interpreter interp,
-									   InstanceScope scope,
-									   String name)
-	{
+	protected ST getEmbeddedInstanceOf(Interpreter interp, InstanceScope scope, String name) {
 		String fullyQualifiedName = name;
-		if ( name.charAt(0)!='/' ) {
+		if (name.charAt(0) != '/')
 			fullyQualifiedName = scope.st.impl.getPrefix() + name;
-		}
-		if ( verbose ) System.out.println("getEmbeddedInstanceOf(" + fullyQualifiedName +")");
-        ST st = getInstanceOf(fullyQualifiedName);
-		if ( st==null ) {
-			errMgr.runTimeError(interp, scope,
-								ErrorType.NO_SUCH_TEMPLATE,
-								fullyQualifiedName);
+		if (verbose)
+			System.out.println("getEmbeddedInstanceOf(" + fullyQualifiedName + ")");
+		ST st = getInstanceOf(fullyQualifiedName);
+		if (st == null) {
+			errMgr.runTimeError(interp, scope, ErrorType.NO_SUCH_TEMPLATE, fullyQualifiedName);
 			return createStringTemplateInternally(new CompiledST());
 		}
 		// this is only called internally. wack any debug ST create events
-		if ( trackCreationEvents ) {
+		if (trackCreationEvents) {
 			st.debugState.newSTEvent = null; // toss it out
 		}
-        return st;
-    }
+		return st;
+	}
 
 	/** Create singleton template for use with dictionary values. */
 	public ST createSingleton(Token templateToken) {
 		String template;
-		if ( templateToken.getType()==GroupParser.BIGSTRING ) {
-			template = Misc.strip(templateToken.getText(),2);
-		}
-		else {
-			template = Misc.strip(templateToken.getText(),1);
+		if (templateToken.getType() == GroupParser.BIGSTRING) {
+			template = Misc.strip(templateToken.getText(), 2);
+		} else {
+			template = Misc.strip(templateToken.getText(), 1);
 		}
 		CompiledST impl = compile(getFileName(), null, null, template, templateToken);
 		ST st = createStringTemplateInternally(impl);
@@ -210,32 +223,41 @@ public class STGroup {
 		return st;
 	}
 
-    /** Is this template defined in this group or from this group below?
-     *  Names must be absolute, fully-qualified names like {@code /a/b}.
-     */
-    public boolean isDefined(String name) {
-        return lookupTemplate(name)!=null;
-    }
+	/**
+	 * Is this template defined in this group or from this group below? Names
+	 * must be absolute, fully-qualified names like {@code /a/b}.
+	 */
+	public boolean isDefined(String name) {
+		return lookupTemplate(name) != null;
+	}
 
 	/** Look up a fully-qualified name. */
-    public CompiledST lookupTemplate(String name) {
-		if ( name.charAt(0)!='/' ) name = "/"+name;
-		if ( verbose ) System.out.println(getName()+".lookupTemplate("+name+")");
-        CompiledST code = rawGetTemplate(name);
-        if ( code==NOT_FOUND_ST ) {
-			if ( verbose ) System.out.println(name+" previously seen as not found");
+	public CompiledST lookupTemplate(String name) {
+		if (name.charAt(0) != '/')
+			name = "/" + name;
+		if (verbose)
+			System.out.println(getName() + ".lookupTemplate(" + name + ")");
+		CompiledST code = rawGetTemplate(name);
+		if (code == NOT_FOUND_ST) {
+			if (verbose)
+				System.out.println(name + " previously seen as not found");
 			return null;
 		}
-        // try to load from disk and look up again
-        if ( code==null ) code = load(name);
-        if ( code==null ) code = lookupImportedTemplate(name);
-        if ( code==null ) {
-			if ( verbose ) System.out.println(name+" recorded not found");
-            templates.put(name, NOT_FOUND_ST);
-        }
-		if ( verbose ) if ( code!=null ) System.out.println(getName()+".lookupTemplate("+name+") found");
-        return code;
-    }
+		// try to load from disk and look up again
+		if (code == null)
+			code = load(name);
+		if (code == null)
+			code = lookupImportedTemplate(name);
+		if (code == null) {
+			if (verbose)
+				System.out.println(name + " recorded not found");
+			templates.put(name, NOT_FOUND_ST);
+		}
+		if (verbose)
+			if (code != null)
+				System.out.println(getName() + ".lookupTemplate(" + name + ") found");
+		return code;
+	}
 
 	/**
 	 * Unload all templates, dictionaries and import relationships, but leave
@@ -256,43 +278,56 @@ public class STGroup {
 		importsToClearOnUnload.clear();
 	}
 
-    /** Load st from disk if directory or load whole group file if .stg file (then
-     *  return just one template). {@code name} is fully-qualified.
-     */
-    protected CompiledST load(String name) { return null; }
+	/**
+	 * Load st from disk if directory or load whole group file if .stg file
+	 * (then return just one template). {@code name} is fully-qualified.
+	 */
+	protected CompiledST load(String name) {
+		return null;
+	}
 
-    /** Force a load if it makes sense for the group. */
-    public void load() { }
+	/** Force a load if it makes sense for the group. */
+	public void load() {
+	}
 
-    protected CompiledST lookupImportedTemplate(String name) {
-        if ( imports.size()==0 ) return null;
-        for (STGroup g : imports) {
-			if ( verbose ) System.out.println("checking "+g.getName()+" for imported "+name);
-            CompiledST code = g.lookupTemplate(name);
-			if ( code!=null ) {
-				if ( verbose ) System.out.println(g.getName()+".lookupImportedTemplate("+name+") found");
+	protected CompiledST lookupImportedTemplate(String name) {
+		if (imports.size() == 0)
+			return null;
+		for (STGroup g : imports) {
+			if (verbose)
+				System.out.println("checking " + g.getName() + " for imported " + name);
+			CompiledST code = g.lookupTemplate(name);
+			if (code != null) {
+				if (verbose)
+					System.out.println(g.getName() + ".lookupImportedTemplate(" + name + ") found");
 				return code;
 			}
-        }
-		if ( verbose ) System.out.println(name+" not found in "+getName()+" imports");
-        return null;
-    }
+		}
+		if (verbose)
+			System.out.println(name + " not found in " + getName() + " imports");
+		return null;
+	}
 
-	public CompiledST rawGetTemplate(String name) { return templates.get(name); }
-	public Map<String,Object> rawGetDictionary(String name) { return dictionaries.get(name); }
-	public boolean isDictionary(String name) { return dictionaries.get(name)!=null; }
+	public CompiledST rawGetTemplate(String name) {
+		return templates.get(name);
+	}
+
+	public Map<String, Object> rawGetDictionary(String name) {
+		return dictionaries.get(name);
+	}
+
+	public boolean isDictionary(String name) {
+		return dictionaries.get(name) != null;
+	}
 
 	/** for testing */
 	public CompiledST defineTemplate(String templateName, String template) {
-		if ( templateName.charAt(0)!='/' ) templateName = "/"+templateName;
+		if (templateName.charAt(0) != '/')
+			templateName = "/" + templateName;
 		try {
-			CompiledST impl =
-				defineTemplate(templateName,
-							   new CommonToken(GroupParser.ID, templateName),
-							   null, template, null);
+			CompiledST impl = defineTemplate(templateName, new CommonToken(GroupParser.ID, templateName), null, template, null);
 			return impl;
-		}
-		catch (STException se) {
+		} catch (STException se) {
 			// we have reported the error; the exception just blasts us
 			// out of parsing this template
 		}
@@ -301,126 +336,94 @@ public class STGroup {
 
 	/** for testing */
 	public CompiledST defineTemplate(String name, String argsS, String template) {
-		if ( name.charAt(0)!='/' ) name = "/"+name;
+		if (name.charAt(0) != '/')
+			name = "/" + name;
 		String[] args = argsS.split(",");
 		List<FormalArgument> a = new ArrayList<FormalArgument>();
 		for (String arg : args) {
 			a.add(new FormalArgument(arg));
 		}
-		return defineTemplate(name, new CommonToken(GroupParser.ID, name),
-							  a, template, null);
+		return defineTemplate(name, new CommonToken(GroupParser.ID, name), a, template, null);
 	}
 
-	public CompiledST defineTemplate(String fullyQualifiedTemplateName,
-									 Token nameT,
-                                     List<FormalArgument> args,
-									 String template,
-									 Token templateToken)
-    {
-		if ( verbose ) System.out.println("defineTemplate("+fullyQualifiedTemplateName+")");
-		if ( fullyQualifiedTemplateName==null || fullyQualifiedTemplateName.length()==0 ) {
+	public CompiledST defineTemplate(String fullyQualifiedTemplateName, Token nameT, List<FormalArgument> args, String template, Token templateToken) {
+		if (verbose)
+			System.out.println("defineTemplate(" + fullyQualifiedTemplateName + ")");
+		if (fullyQualifiedTemplateName == null || fullyQualifiedTemplateName.length() == 0)
 			throw new IllegalArgumentException("empty template name");
-		}
-		if ( fullyQualifiedTemplateName.indexOf('.')>=0 ) {
+		if (fullyQualifiedTemplateName.indexOf('.') >= 0)
 			throw new IllegalArgumentException("cannot have '.' in template names");
-		}
-        template = Misc.trimOneTrailingNewline(template);
+		template = Misc.trimOneTrailingNewline(template);
 		// compile, passing in templateName as enclosing name for any embedded regions
-        CompiledST code = compile(getFileName(), fullyQualifiedTemplateName, args, template, templateToken);
-        code.setName(fullyQualifiedTemplateName);
-        rawDefineTemplate(fullyQualifiedTemplateName, code, nameT);
+		CompiledST code = compile(getFileName(), fullyQualifiedTemplateName, args, template, templateToken);
+		code.setName(fullyQualifiedTemplateName);
+		rawDefineTemplate(fullyQualifiedTemplateName, code, nameT);
 		code.defineArgDefaultValueTemplates(this);
-        code.defineImplicitlyDefinedTemplates(this); // define any anonymous subtemplates
-        return code;
-    }
+		code.defineImplicitlyDefinedTemplates(this); // define any anonymous subtemplates
+		return code;
+	}
 
-    /** Make name and alias for target.  Replace any previous definition of name. */
-    public CompiledST defineTemplateAlias(Token aliasT, Token targetT) {
-        String alias = aliasT.getText();
-        String target = targetT.getText();
-        CompiledST targetCode = rawGetTemplate("/"+target);
-        if ( targetCode==null ){
-            errMgr.compileTimeError(ErrorType.ALIAS_TARGET_UNDEFINED, null, aliasT, alias, target);
-            return null;
-        }
-        rawDefineTemplate("/" + alias, targetCode, aliasT);
-        return targetCode;
-    }
+	/** Make name and alias for target. Replace any previous definition of name. */
+	public CompiledST defineTemplateAlias(Token aliasT, Token targetT) {
+		String alias = aliasT.getText();
+		String target = targetT.getText();
+		CompiledST targetCode = rawGetTemplate("/" + target);
+		if (targetCode == null) {
+			errMgr.compileTimeError(ErrorType.ALIAS_TARGET_UNDEFINED, null, aliasT, alias, target);
+			return null;
+		}
+		rawDefineTemplate("/" + alias, targetCode, aliasT);
+		return targetCode;
+	}
 
-    public CompiledST defineRegion(String enclosingTemplateName,
-                                   Token regionT,
-								   String template,
-								   Token templateToken)
-    {
-        String name = regionT.getText();
+	public CompiledST defineRegion(String enclosingTemplateName, Token regionT, String template, Token templateToken) {
+		String name = regionT.getText();
 		template = Misc.trimOneStartingNewline(template);
 		template = Misc.trimOneTrailingNewline(template);
-        CompiledST code = compile(getFileName(), enclosingTemplateName, null, template, templateToken);
-        String mangled = getMangledRegionName(enclosingTemplateName, name);
+		CompiledST code = compile(getFileName(), enclosingTemplateName, null, template, templateToken);
+		String mangled = getMangledRegionName(enclosingTemplateName, name);
 
-        if ( lookupTemplate(mangled)==null ) {
-            errMgr.compileTimeError(ErrorType.NO_SUCH_REGION, templateToken, regionT,
-                                          enclosingTemplateName, name);
-            return new CompiledST();
-        }
-        code.setName(mangled);
-        code.setRegion(true);
-        code.setRegionDefType(ST.RegionType.EXPLICIT);
+		if (lookupTemplate(mangled) == null) {
+			errMgr.compileTimeError(ErrorType.NO_SUCH_REGION, templateToken, regionT, enclosingTemplateName, name);
+			return new CompiledST();
+		}
+		code.setName(mangled);
+		code.setRegion(true);
+		code.setRegionDefType(ST.RegionType.EXPLICIT);
 		code.setTemplateDefStartToken(regionT);
 
-        rawDefineTemplate(mangled, code, regionT);
+		rawDefineTemplate(mangled, code, regionT);
 		code.defineArgDefaultValueTemplates(this);
 		code.defineImplicitlyDefinedTemplates(this);
 
-        return code;
-    }
+		return code;
+	}
 
-    public void defineTemplateOrRegion(
-		String fullyQualifiedTemplateName,
-		String regionSurroundingTemplateName,
-        Token templateToken,
-		String template,
-        Token nameToken,
-        List<FormalArgument> args)
-    {
-        try {
-            if ( regionSurroundingTemplateName!=null ) {
-                defineRegion(regionSurroundingTemplateName, nameToken, template, templateToken);
-            }
-            else {
-                defineTemplate(fullyQualifiedTemplateName, nameToken, args, template, templateToken);
-            }
-		}
-		catch (STException e) {
-			// after getting syntax error in a template, we emit msg
-			// and throw exception to blast all the way out to here.
+	public void defineTemplateOrRegion(String fullyQualifiedTemplateName, String regionSurroundingTemplateName, Token templateToken, String template, Token nameToken, List<FormalArgument> args) {
+		try {
+			if (regionSurroundingTemplateName != null) {
+				defineRegion(regionSurroundingTemplateName, nameToken, template, templateToken);
+			} else {
+				defineTemplate(fullyQualifiedTemplateName, nameToken, args, template, templateToken);
+			}
+		} catch (STException e) {
+			// after getting syntax error in a template, we emit msg and throw exception to blast all the way out to here.
 		}
 	}
 
 	public void rawDefineTemplate(String name, CompiledST code, Token defT) {
 		CompiledST prev = rawGetTemplate(name);
-		if ( prev!=null ) {
-			if ( !prev.isRegion() ) {
+		if (prev != null) {
+			if (!prev.isRegion()) {
 				errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, null, defT);
 				return;
 			}
-			if ( prev.isRegion() ) {
-				if ( code.getRegionDefType()!=ST.RegionType.IMPLICIT &&
-					 prev.getRegionDefType()==ST.RegionType.EMBEDDED )
-				{
-					errMgr.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
-											null,
-											defT,
-											getUnMangledTemplateName(name));
+			if (prev.isRegion()) {
+				if (code.getRegionDefType() != ST.RegionType.IMPLICIT && prev.getRegionDefType() == ST.RegionType.EMBEDDED) {
+					errMgr.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION, null, defT, getUnMangledTemplateName(name));
 					return;
-				}
-				else if ( code.getRegionDefType()==ST.RegionType.IMPLICIT ||
-					      prev.getRegionDefType()==ST.RegionType.EXPLICIT )
-				{
-					errMgr.compileTimeError(ErrorType.REGION_REDEFINITION,
-											null,
-											defT,
-											getUnMangledTemplateName(name));
+				} else if (code.getRegionDefType() == ST.RegionType.IMPLICIT || prev.getRegionDefType() == ST.RegionType.EXPLICIT) {
+					errMgr.compileTimeError(ErrorType.REGION_REDEFINITION, null, defT, getUnMangledTemplateName(name));
 					return;
 				}
 			}
@@ -435,82 +438,84 @@ public class STGroup {
 	}
 
 	/** Compile a template. */
-	public CompiledST compile(String srcName,
-							  String name,
-							  List<FormalArgument> args,
-							  String template,
-							  Token templateToken) // for error location
-    {
-		//System.out.println("STGroup.compile: "+enclosingTemplateName);
+	public CompiledST compile(String srcName, String name, List<FormalArgument> args, String template, Token templateToken) {
 		Compiler c = new Compiler(this);
 		return c.compile(srcName, name, args, template, templateToken);
 	}
 
-    /** The {@code "foo"} of {@code t() ::= "<@foo()>"} is mangled to
-	 *  {@code "/region__/t__foo"}
+	/**
+	 * The {@code "foo"} of {@code t() ::= "<@foo()>"} is mangled to
+	 * {@code "/region__/t__foo"}
 	 */
-    public static String getMangledRegionName(String enclosingTemplateName,
-                                              String name)
-    {
-		if ( enclosingTemplateName.charAt(0)!='/' ) {
-			enclosingTemplateName = '/'+enclosingTemplateName;
+	public static String getMangledRegionName(String enclosingTemplateName, String name) {
+		if (enclosingTemplateName.charAt(0) != '/') {
+			enclosingTemplateName = '/' + enclosingTemplateName;
 		}
-        return "/region__"+enclosingTemplateName+"__"+name;
-    }
+		return "/region__" + enclosingTemplateName + "__" + name;
+	}
 
-    /** Return {@code "t.foo"} from {@code "/region__/t__foo"} */
-    public static String getUnMangledTemplateName(String mangledName) {
-        String t = mangledName.substring("/region__".length(),
-                                         mangledName.lastIndexOf("__"));
-        String r = mangledName.substring(mangledName.lastIndexOf("__")+2,
-                                         mangledName.length());
-        return t+'.'+r;
-    }
+	/** Return {@code "t.foo"} from {@code "/region__/t__foo"} */
+	public static String getUnMangledTemplateName(String mangledName) {
+		String t = mangledName.substring("/region__".length(), mangledName.lastIndexOf("__"));
+		String r = mangledName.substring(mangledName.lastIndexOf("__") + 2, mangledName.length());
+		return t + '.' + r;
+	}
 
-    /** Define a map for this group.
+	/**
+	 * Define a map for this group.
 	 * <p>
-	 * Not thread safe...do not keep adding these while you reference them.</p>
-     */
-    public void defineDictionary(String name, Map<String,Object> mapping) {
-        dictionaries.put(name, mapping);
-    }
+	 * Not thread safe...do not keep adding these while you reference them.
+	 * </p>
+	 */
+	public void defineDictionary(String name, Map<String, Object> mapping) {
+		dictionaries.put(name, mapping);
+	}
 
-    /**
-     * Make this group import templates/dictionaries from {@code g}.
-     *<p>
-     * On unload imported templates are unloaded but stay in the {@link #imports} list.</p>
-     */
-    public void importTemplates(STGroup g) {
-        importTemplates(g, false);
-    }
+	/**
+	 * Make this group import templates/dictionaries from {@code g}.
+	 * <p>
+	 * On unload imported templates are unloaded but stay in the
+	 * {@link #imports} list.
+	 * </p>
+	 */
+	public void importTemplates(STGroup g) {
+		importTemplates(g, false);
+	}
 
-	/** Import template files, directories, and group files.
-	 *  Priority is given to templates defined in the current group;
-	 *  this, in effect, provides inheritance. Polymorphism is in effect so
-	 *  that if an inherited template references template {@code t()} then we
-	 *  search for {@code t()} in the subgroup first.
-	 *  <p>
-	 *  Templates are loaded on-demand from import dirs.  Imported groups are
-	 *  loaded on-demand when searching for a template.</p>
-	 *  <p>
-	 *  The listener of this group is passed to the import group so errors
-	 *  found while loading imported element are sent to listener of this group.</p>
-	 *  <p>
-	 *  On unload imported templates are unloaded and removed from the imports
-	 *  list.</p>
-	 *  <p>
-	 *  This method is called when processing import statements specified in
-	 *  group files. Use {@link #importTemplates(STGroup)} to import templates
-	 *  'programmatically'.</p>
+	/**
+	 * Import template files, directories, and group files. Priority is given to
+	 * templates defined in the current group; this, in effect, provides
+	 * inheritance. Polymorphism is in effect so that if an inherited template
+	 * references template {@code t()} then we search for {@code t()} in the
+	 * subgroup first.
+	 * <p>
+	 * Templates are loaded on-demand from import dirs. Imported groups are
+	 * loaded on-demand when searching for a template.
+	 * </p>
+	 * <p>
+	 * The listener of this group is passed to the import group so errors found
+	 * while loading imported element are sent to listener of this group.
+	 * </p>
+	 * <p>
+	 * On unload imported templates are unloaded and removed from the imports
+	 * list.
+	 * </p>
+	 * <p>
+	 * This method is called when processing import statements specified in
+	 * group files. Use {@link #importTemplates(STGroup)} to import templates
+	 * 'programmatically'.
+	 * </p>
 	 */
 	public void importTemplates(Token fileNameToken) {
-		if ( verbose ) System.out.println("importTemplates("+fileNameToken.getText()+")");
+		if (verbose)
+			System.out.println("importTemplates(" + fileNameToken.getText() + ")");
 		String fileName = fileNameToken.getText();
 		// do nothing upon syntax error
-		if ( fileName==null || fileName.equals("<missing STRING>") ) return;
+		if (fileName == null || fileName.equals("<missing STRING>"))
+			return;
 		fileName = Misc.strip(fileName, 1);
 
-		//System.out.println("import "+fileName);
+		// System.out.println("import "+fileName);
 		boolean isGroupFile = fileName.endsWith(GROUP_FILE_EXTENSION);
 		boolean isTemplateFile = fileName.endsWith(TEMPLATE_FILE_EXTENSION);
 		boolean isGroupDir = !(isGroupFile || isTemplateFile);
@@ -520,85 +525,85 @@ public class STGroup {
 		// search path is: working dir, g.stg's dir, CLASSPATH
 		URL thisRoot = getRootDirURL();
 		URL fileUnderRoot;
-//		System.out.println("thisRoot="+thisRoot);
+		// System.out.println("thisRoot="+thisRoot);
 		try {
-			fileUnderRoot = new URL(thisRoot+"/"+fileName);
-		}
-		catch (MalformedURLException mfe) {
-			errMgr.internalError(null, "can't build URL for "+thisRoot+"/"+fileName, mfe);
+			fileUnderRoot = new URL(thisRoot + "/" + fileName);
+		} catch (MalformedURLException mfe) {
+			errMgr.internalError(null, "can't build URL for " + thisRoot + "/" + fileName, mfe);
 			return;
 		}
-		if ( isTemplateFile ) {
+		if (isTemplateFile) {
 			g = new STGroup(delimiterStart, delimiterStop);
 			g.setListener(this.getListener());
 			URL fileURL;
-			if ( Misc.urlExists(fileUnderRoot) ) fileURL = fileUnderRoot;
-			else fileURL = getURL(fileName); // try CLASSPATH
-			if ( fileURL!=null ) {
+			if (Misc.urlExists(fileUnderRoot))
+				fileURL = fileUnderRoot;
+			else
+				fileURL = getURL(fileName); // try CLASSPATH
+			if (fileURL != null) {
 				try {
 					InputStream s = fileURL.openStream();
 					ANTLRInputStream templateStream = new ANTLRInputStream(s);
 					templateStream.name = fileName;
 					CompiledST code = g.loadTemplateFile("/", fileName, templateStream);
-					if ( code==null ) g = null;
-				}
-				catch (IOException ioe) {
-					errMgr.internalError(null, "can't read from "+fileURL, ioe);
+					if (code == null)
+						g = null;
+				} catch (IOException ioe) {
+					errMgr.internalError(null, "can't read from " + fileURL, ioe);
 					g = null;
 				}
-			}
-			else {
+			} else {
 				g = null;
 			}
-		}
-		else if ( isGroupFile ) {
-			//System.out.println("look for fileUnderRoot: "+fileUnderRoot);
-			if ( Misc.urlExists(fileUnderRoot) ) {
+		} else if (isGroupFile) {
+			// System.out.println("look for fileUnderRoot: "+fileUnderRoot);
+			if (Misc.urlExists(fileUnderRoot)) {
 				g = new STGroupFile(fileUnderRoot, encoding, delimiterStart, delimiterStop);
 				g.setListener(this.getListener());
-			}
-			else {
+			} else {
 				g = new STGroupFile(fileName, delimiterStart, delimiterStop);
 				g.setListener(this.getListener());
 			}
-		}
-		else if ( isGroupDir ) {
-//			System.out.println("try dir "+fileUnderRoot);
-			if ( Misc.urlExists(fileUnderRoot) ) {
+		} else if (isGroupDir) {
+			// System.out.println("try dir "+fileUnderRoot);
+			if (Misc.urlExists(fileUnderRoot)) {
 				g = new STGroupDir(fileUnderRoot, encoding, delimiterStart, delimiterStop);
 				g.setListener(this.getListener());
-			}
-			else {
+			} else {
 				// try in CLASSPATH
-//				System.out.println("try dir in CLASSPATH "+fileName);
+				// System.out.println("try dir in CLASSPATH "+fileName);
 				g = new STGroupDir(fileName, delimiterStart, delimiterStop);
 				g.setListener(this.getListener());
 			}
 		}
 
-		if ( g==null ) {
-			errMgr.compileTimeError(ErrorType.CANT_IMPORT, null,
-									fileNameToken, fileName);
-		}
-		else {
+		if (g == null) {
+			errMgr.compileTimeError(ErrorType.CANT_IMPORT, null, fileNameToken, fileName);
+		} else {
 			importTemplates(g, true);
 		}
 	}
 
 	protected void importTemplates(STGroup g, boolean clearOnUnload) {
-		if ( g==null ) return;
+		if (g == null)
+			return;
 		imports.add(g);
 		if (clearOnUnload) {
 			importsToClearOnUnload.add(g);
 		}
 	}
 
-	public List<STGroup> getImportedGroups() { return imports; }
+	public List<STGroup> getImportedGroups() {
+		return imports;
+	}
 
-	/** Load a group file with full path {@code fileName}; it's relative to root by {@code prefix}. */
+	/**
+	 * Load a group file with full path {@code fileName}; it's relative to root
+	 * by {@code prefix}.
+	 */
 	public void loadGroupFile(String prefix, String fileName) {
-		if ( verbose ) System.out.println(this.getClass().getSimpleName()+
-										  ".loadGroupFile(group-file-prefix="+prefix+", fileName="+fileName+")");
+		if (verbose)
+			System.out.println(this.getClass().getSimpleName() + ".loadGroupFile(group-file-prefix=" + prefix + ", fileName=" + fileName + ")");
 		GroupParser parser;
 		try {
 			URL f = new URL(fileName);
@@ -608,8 +613,7 @@ public class STGroup {
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
 			parser = new GroupParser(tokens);
 			parser.group(this, prefix);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			errMgr.IOError(null, ErrorType.CANT_LOAD_GROUP_FILE, e, fileName);
 		}
 	}
@@ -620,19 +624,18 @@ public class STGroup {
 		try {
 			fs = new ANTLRFileStream(fileName, encoding);
 			fs.name = fileName;
-		}
-		catch (IOException ioe) {
-			// doesn't exist
-			//errMgr.IOError(null, ErrorType.NO_SUCH_TEMPLATE, ioe, fileName);
+		} catch (IOException ioe) {
+			// doesn't exist errMgr.IOError(null, ErrorType.NO_SUCH_TEMPLATE, ioe, fileName);
 			return null;
 		}
 		return loadTemplateFile("", fileName, fs);
 	}
 
-	/** Load template stream into this group. {@code unqualifiedFileName} is
-	 *  {@code "a.st"}. The {@code prefix} is path from group root to
-	 *  {@code unqualifiedFileName} like {@code "/subdir"} if file is in
-	 *  {@code /subdir/a.st}.
+	/**
+	 * Load template stream into this group. {@code unqualifiedFileName} is
+	 * {@code "a.st"}. The {@code prefix} is path from group root to
+	 * {@code unqualifiedFileName} like {@code "/subdir"} if file is in
+	 * {@code /subdir/a.st}.
 	 */
 	public CompiledST loadTemplateFile(String prefix, String unqualifiedFileName, CharStream templateStream) {
 		GroupLexer lexer = new GroupLexer(templateStream);
@@ -642,14 +645,12 @@ public class STGroup {
 		lexer.group = this;
 		try {
 			parser.templateDef(prefix);
-		}
-		catch (RecognitionException re) {
-			errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR,
-									unqualifiedFileName,
-									re, re.getMessage());
+		} catch (RecognitionException re) {
+			errMgr.groupSyntaxError(ErrorType.SYNTAX_ERROR, unqualifiedFileName, re, re.getMessage());
 		}
 		String templateName = Misc.getFileNameNoSuffix(unqualifiedFileName);
-		if ( prefix!=null && prefix.length()>0 ) templateName = prefix+templateName;
+		if (prefix != null && prefix.length() > 0)
+			templateName = prefix + templateName;
 		CompiledST impl = rawGetTemplate(templateName);
 		impl.setPrefix(prefix);
 		return impl;
@@ -663,16 +664,16 @@ public class STGroup {
 	 * adaptors.
 	 * <p>
 	 * If an adaptor for type {@code T} already exists, it is replaced by the
-	 * {@code adaptor} argument.</p>
+	 * {@code adaptor} argument.
+	 * </p>
 	 * <p>
 	 * This must invalidate cache entries, so set your adaptors up before
-	 * calling {@link ST#render} for efficiency.</p>
+	 * calling {@link ST#render} for efficiency.
+	 * </p>
 	 */
 	public void registerModelAdaptor(Class<?> attributeType, ModelAdapter adaptor) {
-		if ( attributeType.isPrimitive() ) {
-			throw new IllegalArgumentException("can't register ModelAdaptor for primitive type "+
-											   attributeType.getSimpleName());
-		}
+		if (attributeType.isPrimitive())
+			throw new IllegalArgumentException("can't register ModelAdaptor for primitive type " + attributeType.getSimpleName());
 
 		adaptors.put(attributeType, adaptor);
 	}
@@ -681,28 +682,27 @@ public class STGroup {
 		return adaptors.get(attributeType);
 	}
 
-    /** Register a renderer for all objects of a particular "kind" for all
-     *  templates evaluated relative to this group.  Use {@code r} to render if
-	 *  object in question is an instance of {@code attributeType}.  Recursively
-	 *  set renderer into all import groups.
-     */
-    public void registerRenderer(Class<?> attributeType, AttributeRenderer r) {
+	/**
+	 * Register a renderer for all objects of a particular "kind" for all
+	 * templates evaluated relative to this group. Use {@code r} to render if
+	 * object in question is an instance of {@code attributeType}. Recursively
+	 * set renderer into all import groups.
+	 */
+	public void registerRenderer(Class<?> attributeType, AttributeRenderer r) {
 		registerRenderer(attributeType, r, true);
 	}
 
 	public void registerRenderer(Class<?> attributeType, AttributeRenderer r, boolean recursive) {
-		if ( attributeType.isPrimitive() ) {
-			throw new IllegalArgumentException("can't register renderer for primitive type "+
-											   attributeType.getSimpleName());
+		if (attributeType.isPrimitive()) {
+			throw new IllegalArgumentException("can't register renderer for primitive type " + attributeType.getSimpleName());
 		}
 
-		if ( renderers == null ) {
+		if (renderers == null)
 			renderers = Collections.synchronizedMap(new TypeRegistry<AttributeRenderer>());
-		}
 
 		renderers.put(attributeType, r);
 
-		if ( recursive ) {
+		if (recursive) {
 			load(); // make sure imports exist (recursively)
 			for (STGroup g : imports) {
 				g.registerRenderer(attributeType, r, true);
@@ -710,21 +710,21 @@ public class STGroup {
 		}
 	}
 
-	/** Get renderer for class {@code T} associated with this group.
+	/**
+	 * Get renderer for class {@code T} associated with this group.
 	 * <p>
-	 *  For non-imported groups and object-to-render of class {@code T}, use renderer
-	 *  (if any) registered for {@code T}.  For imports, any renderer
-	 *  set on import group is ignored even when using an imported template.
-	 *  You should set the renderer on the main group
-	 *  you use (or all to be sure).  I look at import groups as
-	 *  "helpers" that should give me templates and nothing else. If you
-	 *  have multiple renderers for {@code String}, say, then just make uber combined
-	 *  renderer with more specific format names.</p>
+	 * For non-imported groups and object-to-render of class {@code T}, use
+	 * renderer (if any) registered for {@code T}. For imports, any renderer set
+	 * on import group is ignored even when using an imported template. You
+	 * should set the renderer on the main group you use (or all to be sure). I
+	 * look at import groups as "helpers" that should give me templates and
+	 * nothing else. If you have multiple renderers for {@code String}, say, then
+	 * just make uber combined renderer with more specific format names.
+	 * </p>
 	 */
 	public AttributeRenderer getAttributeRenderer(Class<?> attributeType) {
-		if ( renderers==null ) {
+		if (renderers == null)
 			return null;
-		}
 
 		return renderers.get(attributeType);
 	}
@@ -733,19 +733,20 @@ public class STGroup {
 		ST st = new ST();
 		st.impl = impl;
 		st.groupThatCreatedThisInstance = this;
-		if ( impl.getFormalArguments()!=null ) {
+		if (impl.getFormalArguments() != null) {
 			st.locals = new Object[impl.getFormalArguments().size()];
 			Arrays.fill(st.locals, ST.EMPTY_ATTR);
 		}
 		return st;
 	}
 
-	/** Differentiate so we can avoid having creation events for regions,
-	 *  map operations, and other implicit "new ST" events during rendering.
+	/**
+	 * Differentiate so we can avoid having creation events for regions, map
+	 * operations, and other implicit "new ST" events during rendering.
 	 */
 	public ST createStringTemplateInternally(CompiledST impl) {
 		ST st = createStringTemplate(impl);
-		if ( trackCreationEvents && st.debugState!=null ) {
+		if (trackCreationEvents && st.debugState != null) {
 			st.debugState.newSTEvent = null; // toss it out
 		}
 		return st;
@@ -755,22 +756,29 @@ public class STGroup {
 		return new ST(proto); // no need to wack debugState; not set in ST(proto).
 	}
 
-    public String getName() { return "<no name>;"; }
-	public String getFileName() { return null; }
+	public String getName() {
+		return "<no name>;";
+	}
 
-	/** Return root dir if this is group dir; return dir containing group file
-	 *  if this is group file.  This is derived from original incoming
-	 *  dir or filename.  If it was absolute, this should come back
-	 *  as full absolute path.  If only a URL is available, return URL of
-	 *  one dir up.
+	public String getFileName() {
+		return null;
+	}
+
+	/**
+	 * Return root dir if this is group dir; return dir containing group file if
+	 * this is group file. This is derived from original incoming dir or
+	 * filename. If it was absolute, this should come back as full absolute
+	 * path. If only a URL is available, return URL of one dir up.
 	 */
-	public URL getRootDirURL() { return null; }
+	public URL getRootDirURL() {
+		return null;
+	}
 
 	public URL getURL(String fileName) {
 		URL url;
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		url = cl.getResource(fileName);
-		if ( url==null ) {
+		if (url == null) {
 			cl = this.getClass().getClassLoader();
 			url = cl.getResource(fileName);
 		}
@@ -778,26 +786,31 @@ public class STGroup {
 	}
 
 	@Override
-    public String toString() { return getName(); }
+	public String toString() {
+		return getName();
+	}
 
-    public String show() {
-        StringBuilder buf = new StringBuilder();
-        if ( imports.size()!=0 ) buf.append(" : "+imports);
-        for (String name : templates.keySet()) {
+	public String show() {
+		StringBuilder buf = new StringBuilder();
+		if (imports.size() != 0)
+			buf.append(" : " + imports);
+		for (String name : templates.keySet()) {
 			CompiledST c = rawGetTemplate(name);
-			if ( c.isAnonSubtemplate() || c==NOT_FOUND_ST ) continue;
-            int slash = name.lastIndexOf('/');
-            name = name.substring(slash+1, name.length());
-            buf.append(name);
-            buf.append('(');
-            if ( c.getFormalArguments()!=null ) buf.append( Misc.join(c.getFormalArguments().values().iterator(), ",") );
-            buf.append(')');
-            buf.append(" ::= <<"+Misc.newline);
-            buf.append(c.getTemplate()+ Misc.newline);
-            buf.append(">>"+Misc.newline);
-        }
-        return buf.toString();
-    }
+			if (c.isAnonSubtemplate() || c == NOT_FOUND_ST)
+				continue;
+			int slash = name.lastIndexOf('/');
+			name = name.substring(slash + 1, name.length());
+			buf.append(name);
+			buf.append('(');
+			if (c.getFormalArguments() != null)
+				buf.append(Misc.join(c.getFormalArguments().values().iterator(), ","));
+			buf.append(')');
+			buf.append(" ::= <<" + Misc.newline);
+			buf.append(c.getTemplate() + Misc.newline);
+			buf.append(">>" + Misc.newline);
+		}
+		return buf.toString();
+	}
 
 	public STErrorListener getListener() {
 		return errMgr.listener;
@@ -810,7 +823,7 @@ public class STGroup {
 	public Set<String> getTemplateNames() {
 		load();
 		HashSet<String> result = new HashSet<String>();
-		for (Map.Entry<String, CompiledST> e: templates.entrySet()) {
+		for (Map.Entry<String, CompiledST> e : templates.entrySet()) {
 			if (e.getValue() != NOT_FOUND_ST) {
 				result.add(e.getKey());
 			}

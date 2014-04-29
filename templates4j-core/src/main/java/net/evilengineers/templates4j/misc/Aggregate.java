@@ -72,18 +72,21 @@ import java.util.HashMap;
  */
 public class Aggregate {
 	public HashMap<String, Object> properties = new HashMap<String, Object>();
-	/** Allow StringTemplate to add values, but prevent the end
-	 *  user from doing so.
+
+	/**
+	 * Allow StringTemplate to add values, but prevent the end user from doing
+	 * so.
 	 */
 	protected void put(String propName, Object propValue) {
 		properties.put(propName, propValue);
 	}
+
 	public Object get(String propName) {
 		return properties.get(propName);
 	}
+
 	@Override
 	public String toString() {
 		return properties.toString();
 	}
 }
-

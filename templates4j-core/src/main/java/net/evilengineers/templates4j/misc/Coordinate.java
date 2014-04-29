@@ -31,9 +31,16 @@ package net.evilengineers.templates4j.misc;
  *  mapping stuff to map address to range within a template.
  */
 public class Coordinate {
-    public int line;
-    public int charPosition;
-    public Coordinate(int a, int b) { this.line=a; this.charPosition=b; }
+	public int line;
+	public int charPosition;
+
+	public Coordinate(int a, int b) {
+		this.line = a;
+		this.charPosition = b;
+	}
+
 	@Override
-    public String toString() { return line+":"+charPosition; }        
+	public String toString() {
+		return line + ":" + charPosition;
+	}
 }
