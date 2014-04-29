@@ -130,7 +130,8 @@ public class ST {
 	/** Just an alias for {@link ArrayList}, but this way I can track whether a
      *  list is something ST created or it's an incoming list.
      */
-    public static final class AttributeList extends ArrayList<Object> {
+    @SuppressWarnings("serial")
+	public static final class AttributeList extends ArrayList<Object> {
         public AttributeList(int size) { super(size); }
         public AttributeList() { super(); }
     }

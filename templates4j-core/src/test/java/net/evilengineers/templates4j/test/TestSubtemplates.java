@@ -40,6 +40,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("serial")
 public class TestSubtemplates extends BaseTest {
 
 	@Test public void testSimpleIteration() throws Exception {

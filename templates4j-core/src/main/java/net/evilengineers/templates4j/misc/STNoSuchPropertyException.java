@@ -31,6 +31,7 @@ package net.evilengineers.templates4j.misc;
 import net.evilengineers.templates4j.compiler.STException;
 
 /** For {@code <a.b>}, object {@code a} does not have a property {@code b}. */
+@SuppressWarnings("serial")
 public class STNoSuchPropertyException extends STException {
 	public Object o;
 	public String propertyName;

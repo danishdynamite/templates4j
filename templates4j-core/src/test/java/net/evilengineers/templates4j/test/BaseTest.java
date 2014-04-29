@@ -98,7 +98,7 @@ public abstract class BaseTest {
     @Before
     public void setUp() {
         STGroup.defaultGroup = new STGroup();
-        Compiler.subtemplateCount = 0;
+        Compiler.resetSubtemplateCount();
     }
 
     /**

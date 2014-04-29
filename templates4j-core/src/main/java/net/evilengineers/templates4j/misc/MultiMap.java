@@ -30,6 +30,7 @@ package net.evilengineers.templates4j.misc;
 import java.util.*;
 
 /** A hash table that maps a key to a list of elements not just a single. */
+@SuppressWarnings("serial")
 public class MultiMap<K, V> extends LinkedHashMap<K, List<V>> {
 	public void map(K key, V value) {
 		List<V> elementsForKey = get(key);

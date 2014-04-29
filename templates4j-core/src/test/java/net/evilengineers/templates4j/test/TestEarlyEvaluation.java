@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.awt.*;
 import java.util.HashMap;
 
+@SuppressWarnings("serial")
 public class TestEarlyEvaluation extends BaseTest {
 	/**
 	 * @return true if at least one Window is visible

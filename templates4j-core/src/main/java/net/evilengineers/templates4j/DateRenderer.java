@@ -38,41 +38,46 @@ import java.util.*;
  * {@code "time:"} shows only those components of the time object.
  */
 public class DateRenderer implements AttributeRenderer {
-    public static final Map<String,Integer> formatToInt =
-        new HashMap<String,Integer>() {
-            {
-                put("short", DateFormat.SHORT);
-                put("medium", DateFormat.MEDIUM);
-                put("long", DateFormat.LONG);
-                put("full", DateFormat.FULL);
+	@SuppressWarnings("serial")
+	public static final Map<String, Integer> formatToInt = new HashMap<String, Integer>() {{
+		put("short", DateFormat.SHORT);
+		put("medium", DateFormat.MEDIUM);
+		put("long", DateFormat.LONG);
+		put("full", DateFormat.FULL);
 
-                put("date:short", DateFormat.SHORT);
-                put("date:medium", DateFormat.MEDIUM);
-                put("date:long", DateFormat.LONG);
-                put("date:full", DateFormat.FULL);
+		put("date:short", DateFormat.SHORT);
+		put("date:medium", DateFormat.MEDIUM);
+		put("date:long", DateFormat.LONG);
+		put("date:full", DateFormat.FULL);
 
-                put("time:short", DateFormat.SHORT);
-                put("time:medium", DateFormat.MEDIUM);
-                put("time:long", DateFormat.LONG);
-                put("time:full", DateFormat.FULL);
-            }
-        };
+		put("time:short", DateFormat.SHORT);
+		put("time:medium", DateFormat.MEDIUM);
+		put("time:long", DateFormat.LONG);
+		put("time:full", DateFormat.FULL);
+	}};
 
 	@Override
-    public String toString(Object o, String formatString, Locale locale) {
-        Date d;
-        if ( formatString==null ) formatString = "short";
-        if ( o instanceof Calendar ) d = ((Calendar)o).getTime();
-        else d = (Date)o;
-        Integer styleI = formatToInt.get(formatString);
-        DateFormat f;
-        if ( styleI==null ) f = new SimpleDateFormat(formatString, locale);
-        else {
-            int style = styleI.intValue();
-            if ( formatString.startsWith("date:") ) f = DateFormat.getDateInstance(style, locale);
-            else if ( formatString.startsWith("time:") ) f = DateFormat.getTimeInstance(style, locale);
-            else f = DateFormat.getDateTimeInstance(style, style, locale);
-        }
-        return f.format(d);
-    }
+	public String toString(Object o, String formatString, Locale locale) {
+		Date d;
+		if (formatString == null)
+			formatString = "short";
+		if (o instanceof Calendar)
+			d = ((Calendar) o).getTime();
+		else
+			d = (Date) o;
+		Integer styleI = formatToInt.get(formatString);
+		DateFormat f;
+		if (styleI == null)
+			f = new SimpleDateFormat(formatString, locale);
+		else {
+			int style = styleI.intValue();
+			if (formatString.startsWith("date:"))
+				f = DateFormat.getDateInstance(style, locale);
+			else if (formatString.startsWith("time:"))
+				f = DateFormat.getTimeInstance(style, locale);
+			else
+				f = DateFormat.getDateTimeInstance(style, style, locale);
+		}
+		return f.format(d);
+	}
 }

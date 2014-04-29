@@ -41,6 +41,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("serial")
 public class TestFunctions extends BaseTest {
     @Test public void testFirst() throws Exception {
         String template = "<first(names)>";

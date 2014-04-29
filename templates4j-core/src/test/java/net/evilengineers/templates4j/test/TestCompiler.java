@@ -68,7 +68,7 @@ import static org.junit.Assert.assertEquals;
 public class TestCompiler extends BaseTest {
     @Before
 	@Override
-    public void setUp() { net.evilengineers.templates4j.compiler.Compiler.subtemplateCount = 0; }
+    public void setUp() { net.evilengineers.templates4j.compiler.Compiler.resetSubtemplateCount(); }
 
     @Test public void testAttr() throws Exception {
         String template = "hi <name>";

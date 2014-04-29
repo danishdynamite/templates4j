@@ -32,8 +32,8 @@ package net.evilengineers.templates4j.misc;
  *
  * @author Sam Harwell
  */
+@SuppressWarnings("serial")
 public class AmbiguousMatchException extends RuntimeException {
-
 	public AmbiguousMatchException() {
 		super();
 	}
@@ -49,5 +49,4 @@ public class AmbiguousMatchException extends RuntimeException {
 	public AmbiguousMatchException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
 }

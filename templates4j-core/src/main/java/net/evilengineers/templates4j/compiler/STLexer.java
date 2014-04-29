@@ -64,7 +64,8 @@ public class STLexer implements TokenSource {
 	 *  so we can override {@link #toString()}. It just converts token types to
      *  token names like 23 to {@code "LDELIM"}.
      */
-    public static class STToken extends CommonToken {
+    @SuppressWarnings("serial")
+	public static class STToken extends CommonToken {
         public STToken(CharStream input, int type, int start, int stop) {
             super(input, type, DEFAULT_CHANNEL, start, stop);
         }

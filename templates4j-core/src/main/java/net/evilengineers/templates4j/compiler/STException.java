@@ -27,6 +27,7 @@
  */
 package net.evilengineers.templates4j.compiler;
 
+@SuppressWarnings("serial")
 public class STException extends RuntimeException { // no checking damnit!
     public STException() { ; }
 	public STException(String msg, Exception cause) { super(msg,cause); }

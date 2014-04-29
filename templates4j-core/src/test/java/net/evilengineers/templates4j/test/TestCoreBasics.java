@@ -48,6 +48,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("serial")
 public class TestCoreBasics extends BaseTest {
     @Test public void testNullAttr() throws Exception {
         String template = "hi <name>!";
@@ -106,7 +107,7 @@ public class TestCoreBasics extends BaseTest {
         assertEquals(expected, result);
     }
 
-    @Test public void testAttrIsList() throws Exception {
+	@Test public void testAttrIsList() throws Exception {
         String template = "hi <name>!";
         ST st = new ST(template);
         List<String> names = new ArrayList<String>() {{add("Ter"); add("Tom");}};

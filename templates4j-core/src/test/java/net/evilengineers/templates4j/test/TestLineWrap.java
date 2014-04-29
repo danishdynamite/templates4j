@@ -34,6 +34,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("serial")
 public class TestLineWrap extends BaseTest {
 	@Test public void testLineWrap() throws Exception {
 		String templates =

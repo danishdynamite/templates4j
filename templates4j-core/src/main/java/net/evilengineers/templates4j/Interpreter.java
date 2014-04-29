@@ -62,8 +62,12 @@ public class Interpreter {
 
 	private static Map<Short, UserFunction> customFuncs = new HashMap<Short, UserFunction>();
 	
-	public static final Set<String> predefinedAnonSubtemplateAttributes =
-		new HashSet<String>() { { add("i"); add("i0"); add("iLast"); } };
+	@SuppressWarnings("serial")
+	public static final Set<String> predefinedAnonSubtemplateAttributes = new HashSet<String>() {{ 
+		add("i"); 
+		add("i0"); 
+		add("iLast");
+	}};
 
 	/** Operand stack, grows upwards. */
 	Object[] operands = new Object[DEFAULT_OPERAND_STACK_SIZE];
@@ -818,8 +822,11 @@ public class Interpreter {
 		return -1;
 	}
 
+	@SuppressWarnings("serial")
 	protected void map(InstanceScope scope, Object attr, final ST st) {
-		rot_map(scope, attr, new ArrayList<ST>() {{add(st);}});
+		rot_map(scope, attr, new ArrayList<ST>() {{ 
+			add(st); 
+		}});
 	}
 
 	/**
@@ -1465,9 +1472,11 @@ public class Interpreter {
 		return b1<<(8*1) | b2;
 	}
 
+	@SuppressWarnings("serial")
 	protected static class ObjectList extends ArrayList<Object> {
 	}
 
+	@SuppressWarnings("serial")
 	protected static class ArgumentsMap extends HashMap<String, Object> {
 	}	
 }

@@ -44,6 +44,7 @@ import java.util.List;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("serial")
 public class TestNullAndEmptyValues extends BaseTest {
 	public static class T {
 		String template;
