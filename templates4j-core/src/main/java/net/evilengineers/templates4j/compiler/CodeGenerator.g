@@ -111,7 +111,7 @@ import net.evilengineers.templates4j.*;
 	}
 	public int address() { return $template::state.ip; }
 	public void func(CommonTree id) { $template::state.func(templateToken, id); }
-	public void nsFunc(CommonTree ns, CommonTree fn) { $template::state.func(templateToken, ns, fn); }
+	public void func(CommonTree ns, CommonTree fn) { $template::state.func(templateToken, ns, fn); }
 	public void refAttr(CommonTree id) { $template::state.refAttr(templateToken, id); }
 	public int defineString(String s) { return $template::state.defineString(s); }
 }
@@ -375,8 +375,8 @@ mapTemplateRef[int num_exprs]
 	;
 
 includeExpr
-	:	^(EXEC_FUNC ID list)		{func($ID);}
-	|	^(EXEC_FUNC_NS ns=ID fn=ID list)		{nsFunc($ns,$fn);}
+	:	^(EXEC_FUNC ID list)				{func($ID);}
+	|	^(EXEC_FUNC_NS ns=ID fn=ID list)	{func($ns,$fn);}
 	|	^(INCLUDE ID args)
 		{
 		if ( $args.passThru ) emit1($start, Bytecode.INSTR_PASSTHRU, $ID.text);
