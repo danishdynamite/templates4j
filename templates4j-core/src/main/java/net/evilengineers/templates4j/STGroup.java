@@ -175,7 +175,7 @@ public class STGroup {
 	{
 		String fullyQualifiedName = name;
 		if ( name.charAt(0)!='/' ) {
-			fullyQualifiedName = scope.st.impl.prefix + name;
+			fullyQualifiedName = scope.st.impl.getPrefix() + name;
 		}
 		if ( verbose ) System.out.println("getEmbeddedInstanceOf(" + fullyQualifiedName +")");
         ST st = getInstanceOf(fullyQualifiedName);
@@ -204,8 +204,8 @@ public class STGroup {
 		CompiledST impl = compile(getFileName(), null, null, template, templateToken);
 		ST st = createStringTemplateInternally(impl);
 		st.groupThatCreatedThisInstance = this;
-		st.impl.hasFormalArgs = false;
-		st.impl.name = ST.UNKNOWN_NAME;
+		st.impl.setHasFormalArgs(false);
+		st.impl.setName(ST.UNKNOWN_NAME);
 		st.impl.defineImplicitlyDefinedTemplates(this);
 		return st;
 	}
@@ -327,7 +327,7 @@ public class STGroup {
         template = Misc.trimOneTrailingNewline(template);
 		// compile, passing in templateName as enclosing name for any embedded regions
         CompiledST code = compile(getFileName(), fullyQualifiedTemplateName, args, template, templateToken);
-        code.name = fullyQualifiedTemplateName;
+        code.setName(fullyQualifiedTemplateName);
         rawDefineTemplate(fullyQualifiedTemplateName, code, nameT);
 		code.defineArgDefaultValueTemplates(this);
         code.defineImplicitlyDefinedTemplates(this); // define any anonymous subtemplates
@@ -363,10 +363,10 @@ public class STGroup {
                                           enclosingTemplateName, name);
             return new CompiledST();
         }
-        code.name = mangled;
-        code.isRegion = true;
-        code.regionDefType = ST.RegionType.EXPLICIT;
-		code.templateDefStartToken = regionT;
+        code.setName(mangled);
+        code.setRegion(true);
+        code.setRegionDefType(ST.RegionType.EXPLICIT);
+		code.setTemplateDefStartToken(regionT);
 
         rawDefineTemplate(mangled, code, regionT);
 		code.defineArgDefaultValueTemplates(this);
@@ -400,13 +400,13 @@ public class STGroup {
 	public void rawDefineTemplate(String name, CompiledST code, Token defT) {
 		CompiledST prev = rawGetTemplate(name);
 		if ( prev!=null ) {
-			if ( !prev.isRegion ) {
+			if ( !prev.isRegion() ) {
 				errMgr.compileTimeError(ErrorType.TEMPLATE_REDEFINITION, null, defT);
 				return;
 			}
-			if ( prev.isRegion ) {
-				if ( code.regionDefType!=ST.RegionType.IMPLICIT &&
-					 prev.regionDefType==ST.RegionType.EMBEDDED )
+			if ( prev.isRegion() ) {
+				if ( code.getRegionDefType()!=ST.RegionType.IMPLICIT &&
+					 prev.getRegionDefType()==ST.RegionType.EMBEDDED )
 				{
 					errMgr.compileTimeError(ErrorType.EMBEDDED_REGION_REDEFINITION,
 											null,
@@ -414,8 +414,8 @@ public class STGroup {
 											getUnMangledTemplateName(name));
 					return;
 				}
-				else if ( code.regionDefType==ST.RegionType.IMPLICIT ||
-					      prev.regionDefType==ST.RegionType.EXPLICIT )
+				else if ( code.getRegionDefType()==ST.RegionType.IMPLICIT ||
+					      prev.getRegionDefType()==ST.RegionType.EXPLICIT )
 				{
 					errMgr.compileTimeError(ErrorType.REGION_REDEFINITION,
 											null,
@@ -425,8 +425,8 @@ public class STGroup {
 				}
 			}
 		}
-		code.nativeGroup = this;
-		code.templateDefStartToken = defT;
+		code.setNativeGroup(this);
+		code.setTemplateDefStartToken(defT);
 		templates.put(name, code);
 	}
 
@@ -651,7 +651,7 @@ public class STGroup {
 		String templateName = Misc.getFileNameNoSuffix(unqualifiedFileName);
 		if ( prefix!=null && prefix.length()>0 ) templateName = prefix+templateName;
 		CompiledST impl = rawGetTemplate(templateName);
-		impl.prefix = prefix;
+		impl.setPrefix(prefix);
 		return impl;
 	}
 
@@ -733,8 +733,8 @@ public class STGroup {
 		ST st = new ST();
 		st.impl = impl;
 		st.groupThatCreatedThisInstance = this;
-		if ( impl.formalArguments!=null ) {
-			st.locals = new Object[impl.formalArguments.size()];
+		if ( impl.getFormalArguments()!=null ) {
+			st.locals = new Object[impl.getFormalArguments().size()];
 			Arrays.fill(st.locals, ST.EMPTY_ATTR);
 		}
 		return st;
@@ -785,15 +785,15 @@ public class STGroup {
         if ( imports.size()!=0 ) buf.append(" : "+imports);
         for (String name : templates.keySet()) {
 			CompiledST c = rawGetTemplate(name);
-			if ( c.isAnonSubtemplate || c==NOT_FOUND_ST ) continue;
+			if ( c.isAnonSubtemplate() || c==NOT_FOUND_ST ) continue;
             int slash = name.lastIndexOf('/');
             name = name.substring(slash+1, name.length());
             buf.append(name);
             buf.append('(');
-            if ( c.formalArguments!=null ) buf.append( Misc.join(c.formalArguments.values().iterator(), ",") );
+            if ( c.getFormalArguments()!=null ) buf.append( Misc.join(c.getFormalArguments().values().iterator(), ",") );
             buf.append(')');
             buf.append(" ::= <<"+Misc.newline);
-            buf.append(c.template+ Misc.newline);
+            buf.append(c.getTemplate()+ Misc.newline);
             buf.append(">>"+Misc.newline);
         }
         return buf.toString();

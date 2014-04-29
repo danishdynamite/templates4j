@@ -44,7 +44,7 @@ import java.util.*;
  * field).
  */
 public class CompiledST implements Cloneable {
-	public String name;
+	private String name;
 
 	/**
 	 * Every template knows where it is relative to the group that loaded it.
@@ -65,35 +65,35 @@ public class CompiledST implements Cloneable {
 	 * Always ends with {@code "/"}.
 	 * </p>
 	 */
-	public String prefix = "/";
+	private String prefix = "/";
 
 	/**
 	 * The original, immutable pattern (not really used again after initial
 	 * "compilation"). Useful for debugging. Even for subtemplates, this is
 	 * entire overall template.
 	 */
-	public String template;
+	private String template;
 
 	/**
 	 * The token that begins template definition; could be {@code <@r>} of
 	 * region.
 	 */
-	public Token templateDefStartToken;
+	private Token templateDefStartToken;
 
 	/** Overall token stream for template (debug only). */
-	public TokenStream tokens;
+	private TokenStream tokens;
 
 	/** How do we interpret syntax of template? (debug only) */
-	public CommonTree ast;
+	private CommonTree ast;
 
-	public Map<String, FormalArgument> formalArguments;
+	private Map<String, FormalArgument> formalArguments;
 
-	public boolean hasFormalArgs;
+	private boolean hasFormalArgs;
 
-	public int numberOfArgsWithDefaultValues;
+	private int numberOfArgsWithDefaultValues;
 
 	/** A list of all regions and subtemplates. */
-	public List<CompiledST> implicitlyDefinedTemplates;
+	private List<CompiledST> implicitlyDefinedTemplates;
 
 	/**
 	 * The group that physically defines this {@link ST} definition. We use it
@@ -101,13 +101,13 @@ public class CompiledST implements Cloneable {
 	 * becomes field {@link Interpreter#group} and is fixed until rendering
 	 * completes.
 	 */
-	public STGroup nativeGroup = STGroup.defaultGroup;
+	private STGroup nativeGroup = STGroup.defaultGroup;
 
 	/**
 	 * Does this template come from a {@code <@region>...<@end>} embedded in
 	 * another template?
 	 */
-	public boolean isRegion;
+	private boolean isRegion;
 
 	/**
 	 * If someone refs {@code <@r()>} in template t, an implicit
@@ -121,14 +121,14 @@ public class CompiledST implements Cloneable {
 	 * {@link #isRegion} we can determine these cases.
 	 * </p>
 	 */
-	public ST.RegionType regionDefType;
+	private ST.RegionType regionDefType;
 
-	public boolean isAnonSubtemplate; // {...}
+	private boolean isAnonSubtemplate; // {...}
 
-	public String[] strings; // string operands of instructions
-	public byte[] instrs; // byte-addressable code memory.
-	public int codeSize;
-	public Interval[] sourceMap; // maps IP to range in template pattern
+	private String[] strings; // string operands of instructions
+	private byte[] instrs; // byte-addressable code memory.
+	private int codeSize;
+	private Interval[] sourceMap; // maps IP to range in template pattern
 
 	public CompiledST() {
 		instrs = new byte[Compiler.TEMPLATE_INITIAL_CODE_SIZE];
@@ -245,7 +245,7 @@ public class CompiledST implements Cloneable {
 			int start = Integer.MAX_VALUE;
 			int stop = Integer.MIN_VALUE;
 			
-			for (Interval interval : sourceMap) {
+			for (Interval interval : getSourceMap()) {
 				if (interval == null)
 					continue;
 				start = Math.min(start, interval.a);
@@ -284,5 +284,141 @@ public class CompiledST implements Cloneable {
 		pw.println(dis.sourceMap());
 		pw.close();
 		return sw.toString();
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	public String getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(String template) {
+		this.template = template;
+	}
+
+	public Token getTemplateDefStartToken() {
+		return templateDefStartToken;
+	}
+
+	public void setTemplateDefStartToken(Token templateDefStartToken) {
+		this.templateDefStartToken = templateDefStartToken;
+	}
+
+	public TokenStream getTokens() {
+		return tokens;
+	}
+
+	public void setTokens(TokenStream tokens) {
+		this.tokens = tokens;
+	}
+
+	public CommonTree getAST() {
+		return ast;
+	}
+
+	public void setAST(CommonTree ast) {
+		this.ast = ast;
+	}
+
+	public int getNumberOfArgsWithDefaultValues() {
+		return numberOfArgsWithDefaultValues;
+	}
+
+	public void setNumberOfArgsWithDefaultValues(int numberOfArgsWithDefaultValues) {
+		this.numberOfArgsWithDefaultValues = numberOfArgsWithDefaultValues;
+	}
+
+	public STGroup getNativeGroup() {
+		return nativeGroup;
+	}
+	
+	public void setNativeGroup(STGroup nativeGroup) {
+		this.nativeGroup = nativeGroup;
+	}
+
+	public boolean isRegion() {
+		return isRegion;
+	}
+
+	public void setRegion(boolean isRegion) {
+		this.isRegion = isRegion;
+	}
+
+	public int getCodeSize() {
+		return codeSize;
+	}
+
+	public void setCodeSize(int codeSize) {
+		this.codeSize = codeSize;
+	}
+
+	public boolean isAnonSubtemplate() {
+		return isAnonSubtemplate;
+	}
+
+	public void setAnonSubtemplate(boolean isAnonSubtemplate) {
+		this.isAnonSubtemplate = isAnonSubtemplate;
+	}
+
+	public boolean hasFormalArgs() {
+		return hasFormalArgs;
+	}
+
+	public void setHasFormalArgs(boolean hasFormalArgs) {
+		this.hasFormalArgs = hasFormalArgs;
+	}
+
+	public Map<String, FormalArgument> getFormalArguments() {
+		return formalArguments;
+	}
+
+	public void setFormalArguments(Map<String, FormalArgument> formalArguments) {
+		this.formalArguments = formalArguments;
+	}
+
+	public ST.RegionType getRegionDefType() {
+		return regionDefType;
+	}
+
+	public void setRegionDefType(ST.RegionType regionDefType) {
+		this.regionDefType = regionDefType;
+	}
+
+	public String[] getStrings() {
+		return strings;
+	}
+
+	public void setStrings(String[] strings) {
+		this.strings = strings;
+	}
+
+	public byte[] getInstrs() {
+		return instrs;
+	}
+
+	public void setInstrs(byte[] instrs) {
+		this.instrs = instrs;
+	}
+
+	public Interval[] getSourceMap() {
+		return sourceMap;
+	}
+
+	public void setSourceMap(Interval[] sourceMap) {
+		this.sourceMap = sourceMap;
 	}
 }

@@ -80,7 +80,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , name]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -92,7 +92,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[hi , foo]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -104,7 +104,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[hi , foo]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -116,7 +116,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[hi , y, x, foo]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -129,7 +129,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[foo]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -141,7 +141,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[a, _sub1, foo]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -153,7 +153,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[a, x, _sub1, y, foo]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -165,7 +165,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[hi , a, b, foo]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -177,7 +177,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[_sub1]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -219,7 +219,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[hi , foo, a, b]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -231,7 +231,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , a, b]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -244,7 +244,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[u, id, : , name]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -256,7 +256,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[name, bold]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -269,7 +269,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[a, name, bold]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -281,7 +281,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[name, x, bold]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -293,7 +293,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[name, t, x]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -305,7 +305,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[name, bold, italics]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -318,7 +318,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[name, x, bold, y, italics]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -330,7 +330,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[name, bold, italics]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -342,7 +342,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[name, x, bold, italics]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -354,7 +354,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[names, phones, bold]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -366,7 +366,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[names, phones, x, bold]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -378,7 +378,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[name, _sub1]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -390,7 +390,7 @@ public class TestCompiler extends BaseTest {
 		String asmResult = code.instrs();
 		assertEquals(asmExpected, asmResult);
 		String stringsExpected = "[a, b, _sub1]";
-		String stringsResult = Arrays.toString(code.strings);
+		String stringsResult = Arrays.toString(code.getStrings());
 		assertEquals(stringsExpected, stringsResult);
 	}
 
@@ -402,7 +402,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[go: , name, hi, foo]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -419,7 +419,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[go: , name, hi, foo, bye]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -438,7 +438,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[go: , name, hi, foo, user, a user]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -459,7 +459,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[go: , name, hi, foo, user, a user, bye]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -471,7 +471,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , name, x]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -483,7 +483,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[hi , name, _sub1]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -503,7 +503,7 @@ public class TestCompiler extends BaseTest {
             "write_opt";
         String stringsExpected = // the ", , ," is the ", " separator string
             "[hi , name, true, foo, , ]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
@@ -516,7 +516,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -527,7 +527,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[a, b]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -540,7 +540,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[/region__/a__r]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 
@@ -553,7 +553,7 @@ public class TestCompiler extends BaseTest {
         String asmResult = code.instrs();
         assertEquals(asmExpected, asmResult);
         String stringsExpected = "[x:, /region__/a__r]";
-        String stringsResult = Arrays.toString(code.strings);
+        String stringsResult = Arrays.toString(code.getStrings());
         assertEquals(stringsExpected, stringsResult);
     }
 }

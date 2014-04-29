@@ -132,12 +132,12 @@ scope {
 	    $impl.addArg(new FormalArgument("i0"));
 	    $impl.addArg(new FormalArgument("iLast"));
     }
-	$impl.template = template; // always forget the entire template; char indexes are relative to it
+	$impl.setTemplate(template); // always forget the entire template; char indexes are relative to it
 }
 	:	chunk
 		{ // finish off the CompiledST result
-        if ( $template::state.stringtable!=null ) $impl.strings = $template::state.stringtable.toArray();
-        $impl.codeSize = $template::state.ip;
+        if ( $template::state.stringtable!=null ) $impl.setStrings($template::state.stringtable.toArray());
+        $impl.setCodeSize($template::state.ip);
 		}
 	;
 
@@ -205,9 +205,9 @@ region[CommonTree indent] returns [String name]
 			template[$name,null]
 			{
 			CompiledST sub = $template.impl;
-	        sub.isRegion = true;
-	        sub.regionDefType = ST.RegionType.EMBEDDED;
-	        sub.templateDefStartToken = $ID.token;
+	        sub.setRegion(true);
+	        sub.setRegionDefType(ST.RegionType.EMBEDDED);
+	        sub.setTemplateDefStartToken($ID.token);
 			//sub.dump();
 			outermostImpl.addImplicitlyDefinedTemplate(sub);
 			emit2($start, Bytecode.INSTR_NEW, $region.name, 0);
@@ -227,11 +227,11 @@ subtemplate returns [String name, int nargs]
 			template[$name,args]
 			{
 			CompiledST sub = $template.impl;
-			sub.isAnonSubtemplate = true;
-	        sub.templateDefStartToken = $SUBTEMPLATE.token;
-            sub.ast = $SUBTEMPLATE;
-            sub.ast.setUnknownTokenBoundaries();
-            sub.tokens = input.getTokenStream();
+			sub.setAnonSubtemplate(true);
+	        sub.setTemplateDefStartToken($SUBTEMPLATE.token);
+            sub.setAST($SUBTEMPLATE);
+            sub.getAST().setUnknownTokenBoundaries();
+            sub.setTokens(input.getTokenStream());
 			//sub.dump();
 			outermostImpl.addImplicitlyDefinedTemplate(sub);
 			}
@@ -239,16 +239,16 @@ subtemplate returns [String name, int nargs]
 	|	SUBTEMPLATE // {}
 			{
 			CompiledST sub = new CompiledST();
-			sub.name = $name;
-			sub.template = "";
+			sub.setName($name);
+			sub.setTemplate("");
 			sub.addArg(new FormalArgument("i"));
 			sub.addArg(new FormalArgument("i0"));
 			sub.addArg(new FormalArgument("iLast"));
-			sub.isAnonSubtemplate = true;
-	        sub.templateDefStartToken = $SUBTEMPLATE.token;
-            sub.ast = $SUBTEMPLATE;
-            sub.ast.setUnknownTokenBoundaries();
-            sub.tokens = input.getTokenStream();
+			sub.setAnonSubtemplate(true);
+	        sub.setTemplateDefStartToken($SUBTEMPLATE.token);
+            sub.setAST($SUBTEMPLATE);
+            sub.getAST().setUnknownTokenBoundaries();
+            sub.setTokens(input.getTokenStream());
 			//sub.dump();
 			outermostImpl.addImplicitlyDefinedTemplate(sub);
 			}
@@ -393,11 +393,11 @@ includeExpr
 									CompiledST impl =
 										Compiler.defineBlankRegion(outermostImpl, $ID.token);
 									//impl.dump();
-									emit2($INCLUDE_REGION,Bytecode.INSTR_NEW,impl.name,0);
+									emit2($INCLUDE_REGION,Bytecode.INSTR_NEW,impl.getName(),0);
 									}
 	|	^(INCLUDE_SUPER_REGION ID)	{
 		                            String mangled =
-		                                STGroup.getMangledRegionName(outermostImpl.name, $ID.text);
+		                                STGroup.getMangledRegionName(outermostImpl.getName(), $ID.text);
 									emit2($INCLUDE_SUPER_REGION,Bytecode.INSTR_SUPER_NEW,mangled,0);
 									}
 	|	primary
