@@ -128,15 +128,6 @@ public class Interpreter {
 		}
 	}
 
-//	public static int[] count = new int[Bytecode.MAX_BYTECODE+1];
-
-//	public static void dumpOpcodeFreq() {
-//		System.out.println("#### instr freq:");
-//		for (int i=1; i<=Bytecode.MAX_BYTECODE; i++) {
-//			System.out.println(count[i]+" "+Bytecode.instructions[i].name);
-//		}
-//	}
-
 	/** Execute template {@code self} and return how many characters it wrote to {@code out}.
 	 *
 	 * @return the number of characters written to {@code out}
