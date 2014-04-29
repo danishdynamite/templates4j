@@ -78,11 +78,6 @@ public class Compiler {
             put("strlen", Bytecode.INSTR_STRLEN);
             put("reverse", Bytecode.INSTR_REVERSE);
         }
-        
-        public boolean containsKey(Object key) {
-        	System.err.println("## containsKey: " + key);
-        	return super.containsKey(key);
-        };
     };
 
 	/** Name subtemplates {@code _sub1}, {@code _sub2}, ... */
