@@ -203,7 +203,7 @@ public class TestInterptimeErrors extends BaseTest {
         e.add("salaries", "big");
         e.render();
         String errorExpecting =
-			"1:23: anonymous template has 2 arg(s) but mapped across 3 value(s)" + newline +
+			"0:23: anonymous template has 2 arg(s) but mapped across 3 value(s)" + newline +
 			"context [anonymous] 0:23 passed 3 arg(s) to template /_sub1 with 2 declared arg(s)" + newline +
 			"context [anonymous] 0:1 iterating through 3 values in zip map but template has 2 declared arguments" + newline;
         assertEquals(errorExpecting, errors.toString());

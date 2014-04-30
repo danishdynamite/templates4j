@@ -208,7 +208,7 @@ public class TestGroups extends BaseTest {
         STGroupFile group = new STGroupFile(dir+"/group.stg");
 		group.setListener(errors);
         group.load();
-		String expected = "group.stg 2:0: redefinition of template b"+newline;
+		String expected = "group.stg 1:0: redefinition of template b"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
     }
@@ -564,7 +564,7 @@ public class TestGroups extends BaseTest {
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		group.load();
-		String expected = "group.stg 2:18: mismatched input '{' expecting ELLIPSIS"+newline;
+		String expected = "group.stg 1:18: mismatched input '{' expecting ELLIPSIS"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -581,7 +581,7 @@ public class TestGroups extends BaseTest {
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		group.load();
-		String expected = "group.stg 2:22: '=' came as a complete surprise to me"+newline;
+		String expected = "group.stg 1:22: '=' came as a complete surprise to me"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}

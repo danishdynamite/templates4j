@@ -204,7 +204,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		String expected =
-			"[t.stg 1:12: required parameters (b) must appear before optional parameters]";
+			"[t.stg 0:12: required parameters (b) must appear before optional parameters]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
@@ -219,7 +219,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:15: 'b' came as a complete surprise to me]";
+		String expected = "[t.stg 0:15: 'b' came as a complete surprise to me]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}

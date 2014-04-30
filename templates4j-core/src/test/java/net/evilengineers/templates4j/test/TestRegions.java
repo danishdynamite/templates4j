@@ -192,7 +192,7 @@ public class TestRegions extends BaseTest {
         ErrorBuffer errors = new ErrorBuffer();
         group.setListener(errors);
         group.load();
-        String expected = "g.stg 2:3: region /a.r is embedded and thus already implicitly defined"+newline;
+        String expected = "g.stg 1:3: region /a.r is embedded and thus already implicitly defined"+newline;
         String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -212,7 +212,7 @@ public class TestRegions extends BaseTest {
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		group.load();
-		String expected = "g.stg 4:2: redefinition of region /a.r"+newline;
+		String expected = "g.stg 3:2: redefinition of region /a.r"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -371,7 +371,7 @@ public class TestRegions extends BaseTest {
         ST st = group.getInstanceOf("a");
         st.render();
         String result = errors.toString();
-        String expecting = "g.stg 4:3: template /a doesn't have a region called q"+newline;
+        String expecting = "g.stg 3:3: template /a doesn't have a region called q"+newline;
         assertEquals(expecting, result);
     }
 

@@ -187,7 +187,7 @@ public class TestCompiler extends BaseTest {
 		STGroup g = new STGroup();
 		g.errMgr = new ErrorManager(errors);
 		new Compiler(g).compile(template);
-		String expected = "1:3: anonymous template has 0 arg(s) but mapped across 1 value(s)"+newline;
+		String expected = "0:3: anonymous template has 0 arg(s) but mapped across 1 value(s)"+newline;
 		assertEquals(expected, errors.toString());
 	}
 
@@ -197,7 +197,7 @@ public class TestCompiler extends BaseTest {
 		STGroup g = new STGroup();
 		g.errMgr = new ErrorManager(errors);
 		new Compiler(g).compile(template);
-		String expected = "1:5: anonymous template has 1 arg(s) but mapped across 2 value(s)"+newline;
+		String expected = "0:5: anonymous template has 1 arg(s) but mapped across 2 value(s)"+newline;
 		assertEquals(expected, errors.toString());
 	}
 
@@ -207,7 +207,7 @@ public class TestCompiler extends BaseTest {
 		STGroup g = new STGroup();
 		g.errMgr = new ErrorManager(errors);
 		new Compiler(g).compile(template);
-		String expected = "1:11: anonymous template has 0 arg(s) but mapped across 1 value(s)"+newline;
+		String expected = "0:11: anonymous template has 0 arg(s) but mapped across 1 value(s)"+newline;
 		assertEquals(expected, errors.toString());
 	}
 

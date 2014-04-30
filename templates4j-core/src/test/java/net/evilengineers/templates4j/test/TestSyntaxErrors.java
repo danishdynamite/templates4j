@@ -50,7 +50,7 @@ public class TestSyntaxErrors extends BaseTest {
 			assert false;
 		}
 		String result = errors.toString();
-        String expected = "test 1:0: this doesn't look like a template: \" <> \""+newline;
+        String expected = "test 0:0: this doesn't look like a template: \" <> \""+newline;
         assertEquals(expected, result);
     }
 
@@ -66,7 +66,7 @@ public class TestSyntaxErrors extends BaseTest {
 			assert false;
 		}
 		String result = errors.toString();
-        String expected = "test 1:3: doesn't look like an expression"+newline;
+        String expected = "test 0:3: doesn't look like an expression"+newline;
         assertEquals(expected, result);
     }
 
@@ -84,7 +84,7 @@ public class TestSyntaxErrors extends BaseTest {
 		String result = errors.toString();
 		String expected = "test 1:7: invalid character '$'" +newline+
 			"test 1:7: invalid character '<EOF>'" +newline+
-			"test 1:7: premature EOF"+newline;
+			"test 0:7: premature EOF"+newline;
 		assertEquals(expected, result);
 	}
 
@@ -101,7 +101,7 @@ public class TestSyntaxErrors extends BaseTest {
 		}
 		String result = errors.toString();
 		String expected = "test 1:4: invalid character '*'"+newline +
-						  "test 1:0: this doesn't look like a template: \"   <*>\""+newline;
+						  "test 0:0: this doesn't look like a template: \"   <*>\""+newline;
 		assertEquals(expected, result);
 	}
 
@@ -131,7 +131,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroupFile group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-        String expected = "t.stg 1:15: doesn't look like an expression"+newline;
+        String expected = "t.stg 0:15: doesn't look like an expression"+newline;
         String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -146,7 +146,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroupFile group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:15: \\n in string, t.stg 1:14: doesn't look like an expression]";
+		String expected = "[t.stg 1:15: \\n in string, t.stg 0:14: doesn't look like an expression]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
@@ -161,7 +161,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:29: '!' came as a complete surprise to me"+newline;
+		String expected = "t.stg 0:29: '!' came as a complete surprise to me"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -176,7 +176,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:19: premature EOF"+newline;
+		String expected = "t.stg 0:19: premature EOF"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -192,7 +192,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:34: premature EOF"+newline;
+		String expected = "t.stg 0:34: premature EOF"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -208,7 +208,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:20: EOF in string"+newline +
-						  "t.stg 1:20: premature EOF"+newline;
+						  "t.stg 0:20: premature EOF"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -239,7 +239,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:19: '>' came as a complete surprise to me"+newline;
+		String expected = "t.stg 0:19: '>' came as a complete surprise to me"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -254,7 +254,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:19: mismatched input ',' expecting RDELIM"+newline;
+		String expected = "t.stg 0:19: mismatched input ',' expecting RDELIM"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}

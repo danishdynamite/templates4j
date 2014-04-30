@@ -30,7 +30,7 @@ public class TestBuggyDefaultValueRaisesNPETest extends BaseTest {
 
 		// Check the errors. This contained an "NullPointerException" before
 		Assert.assertEquals(
-				"t.stg 1:12: mismatched input ')' expecting RDELIM"+newline,
+				"t.stg 0:12: mismatched input ')' expecting RDELIM"+newline,
 				errors.toString());
 	}
 }

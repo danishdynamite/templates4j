@@ -65,7 +65,7 @@ public class STCompiletimeMessage extends STMessage {
 		int line = 0;
 		int charPos = -1;
 		if (token != null) {
-			line = token.getLine();
+			line = token.getLine() - 1;   // annoyingly, antrl's line counting starts with 1 (!)
 			charPos = token.getCharPositionInLine();
 			// check the input streams - if different then token is embedded in
 			// templateToken and we need to adjust the offset
@@ -74,14 +74,15 @@ public class STCompiletimeMessage extends STMessage {
 				if (templateToken.getType() == GroupParser.BIGSTRING || templateToken.getType() == GroupParser.BIGSTRING_NO_NL) {
 					templateDelimiterSize = 2;
 				}
-				line += templateToken.getLine() - 1;
+				line += templateToken.getLine() - 1;  // annoyingly, antrl's line counting starts with 1 (!)
 				charPos += templateToken.getCharPositionInLine() + templateDelimiterSize;
 			}
 		}
+		
 		String filepos = line + ":" + charPos;
-		if (srcName != null) {
+		if (srcName != null)
 			return srcName + " " + filepos + ": " + String.format(error.message, arg, arg2);
-		}
+		
 		return filepos + ": " + String.format(error.message, arg, arg2);
 	}
 }
