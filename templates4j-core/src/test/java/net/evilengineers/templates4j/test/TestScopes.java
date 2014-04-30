@@ -39,7 +39,7 @@ public class TestScopes extends BaseTest {
 		ST st = group.getInstanceOf("t");
 		st.render();
 
-		String expectedError = "context [/t] 1:1 passed 0 arg(s) to template /u with 1 declared arg(s)"+newline;
+		String expectedError = "context [/t] 0:1 passed 0 arg(s) to template /u with 1 declared arg(s)"+newline;
 		assertEquals(expectedError, errors.toString());
 	}
 
@@ -53,7 +53,7 @@ public class TestScopes extends BaseTest {
 		ST st = group.getInstanceOf("t");
 		st.render();
 
-		String expectedError = "context [/t] 1:1 attribute x isn't defined"+newline;
+		String expectedError = "context [/t] 0:1 attribute x isn't defined"+newline;
 		assertEquals(expectedError, errors.toString());
 	}
 

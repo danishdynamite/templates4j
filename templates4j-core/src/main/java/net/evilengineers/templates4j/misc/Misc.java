@@ -201,7 +201,7 @@ public class Misc {
 	 * position in line.
 	 */
 	public static Coordinate getLineCharPosition(String s, int index) {
-		int line = 1;
+		int line = 0;  // all counting should always start at zero
 		int charPos = 0;
 		int p = 0;
 		while (p < index) { // don't care about s[index] itself; count before

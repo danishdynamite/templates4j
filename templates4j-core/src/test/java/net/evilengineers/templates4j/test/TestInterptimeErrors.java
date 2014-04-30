@@ -57,7 +57,7 @@ public class TestInterptimeErrors extends BaseTest {
 		group.setListener(errors);
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [/t] 1:1 no such template: /foo"+newline;
+        String expected = "context [/t] 0:1 no such template: /foo"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -79,7 +79,7 @@ public class TestInterptimeErrors extends BaseTest {
         group.importTemplates(group2);
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [/t] 1:1 no such template: super.t"+newline;
+        String expected = "context [/t] 0:1 no such template: super.t"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -147,7 +147,7 @@ public class TestInterptimeErrors extends BaseTest {
 		group.setListener(errors);
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [/t] 1:1 passed 1 arg(s) to template /u with 2 declared arg(s)"+newline;
+        String expected = "context [/t] 0:1 passed 1 arg(s) to template /u with 2 declared arg(s)"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -167,7 +167,7 @@ public class TestInterptimeErrors extends BaseTest {
         String result = st.render();
         assertEquals(expected, result);
 
-        expected = "context [/t] 1:5 passed 1 arg(s) to template /u with 2 declared arg(s)"+newline;
+        expected = "context [/t] 0:5 passed 1 arg(s) to template /u with 2 declared arg(s)"+newline;
 		result = errors.toString();
         assertEquals(expected, result);
     }
@@ -184,7 +184,7 @@ public class TestInterptimeErrors extends BaseTest {
 		group.setListener(errors);
         ST st = group.getInstanceOf("t");
         st.render();
-        String expected = "context [/t /u] 1:1 attribute x isn't defined"+newline;
+        String expected = "context [/t /u] 0:1 attribute x isn't defined"+newline;
 		String result = errors.toString();
         assertEquals(expected, result);
     }
@@ -204,8 +204,8 @@ public class TestInterptimeErrors extends BaseTest {
         e.render();
         String errorExpecting =
 			"1:23: anonymous template has 2 arg(s) but mapped across 3 value(s)" + newline +
-			"context [anonymous] 1:23 passed 3 arg(s) to template /_sub1 with 2 declared arg(s)" + newline +
-			"context [anonymous] 1:1 iterating through 3 values in zip map but template has 2 declared arguments" + newline;
+			"context [anonymous] 0:23 passed 3 arg(s) to template /_sub1 with 2 declared arg(s)" + newline +
+			"context [anonymous] 0:1 iterating through 3 values in zip map but template has 2 declared arguments" + newline;
         assertEquals(errorExpecting, errors.toString());
         String expecting = "Ter@1, Tom@2";
         assertEquals(expecting, e.render());
@@ -218,7 +218,7 @@ public class TestInterptimeErrors extends BaseTest {
         ST e = new ST(group, "<trim(s)>");
         e.add("s", 34);
         e.render(); // generate the error
-        String errorExpecting = "context [anonymous] 1:1 function trim expects a string not java.lang.Integer"+newline;
+        String errorExpecting = "context [anonymous] 0:1 function trim expects a string not java.lang.Integer"+newline;
         assertEquals(errorExpecting, errors.toString());
     }
 
@@ -229,7 +229,7 @@ public class TestInterptimeErrors extends BaseTest {
         ST e = new ST(group, "<strlen(s)>");
         e.add("s", 34);
         e.render(); // generate the error
-        String errorExpecting = "context [anonymous] 1:1 function strlen expects a string not java.lang.Integer"+newline;
+        String errorExpecting = "context [anonymous] 0:1 function strlen expects a string not java.lang.Integer"+newline;
         assertEquals(errorExpecting, errors.toString());
     }
 }
