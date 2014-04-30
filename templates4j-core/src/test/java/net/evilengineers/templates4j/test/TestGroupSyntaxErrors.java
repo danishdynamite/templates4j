@@ -93,7 +93,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:11: missing final '}' in {...} anonymous template" +newline+
+		String expected = "t.stg 0:11: missing final '}' in {...} anonymous template" +newline+
 						  "t.stg 0:10: no viable alternative at input '{'"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
@@ -124,7 +124,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:11: \\n in string"+newline;
+		String expected = "t.stg 0:11: \\n in string"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -264,7 +264,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:17: invalid character '}']";
+		String expected = "[t.stg 0:17: invalid character '}']";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
@@ -279,7 +279,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:9: unterminated string, t.stg 0:9: missing template at '<EOF>']";
+		String expected = "[t.stg 0:9: unterminated string, t.stg 0:9: missing template at '<EOF>']";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}

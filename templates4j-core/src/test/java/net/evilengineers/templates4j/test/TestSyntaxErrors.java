@@ -146,7 +146,7 @@ public class TestSyntaxErrors extends BaseTest {
 		STGroupFile group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:15: \\n in string, t.stg 0:14: doesn't look like an expression]";
+		String expected = "[t.stg 0:15: \\n in string, t.stg 0:14: doesn't look like an expression]";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}

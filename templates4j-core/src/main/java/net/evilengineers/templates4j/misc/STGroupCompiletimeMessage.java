@@ -60,7 +60,7 @@ public class STGroupCompiletimeMessage extends STMessage {
 			line = token.getLine() - 1;
 			charPos = token.getCharPositionInLine();
 		} else if (re != null) {
-			line = re.line;
+			line = re.line - 1;
 			charPos = re.charPositionInLine;
 		}
 		String filepos = line + ":" + charPos;
