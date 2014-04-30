@@ -63,7 +63,7 @@ public class STRuntimeMessage extends STMessage {
 	}
 
 	public STRuntimeMessage(Interpreter interp, ErrorType error, int ip, InstanceScope scope, Throwable e, Object arg, Object arg2, Object arg3) {
-		super(error, scope != null ? scope.st : null, e, arg, arg2, arg3);
+		super(error, scope != null ? scope.getST() : null, e, arg, arg2, arg3);
 		this.interp = interp;
 		this.ip = ip;
 		this.scope = scope;
@@ -80,7 +80,7 @@ public class STRuntimeMessage extends STMessage {
 		if (I == null)
 			return null;
 		// get left edge and get line/col
-		int i = I.a;
+		int i = I.getStart();
 		Coordinate loc = Misc.getLineCharPosition(self.impl.getTemplate(), i);
 		return loc;
 	}

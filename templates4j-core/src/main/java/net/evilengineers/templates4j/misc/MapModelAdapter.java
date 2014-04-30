@@ -34,7 +34,7 @@ import net.evilengineers.templates4j.STGroup;
 
 import java.util.Map;
 
-public class MapModelAdaptor implements ModelAdapter {
+public class MapModelAdapter implements ModelAdapter {
 	@Override
 	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName) throws STNoSuchPropertyException {
 		Object value;

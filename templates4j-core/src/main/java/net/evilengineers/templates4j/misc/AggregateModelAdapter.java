@@ -34,10 +34,10 @@ import net.evilengineers.templates4j.ST;
 import java.util.Map;
 
 /** Deal with structs created via {@link ST#addAggr}{@code ("structname.{prop1, prop2}", ...);}. */
-public class AggregateModelAdaptor extends MapModelAdaptor {
+public class AggregateModelAdapter extends MapModelAdapter {
 	@Override
 	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName) throws STNoSuchPropertyException {
-		Map<?, ?> map = ((Aggregate) o).properties;
+		Map<?, ?> map = ((Aggregate) o).getProperties();
 		return super.getProperty(interp, self, map, property, propertyName);
 	}
 }

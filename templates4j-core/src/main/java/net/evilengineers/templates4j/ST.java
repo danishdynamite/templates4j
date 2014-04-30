@@ -260,13 +260,13 @@ public class ST {
 					System.arraycopy(locals, 0, copy, 0, Math.min(locals.length, impl.getFormalArguments().size()));
 					locals = copy;
 				}
-				locals[arg.index] = EMPTY_ATTR;
+				locals[arg.getIndex()] = EMPTY_ATTR;
 			}
 		}
 
-		Object curvalue = locals[arg.index];
+		Object curvalue = locals[arg.getIndex()];
 		if (curvalue == EMPTY_ATTR) { // new attribute
-			locals[arg.index] = value;
+			locals[arg.getIndex()] = value;
 			return this;
 		}
 
@@ -275,7 +275,7 @@ public class ST {
 		// copy-on-write semantics; copy a list injected by user to add new
 		// value
 		AttributeList multi = convertToAttributeList(curvalue);
-		locals[arg.index] = multi; // replace with list
+		locals[arg.getIndex()] = multi; // replace with list
 
 		// now, add incoming value to multi-valued attribute
 		if (value instanceof List) {
@@ -317,7 +317,7 @@ public class ST {
 		Aggregate aggr = new Aggregate();
 		for (String p : propNames) {
 			Object v = values[i++];
-			aggr.properties.put(p, v);
+			aggr.put(p, v);
 		}
 		add(aggrName, aggr); // now add as usual
 		return this;
@@ -335,7 +335,7 @@ public class ST {
 		if (arg == null) {
 			throw new IllegalArgumentException("no such attribute: " + name);
 		}
-		locals[arg.index] = EMPTY_ATTR; // reset value
+		locals[arg.getIndex()] = EMPTY_ATTR; // reset value
 	}
 
 	/**
@@ -349,7 +349,7 @@ public class ST {
 		FormalArgument arg = impl.getFormalArguments().get(name);
 		if (arg == null)
 			throw new IllegalArgumentException("no such attribute: " + name);
-		locals[arg.index] = value;
+		locals[arg.getIndex()] = value;
 	}
 
 	/** Find an attribute in this template only. */
@@ -358,7 +358,7 @@ public class ST {
 		if (impl.getFormalArguments() != null)
 			localArg = impl.getFormalArguments().get(name);
 		if (localArg != null) {
-			Object o = locals[localArg.index];
+			Object o = locals[localArg.getIndex()];
 			if (o == ST.EMPTY_ATTR)
 				o = null;
 			return o;
@@ -371,10 +371,10 @@ public class ST {
 			return null;
 		Map<String, Object> attributes = new HashMap<String, Object>();
 		for (FormalArgument a : impl.getFormalArguments().values()) {
-			Object o = locals[a.index];
+			Object o = locals[a.getIndex()];
 			if (o == ST.EMPTY_ATTR)
 				o = null;
-			attributes.put(a.name, o);
+			attributes.put(a.getName(), o);
 		}
 		return attributes;
 	}

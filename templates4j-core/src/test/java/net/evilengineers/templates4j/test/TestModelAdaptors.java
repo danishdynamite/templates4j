@@ -9,7 +9,7 @@ import org.junit.*;
 import static org.junit.Assert.assertEquals;
 
 public class TestModelAdaptors extends BaseTest {
-	static class UserAdaptor implements ModelAdapter {
+	static class UserAdapter implements ModelAdapter {
 		@Override
 		public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 			throws STNoSuchPropertyException
@@ -20,7 +20,7 @@ public class TestModelAdaptors extends BaseTest {
 		}
 	}
 
-	static class UserAdaptorConst implements ModelAdapter {
+	static class UserAdapterConst implements ModelAdapter {
 		@Override
 		public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName)
 			throws STNoSuchPropertyException
@@ -49,7 +49,7 @@ public class TestModelAdaptors extends BaseTest {
 				"foo(x) ::= \"<x.id>: <x.name>\"\n";
 		writeFile(tmpdir, "foo.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/foo.stg");
-		group.registerModelAdaptor(User.class, new UserAdaptor());
+		group.registerModelAdaptor(User.class, new UserAdapter());
 		ST st = group.getInstanceOf("foo");
 		st.add("x", new User(100, "parrt"));
 		String expecting = "100: parrt";
@@ -64,7 +64,7 @@ public class TestModelAdaptors extends BaseTest {
 		writeFile(tmpdir, "foo.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/foo.stg");
 		group.setListener(errors);
-		group.registerModelAdaptor(User.class, new UserAdaptor());
+		group.registerModelAdaptor(User.class, new UserAdapter());
 		ST st = group.getInstanceOf("foo");
 		st.add("x", new User(100, "parrt"));
 		String expecting = "";
@@ -81,7 +81,7 @@ public class TestModelAdaptors extends BaseTest {
 				"foo(x) ::= \"<x.id>: <x.name>\"\n";
 		writeFile(tmpdir, "foo.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/foo.stg");
-		group.registerModelAdaptor(User.class, new UserAdaptor());
+		group.registerModelAdaptor(User.class, new UserAdapter());
 		ST st = group.getInstanceOf("foo");
 		st.add("x", new SuperUser(100, "parrt")); // create subclass of User
 		String expecting = "100: super parrt";
@@ -94,11 +94,11 @@ public class TestModelAdaptors extends BaseTest {
 				"foo(x) ::= \"<x.id>: <x.name>\"\n";
 		writeFile(tmpdir, "foo.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/foo.stg");
-		group.registerModelAdaptor(User.class, new UserAdaptor());
+		group.registerModelAdaptor(User.class, new UserAdapter());
 		group.getModelAdaptor(User.class); // get User, SuperUser into cache
 		group.getModelAdaptor(SuperUser.class);
 
-		group.registerModelAdaptor(User.class, new UserAdaptorConst());
+		group.registerModelAdaptor(User.class, new UserAdapterConst());
 		// cache should be reset so we see new adaptor
 		ST st = group.getInstanceOf("foo");
 		st.add("x", new User(100, "parrt"));
@@ -112,8 +112,8 @@ public class TestModelAdaptors extends BaseTest {
 				"foo(x) ::= \"<x.id>: <x.name>\"\n";
 		writeFile(tmpdir, "foo.stg", templates);
 		STGroup group = new STGroupFile(tmpdir+"/foo.stg");
-		group.registerModelAdaptor(User.class, new UserAdaptor());
-		group.registerModelAdaptor(SuperUser.class, new UserAdaptorConst()); // most specific
+		group.registerModelAdaptor(User.class, new UserAdapter());
+		group.registerModelAdaptor(SuperUser.class, new UserAdapterConst()); // most specific
 		ST st = group.getInstanceOf("foo");
 		st.add("x", new User(100, "parrt"));
 		String expecting = "100: parrt";

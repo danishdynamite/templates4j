@@ -36,11 +36,11 @@ import java.util.List;
 
 public class InstanceScope {
 	/** Template that invoked us. */
-	public final InstanceScope parent;
+	private final InstanceScope parent;
 	/** Template we're executing. */
-	public final ST st;
+	private final ST st;
 	/** Current instruction pointer. */
-	public int ip;
+	private int ip;
 
 	/**
 	 * Includes the {@link EvalTemplateEvent} for this template. This is a
@@ -58,19 +58,59 @@ public class InstanceScope {
 	 * All events get added to the {@link #parent}'s event list.
 	 * </p>
 	 */
-	public List<InterpEvent> events = new ArrayList<InterpEvent>();
+	private List<InterpEvent> events = new ArrayList<InterpEvent>();
 
 	/**
 	 * All templates evaluated and embedded in this {@link ST}. Used for tree
 	 * view in {@link STViz}.
 	 */
-	public List<EvalTemplateEvent> childEvalTemplateEvents = new ArrayList<EvalTemplateEvent>();
+	private List<EvalTemplateEvent> childEvalTemplateEvents = new ArrayList<EvalTemplateEvent>();
 
-	public boolean earlyEval;
+	private boolean earlyEval;
 
 	public InstanceScope(InstanceScope parent, ST st) {
 		this.parent = parent;
 		this.st = st;
 		this.earlyEval = parent != null && parent.earlyEval;
+	}
+
+	public boolean isEarlyEval() {
+		return earlyEval;
+	}
+
+	public void setEarlyEval(boolean earlyEval) {
+		this.earlyEval = earlyEval;
+	}
+
+	public int getIp() {
+		return ip;
+	}
+
+	public void setIp(int ip) {
+		this.ip = ip;
+	}
+
+	public ST getST() {
+		return st;
+	}
+
+	public InstanceScope getParent() {
+		return parent;
+	}
+
+	public List<InterpEvent> getEvents() {
+		return events;
+	}
+
+	public void setEvents(List<InterpEvent> events) {
+		this.events = events;
+	}
+
+	public List<EvalTemplateEvent> getChildEvalTemplateEvents() {
+		return childEvalTemplateEvents;
+	}
+
+	public void setChildEvalTemplateEvents(List<EvalTemplateEvent> childEvalTemplateEvents) {
+		this.childEvalTemplateEvents = childEvalTemplateEvents;
 	}
 }

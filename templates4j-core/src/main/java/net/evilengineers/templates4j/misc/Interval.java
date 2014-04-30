@@ -27,20 +27,28 @@
  */
 package net.evilengineers.templates4j.misc;
 
-/** An inclusive interval {@code a..b}.  Used to track ranges in output and
+/** An inclusive interval {@code start..end}.  Used to track ranges in output and
  *  template patterns (for debugging).
  */
 public class Interval {
-	public int a;
-	public int b;
+	private int start;
+	private int end;
 
-	public Interval(int a, int b) {
-		this.a = a;
-		this.b = b;
+	public Interval(int start, int end) {
+		this.start = start;
+		this.end = end;
 	}
 
 	@Override
 	public String toString() {
-		return a + ".." + b;
+		return start + ".." + end;
+	}
+
+	public int getStart() {
+		return start;
+	}
+
+	public int getEnd() {
+		return end;
 	}
 }

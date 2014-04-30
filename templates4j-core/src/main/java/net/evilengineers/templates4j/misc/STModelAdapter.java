@@ -31,7 +31,7 @@ import net.evilengineers.templates4j.Interpreter;
 import net.evilengineers.templates4j.ModelAdapter;
 import net.evilengineers.templates4j.ST;
 
-public class STModelAdaptor implements ModelAdapter {
+public class STModelAdapter implements ModelAdapter {
 	@Override
 	public Object getProperty(Interpreter interp, ST self, Object o, Object property, String propertyName) throws STNoSuchPropertyException {
 		return ((ST) o).getAttribute(propertyName);

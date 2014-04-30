@@ -27,12 +27,13 @@
  */
 package net.evilengineers.templates4j.misc;
 
-/** A line number and char position within a line.  Used by the source
+/**
+ *  A line number and char position within a line.  Used by the source
  *  mapping stuff to map address to range within a template.
  */
 public class Coordinate {
-	public int line;
-	public int charPosition;
+	private int line;
+	private int charPosition;
 
 	public Coordinate(int a, int b) {
 		this.line = a;
@@ -42,5 +43,13 @@ public class Coordinate {
 	@Override
 	public String toString() {
 		return line + ":" + charPosition;
+	}
+
+	public int getLine() {
+		return line;
+	}
+
+	public int getCharPosition() {
+		return charPosition;
 	}
 }

@@ -37,13 +37,13 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ObjectModelAdaptor implements ModelAdapter {
+public class ObjectModelAdapter implements ModelAdapter {
 	protected static final Member INVALID_MEMBER;
 	
 	static {
 		Member invalidMember;
 		try {
-			invalidMember = ObjectModelAdaptor.class.getDeclaredField("INVALID_MEMBER");
+			invalidMember = ObjectModelAdapter.class.getDeclaredField("INVALID_MEMBER");
 		} catch (NoSuchFieldException ex) {
 			invalidMember = null;
 		} catch (SecurityException ex) {

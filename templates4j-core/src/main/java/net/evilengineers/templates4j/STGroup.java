@@ -124,10 +124,10 @@ public class STGroup {
 	
 	{
 		TypeRegistry<ModelAdapter> registry = new TypeRegistry<ModelAdapter>();
-		registry.put(Object.class, new ObjectModelAdaptor());
-		registry.put(ST.class, new STModelAdaptor());
-		registry.put(Map.class, new MapModelAdaptor());
-		registry.put(Aggregate.class, new AggregateModelAdaptor());
+		registry.put(Object.class, new ObjectModelAdapter());
+		registry.put(ST.class, new STModelAdapter());
+		registry.put(Map.class, new MapModelAdapter());
+		registry.put(Aggregate.class, new AggregateModelAdapter());
 		adaptors = Collections.synchronizedMap(registry);
 	}
 
@@ -191,7 +191,7 @@ public class STGroup {
 	protected ST getEmbeddedInstanceOf(Interpreter interp, InstanceScope scope, String name) {
 		String fullyQualifiedName = name;
 		if (name.charAt(0) != '/')
-			fullyQualifiedName = scope.st.impl.getPrefix() + name;
+			fullyQualifiedName = scope.getST().impl.getPrefix() + name;
 		if (verbose)
 			System.out.println("getEmbeddedInstanceOf(" + fullyQualifiedName + ")");
 		ST st = getInstanceOf(fullyQualifiedName);

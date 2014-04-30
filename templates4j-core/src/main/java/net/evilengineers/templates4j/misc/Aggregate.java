@@ -66,18 +66,14 @@ import java.util.HashMap;
  *  attribute name syntax: {@code "name.{propName1,propName2,...}"}.  This
  *  object is a special kind of {@code HashMap} that hopefully prevents people
  *  from passing a subclass or other variant that they have created as
- *  it would be a loophole.  Anyway, the {@link AggregateModelAdaptor#getProperty}
+ *  it would be a loophole.  Anyway, the {@link AggregateModelAdapter#getProperty}
  *  method looks for {@code Aggregate} as a special case and does a {@link #get} instead
  *  of {@code getPropertyName}.</p>
  */
 public class Aggregate {
-	public HashMap<String, Object> properties = new HashMap<String, Object>();
+	private HashMap<String, Object> properties = new HashMap<String, Object>();
 
-	/**
-	 * Allow StringTemplate to add values, but prevent the end user from doing
-	 * so.
-	 */
-	protected void put(String propName, Object propValue) {
+	public void put(String propName, Object propValue) {
 		properties.put(propName, propValue);
 	}
 
@@ -85,6 +81,10 @@ public class Aggregate {
 		return properties.get(propName);
 	}
 
+	public HashMap<String, Object> getProperties() {
+		return properties;
+	}
+	
 	@Override
 	public String toString() {
 		return properties.toString();

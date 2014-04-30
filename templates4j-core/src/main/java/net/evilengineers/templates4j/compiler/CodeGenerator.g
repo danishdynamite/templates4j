@@ -109,7 +109,7 @@ import net.evilengineers.templates4j.*;
 	public void write(int addr, short value) {
 		$template::state.write(addr,value);
 	}
-	public int address() { return $template::state.ip; }
+	public int address() { return $template::state.getIp(); }
 	public void func(CommonTree id) { $template::state.func(templateToken, id); }
 	public void func(CommonTree ns, CommonTree fn) { $template::state.func(templateToken, ns, fn); }
 	public void refAttr(CommonTree id) { $template::state.refAttr(templateToken, id); }
@@ -124,7 +124,7 @@ scope {
 }
 @init {
  	$template::state = new CompilationState(errMgr, name, input.getTokenStream());
-	$impl = $template::state.impl;
+	$impl = $template::state.getImpl();
  	if ( $template.size() == 1 ) outermostImpl = $impl;
 	$impl.defineFormalArgs($args); // make sure args are defined prior to compilation
 	if ( name!=null && name.startsWith(Compiler.SUBTEMPLATE_PREFIX) ) {
@@ -136,8 +136,9 @@ scope {
 }
 	:	chunk
 		{ // finish off the CompiledST result
-        if ( $template::state.stringtable!=null ) $impl.setStrings($template::state.stringtable.toArray());
-        $impl.setCodeSize($template::state.ip);
+        if ($template::state.getStringTable() != null) 
+        	$impl.setStrings($template::state.getStringTable().toArray());
+        $impl.setCodeSize($template::state.getIp());
 		}
 	;
 
@@ -163,7 +164,7 @@ singleElement
 
 	|	NEWLINE 
 		{
-		if ($template::state.ip > 0 || skippedLeadingNewline) 
+		if ($template::state.getIp() > 0 || skippedLeadingNewline) 
 			emit($NEWLINE, Bytecode.INSTR_NEWLINE); 
 		else 
 			skippedLeadingNewline = true; 
