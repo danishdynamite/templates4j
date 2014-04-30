@@ -18,7 +18,9 @@ import net.evilengineers.templates4j.extension.antlr.AntlrUtils;
 import net.evilengineers.templates4j.extension.antlr.FilterList;
 import net.evilengineers.templates4j.extension.antlr.ParseTreeModelAdapter;
 import net.evilengineers.templates4j.extension.antlr.XPathQueryFunction;
+import net.evilengineers.templates4j.misc.Coordinate;
 import net.evilengineers.templates4j.misc.STMessage;
+import net.evilengineers.templates4j.misc.STRuntimeMessage;
 import net.evilengineers.templates4j.spi.UserFunction;
 
 import org.antlr.v4.Tool;
@@ -363,6 +365,15 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 
 	@Override
 	public void runTimeError(STMessage msg) {
+		
+		if (msg instanceof STRuntimeMessage) {
+			Coordinate pos = ((STRuntimeMessage) msg).getSourceLocation();
+			if (msg.self.impl.getTemplateDefStartToken() != null)
+				pos = new Coordinate(pos.getLine() + msg.self.impl.getTemplateDefStartToken().getLine(), pos.getCharPosition());
+			
+			throw new SomethingWentWrongException(templateFile, pos.getLine(), pos.getCharPosition() + 1, "templateline " + msg.self.impl.getTemplateDefStartToken().getLine() + " - Runtime error: " + msg, msg.cause);
+		}
+		
 		if (msg.cause != null && msg.cause.getMessage() != null && msg.cause instanceof SomethingWentWrongException) {
 			throw (SomethingWentWrongException) msg.cause;
 		} else {
