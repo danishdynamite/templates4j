@@ -50,7 +50,7 @@ public class STLexerMessage extends STMessage {
 	@Override
 	public String toString() {
 		RecognitionException re = (RecognitionException) cause;
-		int line = re.line;
+		int line = re.line - 1;
 		int charPos = re.charPositionInLine;
 		if (templateToken != null) {
 			int templateDelimiterSize = 1;

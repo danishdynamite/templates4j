@@ -57,7 +57,7 @@ public class STGroupCompiletimeMessage extends STMessage {
 		int line = 0;
 		int charPos = -1;
 		if (token != null) {
-			line = token.getLine();
+			line = token.getLine() - 1;
 			charPos = token.getCharPositionInLine();
 		} else if (re != null) {
 			line = re.line;

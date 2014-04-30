@@ -753,7 +753,7 @@ public class TestGroups extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		ST st = group.getInstanceOf("a");
-		assertEquals("t.stg 1:15: Missing newline after newline escape <\\\\>" + newline, errors.toString());
+		assertEquals("t.stg 0:15: Missing newline after newline escape <\\\\>" + newline, errors.toString());
 		st.add("x", "parrt");
 		String expected = "";
 		String result = st.render();
@@ -766,7 +766,7 @@ public class TestGroups extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		ST st = group.getInstanceOf("a");
-		assertEquals("t.stg 1:15: Missing newline after newline escape <\\\\>" + newline, errors.toString());
+		assertEquals("t.stg 0:15: Missing newline after newline escape <\\\\>" + newline, errors.toString());
 		st.add("x", "parrt");
 		String expected = "";
 		String result = st.render();

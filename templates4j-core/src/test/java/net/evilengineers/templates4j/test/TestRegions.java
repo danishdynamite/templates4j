@@ -226,7 +226,7 @@ public class TestRegions extends BaseTest {
 		ErrorBuffer errors = new ErrorBuffer();
 		group.setListener(errors);
 		group.load();
-		String expected = "g.stg 1:3: missing ID at '('"+newline;
+		String expected = "g.stg 0:3: missing ID at '('"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}

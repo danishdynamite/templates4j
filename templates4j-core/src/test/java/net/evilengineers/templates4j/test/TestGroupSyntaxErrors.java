@@ -48,7 +48,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		//String expected = "t.stg 2:0: mismatched input 'foo' expecting STRING"+newline+"t.stg 2:3: required (...)+ loop did not match anything at input '('"+newline;
-		String expected = "t.stg 2:0: mismatched input 'foo' expecting STRING"+newline+"t.stg 2:3: missing EOF at '('"+newline;
+		String expected = "t.stg 1:0: mismatched input 'foo' expecting STRING"+newline+"t.stg 1:3: missing EOF at '('"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -63,7 +63,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		STGroup group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:7: mismatched input 'Super' expecting STRING"+newline;
+		String expected = "t.stg 0:7: mismatched input 'Super' expecting STRING"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -78,7 +78,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 2:0: missing template at '<EOF>'"+newline;
+		String expected = "t.stg 1:0: missing template at '<EOF>'"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -94,7 +94,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		String expected = "t.stg 1:11: missing final '}' in {...} anonymous template" +newline+
-						  "t.stg 1:10: no viable alternative at input '{'"+newline;
+						  "t.stg 0:10: no viable alternative at input '{'"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -109,7 +109,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:5: no viable alternative at input '::='"+newline;
+		String expected = "t.stg 0:5: no viable alternative at input '::='"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -140,7 +140,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:0: garbled template definition starting at 'foo'"+newline;
+		String expected = "t.stg 0:0: garbled template definition starting at 'foo'"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -155,7 +155,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:6: missing ID at ')'"+newline;
+		String expected = "t.stg 0:6: missing ID at ')'"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
@@ -171,8 +171,8 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		String expected =
-			"[t.stg 1:6: missing ID at ',', " +
-			"t.stg 1:7: missing ID at ')']";
+			"[t.stg 0:6: missing ID at ',', " +
+			"t.stg 0:7: missing ID at ')']";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
@@ -188,7 +188,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		String expected =
-			"[t.stg 1:6: no viable alternative at input 'b']";
+			"[t.stg 0:6: no viable alternative at input 'b']";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
@@ -234,7 +234,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:7: missing dictionary entry at ']']";
+		String expected = "[t.stg 0:7: missing dictionary entry at ']']";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
@@ -249,7 +249,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:11: missing value for key at ']']";
+		String expected = "[t.stg 0:11: missing value for key at ']']";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}
@@ -279,7 +279,7 @@ public class TestGroupSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "[t.stg 1:9: unterminated string, t.stg 1:9: missing template at '<EOF>']";
+		String expected = "[t.stg 1:9: unterminated string, t.stg 0:9: missing template at '<EOF>']";
 		String result = errors.errors.toString();
 		assertEquals(expected, result);
 	}

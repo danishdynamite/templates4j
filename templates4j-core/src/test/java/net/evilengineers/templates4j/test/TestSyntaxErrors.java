@@ -82,8 +82,8 @@ public class TestSyntaxErrors extends BaseTest {
 			assert false;
 		}
 		String result = errors.toString();
-		String expected = "test 1:7: invalid character '$'" +newline+
-			"test 1:7: invalid character '<EOF>'" +newline+
+		String expected = "test 0:7: invalid character '$'" +newline+
+			"test 0:7: invalid character '<EOF>'" +newline+
 			"test 0:7: premature EOF"+newline;
 		assertEquals(expected, result);
 	}
@@ -100,7 +100,7 @@ public class TestSyntaxErrors extends BaseTest {
 			assert false;
 		}
 		String result = errors.toString();
-		String expected = "test 1:4: invalid character '*'"+newline +
+		String expected = "test 0:4: invalid character '*'"+newline +
 						  "test 0:0: this doesn't look like a template: \"   <*>\""+newline;
 		assertEquals(expected, result);
 	}
@@ -117,8 +117,8 @@ public class TestSyntaxErrors extends BaseTest {
 			assert false;
 		}
 		String result = errors.toString();
-		String expected = "test 2:2: invalid escaped char: '<EOF>'" + newline +
-						  "test 2:2: expecting '>', found '<EOF>'"+newline;
+		String expected = "test 1:2: invalid escaped char: '<EOF>'" + newline +
+						  "test 1:2: expecting '>', found '<EOF>'"+newline;
 		assertEquals(expected, result);
 	}
 
@@ -207,7 +207,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group = new STGroupFile(tmpdir+"/"+"t.stg");
 		group.setListener(errors);
 		group.load(); // force load
-		String expected = "t.stg 1:20: EOF in string"+newline +
+		String expected = "t.stg 0:20: EOF in string"+newline +
 						  "t.stg 0:20: premature EOF"+newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
@@ -224,7 +224,7 @@ public class TestSyntaxErrors extends BaseTest {
 		group.setListener(errors);
 		group.load(); // force load
 		String expected =
-			"t.stg 1:20: Nonterminated comment starting at 1:1: '!>' missing" +newline;
+			"t.stg 0:20: Nonterminated comment starting at 1:1: '!>' missing" +newline;
 		String result = errors.toString();
 		assertEquals(expected, result);
 	}
