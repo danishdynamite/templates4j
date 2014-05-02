@@ -93,6 +93,8 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	protected Boolean printSyntaxTree;
 
 	protected Log log;
+
+	protected ParserInterpreter parser = null;
 	
 	public void execute() throws MojoExecutionException {
 		try {
@@ -141,7 +143,6 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	
 			// Read grammar and create parser
 			Grammar grammer = null;
-			ParserInterpreter parser = null;
 			ParseTree grammarParseTree = null;
 			if (grammarFile != null) {
 				Tool antrl = new Tool();
@@ -312,6 +313,10 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	
 	public MavenProject getProject() {
 		return project;
+	}
+	
+	public Parser getParser() {
+		return parser;
 	}
 	
 	public Date getBuildTime() {

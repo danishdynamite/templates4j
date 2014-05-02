@@ -4,10 +4,13 @@ grammar AntlrXPath;
 
 query: absoluteQuery | relativeQuery;
 
-absoluteQuery: (Next queryElement)+
-             | Any queryElement (Next queryElement)*;
+absoluteQuery: (nextQueryElement)+
+             | anyQueryElement (nextQueryElement)*;
 
-relativeQuery: queryElement (Next queryElement)*;
+relativeQuery: queryElement (nextQueryElement)*;
+
+anyQueryElement: Any queryElement;
+nextQueryElement: Next queryElement;
 
 queryElement: axisSpecifier? name ('[' condition ']')?
 			| axisSpecifier;
