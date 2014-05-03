@@ -188,7 +188,7 @@ public class Interpreter {
 					Object[] args = ((ArrayList<?>) operands[sp]).toArray();
 					for (int i = 0; i < args.length; i++)
 						if (args[i] instanceof ST)
-							args[i] = toString(out, scope, operands[sp]);
+							args[i] = toString(out, scope, args[i]);
 					operands[sp] = fn.doExecute(args);
 				}
 				prevOpcode = opcode;
