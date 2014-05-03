@@ -14,10 +14,8 @@ import net.evilengineers.templates4j.ST;
 import net.evilengineers.templates4j.STErrorListener;
 import net.evilengineers.templates4j.STGroup;
 import net.evilengineers.templates4j.STGroupFile;
-import net.evilengineers.templates4j.extension.antlr.AntlrUtils;
-import net.evilengineers.templates4j.extension.antlr.FilterList;
-import net.evilengineers.templates4j.extension.antlr.ParseTreeModelAdapter;
-import net.evilengineers.templates4j.extension.antlr.XPathQueryFunction;
+import net.evilengineers.templates4j.extension.antlr4.AntlrUtils;
+import net.evilengineers.templates4j.extension.antlr4.ParserInterpreterProvider;
 import net.evilengineers.templates4j.misc.STMessage;
 import net.evilengineers.templates4j.spi.UserFunction;
 
@@ -28,7 +26,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.LexerInterpreter;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserInterpreter;
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
@@ -94,8 +91,6 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 
 	protected Log log;
 
-	protected ParserInterpreter parser = null;
-	
 	public void execute() throws MojoExecutionException {
 		try {
 			log = getLog();
@@ -141,6 +136,11 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			if (inputFile != null)
 				ctx.removeMessages(inputFile);
 	
+			Context context = new Context();
+			context.project = project;
+			context.templateFile = templateFile;
+			context.inputFile = inputFile;
+			
 			// Read grammar and create parser
 			Grammar grammer = null;
 			ParseTree grammarParseTree = null;
@@ -159,21 +159,19 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 				}
 				
 				info("Creating parser.");
-				parser = grammer.createParserInterpreter(new CommonTokenStream(lexEngine));
-				parser.addErrorListener(this);
+				context.parser = grammer.createParserInterpreter(new CommonTokenStream(lexEngine));
+				context.parser.addErrorListener(this);
 			
-				grammarParseTree = parser.parse(grammarNameRoot != null ? grammer.getRule(grammarNameRoot).index : 0);
+				grammarParseTree = context.parser.parse(grammarNameRoot != null ? grammer.getRule(grammarNameRoot).index : 0);
 				if (printSyntaxTree)
-					info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, parser.getRuleNames(), parser.getTokenNames()));
+					info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, context.parser.getRuleNames(), context.parser.getTokenNames()));
 			}
 			
 			// Setup the template interpreter
 			Interpreter.trace = traceTemplateInterpreter;
 			for (UserFunction fn : Interpreter.autoregisterUserFunctions())
-				info("Autoregistered user-function: " + fn.getName() + " -> " + fn);
+				info("Autoregistered user-function: " + fn.getFullName() + " -> " + fn);
 			
-			Interpreter.registerUserFunction("antlr4::xpath", new XPathQueryFunction(parser));
-
 			// Read template / templategroup
 			STGroup templateGroup;
 			ST template;
@@ -204,13 +202,9 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 				throw new SomethingWentWrongException(templateFile, 1, 1, "Unknown template extension for file: " + templateFile.getName());
 			}
 			
-			// Register model adapters
-			templateGroup.registerModelAdaptor(ParserRuleContext.class, new ParseTreeModelAdapter(parser));
-			templateGroup.registerModelAdaptor(FilterList.class, new ParseTreeModelAdapter(parser));
-			
-			template.add("caller", this);
+			template.add("ctx", context);
 			if (grammarParseTree != null)
-				template.add("parsetree", grammarParseTree);
+				template.add("model", grammarParseTree);
 			
 			String data = template.render();
 	
@@ -254,7 +248,7 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			info("Refreshing " + outputDirectory.getAbsoluteFile());
 			ctx.refresh(outputDirectory.getAbsoluteFile());
 	
-			info("Done!!");
+			info("Done!");
 			
 		} catch (SomethingWentWrongException e) {
 			if (e.getCause() != null && e.getCause() instanceof SomethingWentWrongException) 
@@ -303,30 +297,6 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 		}
 	}	
 
-	public File getTemplateFile() {
-		return templateFile;
-	}
-	
-	public File getInputFile() {
-		return inputFile;
-	}
-	
-	public MavenProject getProject() {
-		return project;
-	}
-	
-	public Parser getParser() {
-		return parser;
-	}
-	
-	public Date getBuildTime() {
-		if (getProject().getProjectBuildingRequest() != null && getProject().getProjectBuildingRequest().getBuildStartTime() != null)
-			return getProject().getProjectBuildingRequest().getBuildStartTime();
-
-		// The data above is not available during an m2e-build, so lets provide a reasonable default: 
-		return new Date();
-	}
-	
 	private final void error(CharSequence s, Throwable t) {
 		if (t == null) {
 			log.error(name + ": " + s);
@@ -442,6 +412,38 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 
 		public int getPos() {
 			return pos;
+		}
+	}
+	
+	public class Context implements ParserInterpreterProvider {
+		private ParserInterpreter parser;
+		private MavenProject project;
+		private File templateFile;
+		private File inputFile;
+		
+		@Override
+		public ParserInterpreter getParserInterpreter() {
+			return parser;
+		}
+		
+		public File getTemplateFile() {
+			return templateFile;
+		}
+		
+		public File getInputFile() {
+			return inputFile;
+		}
+		
+		public MavenProject getProject() {
+			return project;
+		}
+		
+		public Date getBuildTime() {
+			if (getProject().getProjectBuildingRequest() != null && getProject().getProjectBuildingRequest().getBuildStartTime() != null)
+				return getProject().getProjectBuildingRequest().getBuildStartTime();
+
+			// The data above is not available during an m2e-build, so lets provide a reasonable default: 
+			return new Date();
 		}
 	}
 }

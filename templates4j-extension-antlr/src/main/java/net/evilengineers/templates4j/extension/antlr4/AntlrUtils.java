@@ -1,4 +1,4 @@
-package net.evilengineers.templates4j.extension.antlr;
+package net.evilengineers.templates4j.extension.antlr4;
 
 import java.util.ArrayList;
 import java.util.List;

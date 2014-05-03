@@ -44,5 +44,13 @@ public abstract class UserFunction {
 		return toString;
 	}
 
+	public String getNamespace() {
+		return null;
+	}
+	
+	public String getFullName() {
+		return getNamespace() == null ? getName() : (getNamespace() + "::" + getName());
+	}
+	
 	public abstract String getName();	
 }

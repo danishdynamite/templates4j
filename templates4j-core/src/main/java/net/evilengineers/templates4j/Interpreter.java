@@ -1410,7 +1410,7 @@ public class Interpreter {
 			Iterator<UserFunction> i = loader.iterator();
 			while (i.hasNext()) {
 				UserFunction fn = i.next();
-				registerUserFunction(fn.getName(), fn);
+				registerUserFunction(fn.getFullName(), fn);
 				justLoaded.add(fn);
 			}
 		}

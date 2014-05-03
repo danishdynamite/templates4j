@@ -2,27 +2,34 @@ grammar AntlrXPath;
 
 /* Grammar rules */
 
-query: absoluteQuery | relativeQuery;
+query: 
+		queryStep+;
 
-absoluteQuery: (nextQueryElement)+
-             | anyQueryElement (nextQueryElement)*;
+queryStep:
+		Any name ('[' condition ']')?
+	  | Next axisSpecifier? name ('[' condition ']')?
+	  | Next axisSpecifier;
 
-relativeQuery: queryElement (nextQueryElement)*;
+axisSpecifier: 
+		axisName '::';
 
-anyQueryElement: Any queryElement;
-nextQueryElement: Next queryElement;
+axisName: 
+		'child'
+	  | 'parent'
+	  | 'descendant'
+	  | 'descendant-or-self';
 
-queryElement: axisSpecifier? name ('[' condition ']')?
-			| axisSpecifier;
+name: 
+		Name;
 
-axisSpecifier: axisName '::';
-axisName: 'parent';
+condition: 
+		function '()' operator StringLiteral;
 
-name: Name;
+operator: 
+		'=';
 
-condition: function '()' operator StringLiteral;
-operator: '=';
-function: 'text';
+function: 
+		'text';
 
 
 /* Lexer tokens */

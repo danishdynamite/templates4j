@@ -1,2 +1,4 @@
 net.evilengineers.templates4j.extension.strings.ToLowercaseStringFunction
 net.evilengineers.templates4j.extension.strings.ToUppercaseStringFunction
+net.evilengineers.templates4j.extension.strings.ToJavaClassName
+net.evilengineers.templates4j.extension.strings.ToJavaEnumName
