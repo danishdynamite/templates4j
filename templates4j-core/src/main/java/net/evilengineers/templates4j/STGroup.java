@@ -127,6 +127,7 @@ public class STGroup {
 		registry.put(Object.class, new ObjectModelAdapter());
 		registry.put(ST.class, new STModelAdapter());
 		registry.put(Map.class, new MapModelAdapter());
+		registry.put(List.class, new ListModelAdapter());
 		registry.put(Aggregate.class, new AggregateModelAdapter());
 		adaptors = Collections.synchronizedMap(registry);
 	}
