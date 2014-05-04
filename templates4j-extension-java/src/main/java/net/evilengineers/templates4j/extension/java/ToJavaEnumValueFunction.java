@@ -6,12 +6,18 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ToJavaEnumValueFunction extends UserFunction {
 	@Override
-	public String getName() {
-		return "toJavaClassName";
+	public String getNamespace() {
+		String ns = getClass().getPackage().getName();
+		return ns.substring(ns.lastIndexOf('.') + 1);
 	}
 
-	public Object execute(String val) {
-		String s = val.replace("-", "").replace(".", "");
+	@Override
+	public String getName() {
+		return "toJavaEnumName";
+	}
+
+	public Object execute(String arg) {
+		String s = arg.toString().replace("-", "").replace(".", "");
 		StringBuilder sb = new StringBuilder();
 		String[] tokens = StringUtils.splitByCharacterTypeCamelCase(s);
 		for (int i = 0; i < tokens.length; i++) {

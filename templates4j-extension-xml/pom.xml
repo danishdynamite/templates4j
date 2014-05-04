@@ -7,10 +7,10 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>templates4j-extension-java</artifactId>
+	<artifactId>templates4j-extension-xml</artifactId>
 	<packaging>jar</packaging>
 
-	<name>Templates4J extensions for Java</name>
+	<name>Templates4J extensions for XML</name>
 	<description>
     </description>
 
@@ -52,11 +52,6 @@
 		<dependency>
 			<groupId>net.evilengineers.templates4j</groupId>
 			<artifactId>templates4j-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.3</version>
 		</dependency>
 	</dependencies>
 

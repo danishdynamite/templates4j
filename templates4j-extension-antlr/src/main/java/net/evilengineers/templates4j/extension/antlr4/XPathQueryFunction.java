@@ -25,8 +25,7 @@ public class XPathQueryFunction extends UserFunction {
 	@Override
 	public String getNamespace() {
 		String ns = getClass().getPackage().getName();
-		ns = ns.substring(ns.lastIndexOf('.') + 1);
-		return ns;
+		return ns.substring(ns.lastIndexOf('.') + 1);
 	}
 	
 	@Override

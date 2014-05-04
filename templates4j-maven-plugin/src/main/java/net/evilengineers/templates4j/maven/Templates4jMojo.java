@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import net.evilengineers.templates4j.Interpreter;
 import net.evilengineers.templates4j.ST;
 import net.evilengineers.templates4j.STErrorListener;
@@ -45,6 +48,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.Scanner;
 
@@ -141,6 +146,8 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			context.templateFile = templateFile;
 			context.inputFile = inputFile;
 			
+			Object model = null;
+			
 			// Read grammar and create parser
 			Grammar grammer = null;
 			ParseTree grammarParseTree = null;
@@ -165,6 +172,15 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 				grammarParseTree = context.parser.parse(grammarNameRoot != null ? grammer.getRule(grammarNameRoot).index : 0);
 				if (printSyntaxTree)
 					info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, context.parser.getRuleNames(), context.parser.getTokenNames()));
+				model = grammarParseTree;
+
+			} else if (inputFile != null && inputFile.getName().endsWith(".xml")) {
+				try {
+					Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputFile);
+					model = doc;
+				} catch (SAXException | IOException | ParserConfigurationException e) {
+					throw new SomethingWentWrongException(inputFile, 1, 1, "Error reading inputfile: ", e);
+				}
 			}
 			
 			// Setup the template interpreter
@@ -203,8 +219,8 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			}
 			
 			template.add("ctx", context);
-			if (grammarParseTree != null)
-				template.add("model", grammarParseTree);
+			if (model != null)
+				template.add("model", model);
 			
 			String data = template.render();
 	
