@@ -19,11 +19,11 @@ axisName:
 	  | 'descendant'
 	  | 'descendant-or-self';
 
-name: 
+name:
 		Name;
 
 condition: 
-		function '()' operator StringLiteral;
+		function '(' arg? ')' operator StringLiteral;
 
 operator: 
 		'=';
@@ -31,10 +31,13 @@ operator:
 function: 
 		'text';
 
+arg:
+		Number;
 
 /* Lexer tokens */
 
 Name: Char (Char | Numeric)*;
+Number: Numeric+;
 StringLiteral: '\'' StringCharacters? '\'';
 Any: '//';
 Next: '/';

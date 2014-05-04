@@ -88,8 +88,16 @@ public class XPathQueryFunction extends UserFunction {
 						ParseTree candidate = i.next();
 						if ("text".equals(condition.function().getText()) && "=".equals(condition.operator().getText())) {
 							String val = Misc.strip(condition.StringLiteral().getText(), 1);
-							if (!candidate.getText().equals(val))
-								i.remove();
+							
+							if (condition.arg() != null) {
+								int tokenIdx = Integer.parseInt(condition.arg().getText());
+								if (!candidate.getChild(tokenIdx).getText().equals(val))
+									i.remove();
+								
+							} else {
+								if (!candidate.getText().equals(val))
+									i.remove();
+							}
 						} else {
 							i.remove();
 						}
