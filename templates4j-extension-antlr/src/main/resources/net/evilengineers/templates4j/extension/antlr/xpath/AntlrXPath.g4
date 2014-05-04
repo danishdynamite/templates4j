@@ -20,7 +20,7 @@ axisName:
 	  | 'descendant-or-self';
 
 name:
-		Name;
+		Name | '*';
 
 condition: 
 		function '(' arg? ')' operator StringLiteral;
