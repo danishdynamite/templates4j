@@ -48,10 +48,11 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.sonatype.plexus.build.incremental.BuildContext;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.Scanner;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Mojo(name="execute-templates", defaultPhase=LifecyclePhase.GENERATE_SOURCES, threadSafe=false, requiresDependencyResolution=ResolutionScope.COMPILE, requiresProject=true, instantiationStrategy = InstantiationStrategy.PER_LOOKUP)
 public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, STErrorListener, ANTLRErrorListener {
@@ -176,9 +177,15 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 
 			} else if (inputFile != null && inputFile.getName().endsWith(".xml")) {
 				try {
-					Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputFile);
-					model = doc;
+					model = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputFile);
 				} catch (SAXException | IOException | ParserConfigurationException e) {
+					throw new SomethingWentWrongException(inputFile, 1, 1, "Error reading inputfile: ", e);
+				}
+
+			} else if (inputFile != null && inputFile.getName().endsWith(".json")) {
+				try {
+					model = new ObjectMapper().readTree(inputFile);
+				} catch (IOException e) {
 					throw new SomethingWentWrongException(inputFile, 1, 1, "Error reading inputfile: ", e);
 				}
 			}

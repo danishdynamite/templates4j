@@ -21,6 +21,7 @@
 		<module>templates4j-extension-java</module>
 		<module>templates4j-extension-strings</module>
 		<module>templates4j-extension-xml</module>
+		<module>templates4j-extension-json</module>
 		<module>templates4j-maven-plugin</module>
 	</modules>
 
