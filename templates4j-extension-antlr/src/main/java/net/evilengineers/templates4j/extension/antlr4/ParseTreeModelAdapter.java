@@ -8,6 +8,7 @@ import net.evilengineers.templates4j.ModelAdapter;
 import net.evilengineers.templates4j.ST;
 import net.evilengineers.templates4j.misc.ObjectModelAdapter;
 import net.evilengineers.templates4j.misc.STNoSuchPropertyException;
+import static net.evilengineers.templates4j.misc.AntlrUtils.*;
 
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -23,7 +24,7 @@ public class ParseTreeModelAdapter implements ModelAdapter {
 	@Override
 	public Object getProperty(Interpreter interpreter, ST self, Object o, Object property, String propertyName) throws STNoSuchPropertyException {
 		if (o instanceof ParserRuleContext) {
-			List<ParseTree> r = AntlrUtils.filterByRule(((ParserRuleContext) o).children, propertyName, rules);
+			List<ParseTree> r = filterByRule(((ParserRuleContext) o).children, propertyName, rules);
 			if (!r.isEmpty()) {
 				return r.get(0);
 			} else {

@@ -17,9 +17,9 @@ import net.evilengineers.templates4j.ST;
 import net.evilengineers.templates4j.STErrorListener;
 import net.evilengineers.templates4j.STGroup;
 import net.evilengineers.templates4j.STGroupFile;
-import net.evilengineers.templates4j.extension.antlr4.AntlrUtils;
 import net.evilengineers.templates4j.extension.antlr4.ParseTreeModelAdapter;
 import net.evilengineers.templates4j.extension.antlr4.ParserInterpreterProvider;
+import net.evilengineers.templates4j.misc.AntlrUtils;
 import net.evilengineers.templates4j.misc.STMessage;
 import net.evilengineers.templates4j.spi.UserFunction;
 
@@ -151,29 +151,29 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			Object model = null;
 			
 			// Read grammar and create parser
-			Grammar grammer = null;
+			Grammar grammar = null;
 			ParseTree grammarParseTree = null;
 			if (grammarFile != null) {
 				Tool antrl = new Tool();
 				antrl.addListener(this);
-				grammer = antrl.loadGrammar(grammarFile.getAbsolutePath());
+				grammar = antrl.loadGrammar(grammarFile.getAbsolutePath());
 				info("Read grammar from: " + grammarFile.getName());
 
 				info("Creating lexer.");
 				LexerInterpreter lexEngine;
 				try {
-					lexEngine = grammer.createLexerInterpreter(new ANTLRFileStream(inputFile.getAbsolutePath(), encoding));
+					lexEngine = grammar.createLexerInterpreter(new ANTLRFileStream(inputFile.getAbsolutePath(), encoding));
 				} catch (IOException e) {
 					throw new SomethingWentWrongException(inputFile, 1, 1, "Error reading inputfile: " + e.getMessage(), e);
 				}
 				
 				info("Creating parser.");
-				context.parser = grammer.createParserInterpreter(new CommonTokenStream(lexEngine));
+				context.parser = grammar.createParserInterpreter(new CommonTokenStream(lexEngine));
 				context.parser.addErrorListener(this);
 			
-				grammarParseTree = context.parser.parse(grammarNameRoot != null ? grammer.getRule(grammarNameRoot).index : 0);
+				grammarParseTree = context.parser.parse(grammarNameRoot != null ? grammar.getRule(grammarNameRoot).index : 0);
 				if (printSyntaxTree)
-					info("The AST for the grammar is:\n" + AntlrUtils.toStringTree(grammarParseTree, context.parser.getRuleNames(), context.parser.getTokenNames()));
+					info("The AST for the grammar is:\n" + AntlrUtils.toPrettyStringTree(grammarParseTree, context.parser.getRuleNames(), context.parser.getTokenNames()));
 				model = grammarParseTree;
 
 			} else if (inputFile != null && inputFile.getName().endsWith(".xml")) {

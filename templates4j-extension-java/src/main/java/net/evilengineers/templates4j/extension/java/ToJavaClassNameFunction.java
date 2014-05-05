@@ -13,7 +13,7 @@ public class ToJavaClassNameFunction extends UserFunction {
 
 	@Override
 	public String getName() {
-		return "toJavaClassName";
+		return "toClassName";
 	}
 
 	public Object execute(String arg) {

@@ -33,13 +33,17 @@ public class XPathQueryFunction extends UserFunction {
 		return "xpath";
 	}
 
-	public Object execute(JsonNode model, String path) throws XPathExpressionException {
+	protected JsonXPathParser createParser(String query) {
+		return new JsonXPathParser(new CommonTokenStream(new JsonXPathLexer(new ANTLRInputStream(query))));
+	}
+	
+	public Object execute(JsonNode model, String query) throws XPathExpressionException {
 		final List<Node> nodes = new ArrayList<>();
 
 		// Add fake root node
 		nodes.add(new Node("", model, null));
 
-		JsonXPathParser xpathParser = new JsonXPathParser(new CommonTokenStream(new JsonXPathLexer(new ANTLRInputStream(path))));
+		JsonXPathParser xpathParser = createParser(query);
 		xpathParser.addParseListener(new JsonXPathBaseListener() {
 			@Override
 			public void exitQueryStep(QueryStepContext ctx) {

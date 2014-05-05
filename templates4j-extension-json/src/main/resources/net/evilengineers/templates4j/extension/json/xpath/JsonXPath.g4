@@ -7,8 +7,7 @@ query:
 
 queryStep:
 		Any name ('[' condition ']')?
-	  | Next axisSpecifier? name ('[' condition ']')?
-	  | Next axisSpecifier;
+	  | Next axisSpecifier? (name ('[' condition ']')?)?;
 
 axisSpecifier: 
 		axisName '::';
@@ -23,7 +22,7 @@ name:
 		Name | '*';
 
 condition: 
-		function '()' operator StringLiteral;
+		function '(' ')' operator StringLiteral;
 
 operator: 
 		'=';

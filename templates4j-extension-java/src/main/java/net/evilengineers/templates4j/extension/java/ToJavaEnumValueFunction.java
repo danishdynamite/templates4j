@@ -13,7 +13,7 @@ public class ToJavaEnumValueFunction extends UserFunction {
 
 	@Override
 	public String getName() {
-		return "toJavaEnumName";
+		return "toEnumName";
 	}
 
 	public Object execute(String arg) {

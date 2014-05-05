@@ -33,13 +33,16 @@ public class XPathQueryFunction extends UserFunction {
 		return "xpath";
 	}
 
-	public Object execute(ParserInterpreterProvider ctx, final ParseTree model, String path) {
+	protected AntlrXPathParser createParser(String query) {
+		return new AntlrXPathParser(new CommonTokenStream(new AntlrXPathLexer(new ANTLRInputStream(query))));
+	}
+	
+	public Object execute(ParserInterpreterProvider ctx, final ParseTree model, String query) {
 		final Parser parser = ctx.getParserInterpreter();
 		
 		final List<ParseTree> nodes = new ArrayList<>();
 
-		AntlrXPathParser xpathParser = new AntlrXPathParser(new CommonTokenStream(new AntlrXPathLexer(new ANTLRInputStream(path))));
-		
+		AntlrXPathParser xpathParser = createParser(query);
 		xpathParser.addParseListener(new AntlrXPathBaseListener() {
 			boolean first = true;
 			
@@ -128,7 +131,7 @@ public class XPathQueryFunction extends UserFunction {
 		return nodes;
 	}
 	
-	private static List<ParseTree> getChildren(List<ParseTree> elems) {
+	protected static List<ParseTree> getChildren(List<ParseTree> elems) {
 		List<ParseTree> r = new ArrayList<>();
 		for (ParseTree elem : elems)
 			for (int i = 0; i < elem.getChildCount(); i++)
@@ -136,7 +139,7 @@ public class XPathQueryFunction extends UserFunction {
 		return r;
 	}
 
-	private static List<ParseTree> getParents(List<ParseTree> elems) {
+	protected static List<ParseTree> getParents(List<ParseTree> elems) {
 		List<ParseTree> r = new ArrayList<>();
 		for (ParseTree elem : elems)
 			if (elem.getParent() != null)
@@ -144,7 +147,7 @@ public class XPathQueryFunction extends UserFunction {
 		return r;
 	}
 	
-	private static List<ParseTree> getDescendants(List<ParseTree> elems) {
+	protected static List<ParseTree> getDescendants(List<ParseTree> elems) {
 		List<ParseTree> r = getChildren(elems);
 		if (r.size() > 0)
 			r.addAll(getDescendants(r));

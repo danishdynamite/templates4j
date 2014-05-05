@@ -1,4 +1,4 @@
-package net.evilengineers.templates4j.extension.antlr4;
+package net.evilengineers.templates4j.misc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +13,14 @@ import org.antlr.v4.runtime.tree.Tree;
 
 public final class AntlrUtils {
 	public static String toStringTree(Tree t, String[] ruleNames, String[] tokenNames) {
-		return toStringTree(t, ruleNames, tokenNames, 0);
+		return toStringTree(t, ruleNames, tokenNames, 0, false);
+	}
+	
+	public static String toPrettyStringTree(Tree t, String[] ruleNames, String[] tokenNames) {
+		return toStringTree(t, ruleNames, tokenNames, 0, true);
 	}
 
-	public static String toStringTree(Tree t, String[] ruleNames, String[] tokenNames, int indent) {
+	private static String toStringTree(Tree t, String[] ruleNames, String[] tokenNames, int indent, boolean prettyPrint) {
 		String s = Utils.escapeWhitespace(getNodeText(t, ruleNames, tokenNames), false);
 		if (t.getChildCount() == 0)
 			return s;
@@ -28,23 +32,25 @@ public final class AntlrUtils {
 
 		boolean inlined = true;
 
-		for (int i = 0; i < t.getChildCount(); i++) {
-			if (t.getChild(i).getChildCount() > 1) {
-				inlined = false;
+		if (prettyPrint) {
+			for (int i = 0; i < t.getChildCount(); i++) {
+				if (t.getChild(i).getChildCount() > 1) {
+					inlined = false;
+				}
 			}
 		}
-
+		
 		for (int i = 0; i < t.getChildCount(); i++) {
 			if (inlined) {
 				if (i > 0)
 					buf.append(" ");
-				buf.append(toStringTree(t.getChild(i), ruleNames, tokenNames, indent + 1));
+				buf.append(toStringTree(t.getChild(i), ruleNames, tokenNames, indent + 1, prettyPrint));
 				inlined = true;
 			} else {
 				buf.append("\n");
 				for (int k = 0; k < indent + 1; k++)
 					buf.append("    ");
-				buf.append(toStringTree(t.getChild(i), ruleNames, tokenNames, indent + 1));
+				buf.append(toStringTree(t.getChild(i), ruleNames, tokenNames, indent + 1, prettyPrint));
 				inlined = false;
 			}
 		}
