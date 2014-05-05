@@ -60,7 +60,7 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 	
 	protected String name = "[Template4J-plugin]";
 	
-	@Parameter(property = "project.build.sourceEncoding")
+	@Parameter(property = "project.build.sourceEncoding", required=true, defaultValue="UTF-8")
 	protected String encoding;
 	
 	@Component
