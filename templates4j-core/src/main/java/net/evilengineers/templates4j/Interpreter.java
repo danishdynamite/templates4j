@@ -1135,8 +1135,8 @@ public class Interpreter {
 			i = ((Object[]) v).length;
 		else if (v.getClass().isArray())
 			i = Array.getLength(v);
-		else if (v instanceof Iterator) {
-			Iterator<?> it = (Iterator<?>) v;
+		else if (v instanceof Iterator<?> || v instanceof Iterable<?>) {
+			Iterator<?> it = v instanceof Iterator<?> ? ((Iterator<?>) v) : ((Iterable<?>) v).iterator();
 			i = 0;
 			while (it.hasNext()) {
 				it.next();
@@ -1178,8 +1178,8 @@ public class Interpreter {
 		Iterator<?> iter = null;
 		if (o == null)
 			return null;
-		if (o instanceof Collection)
-			iter = ((Collection<?>) o).iterator();
+		if (o instanceof Iterable<?>)
+			iter = ((Iterable<?>) o).iterator();
 		else if (o instanceof Object[])
 			iter = Arrays.asList((Object[]) o).iterator();
 		else if (o.getClass().isArray())
@@ -1218,8 +1218,10 @@ public class Interpreter {
 			return ((Collection<?>) a).size() > 0;
 		if (a instanceof Map)
 			return ((Map<?, ?>) a).size() > 0;
-		if (a instanceof Iterator)
+		if (a instanceof Iterator<?>)
 			return ((Iterator<?>) a).hasNext();
+		if (a instanceof Iterable<?>)
+			return ((Iterable<?>) a).iterator().hasNext();
 		return true;  // any other non-null object, return true--it's present
 	}
 
