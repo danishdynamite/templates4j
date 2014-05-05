@@ -18,6 +18,7 @@ import net.evilengineers.templates4j.STErrorListener;
 import net.evilengineers.templates4j.STGroup;
 import net.evilengineers.templates4j.STGroupFile;
 import net.evilengineers.templates4j.extension.antlr4.AntlrUtils;
+import net.evilengineers.templates4j.extension.antlr4.ParseTreeModelAdapter;
 import net.evilengineers.templates4j.extension.antlr4.ParserInterpreterProvider;
 import net.evilengineers.templates4j.misc.STMessage;
 import net.evilengineers.templates4j.spi.UserFunction;
@@ -194,7 +195,7 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			Interpreter.trace = traceTemplateInterpreter;
 			for (UserFunction fn : Interpreter.autoregisterUserFunctions())
 				info("Autoregistered user-function: " + fn.getFullName() + " -> " + fn);
-			
+
 			// Read template / templategroup
 			STGroup templateGroup;
 			ST template;
@@ -224,7 +225,10 @@ public class Templates4jMojo extends AbstractMojo implements ANTLRToolListener, 
 			} else {
 				throw new SomethingWentWrongException(templateFile, 1, 1, "Unknown template extension for file: " + templateFile.getName());
 			}
-			
+
+			if (grammarFile != null)
+				templateGroup.registerModelAdaptor(ParseTree.class, new ParseTreeModelAdapter(context.parser));
+
 			template.add("ctx", context);
 			if (model != null)
 				template.add("model", model);
