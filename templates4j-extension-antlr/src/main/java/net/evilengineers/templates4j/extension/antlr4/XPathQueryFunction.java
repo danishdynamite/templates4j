@@ -33,22 +33,35 @@ public class XPathQueryFunction extends UserFunction {
 		return "xpath";
 	}
 
-	public Object execute(ParserInterpreterProvider ctx, ParseTree model, String path) {
+	public Object execute(ParserInterpreterProvider ctx, final ParseTree model, String path) {
 		final Parser parser = ctx.getParserInterpreter();
 		
 		final List<ParseTree> nodes = new ArrayList<>();
 
-		ParserRuleContext fakeroot = new ParserRuleContext();
-		fakeroot.children = Arrays.asList(model);
-		nodes.add(fakeroot);
-
 		AntlrXPathParser xpathParser = new AntlrXPathParser(new CommonTokenStream(new AntlrXPathLexer(new ANTLRInputStream(path))));
 		
 		xpathParser.addParseListener(new AntlrXPathBaseListener() {
+			boolean first = true;
+			
 			@Override
 			public void exitQueryStep(QueryStepContext ctx) {
 				List<ParseTree> candidates = new ArrayList<>();
 
+				// The initial model is setup up differently depending on type of query (absolute or relative) 
+				if (first) {
+					if (ctx.Next() == null && ctx.Any() == null) {
+						nodes.add(model);
+					} else {
+						ParseTree t = model;
+						while (t.getParent() != null)
+							t = t.getParent();
+						ParserRuleContext fakeroot = new ParserRuleContext();
+						fakeroot.children = Arrays.asList(t);
+						nodes.add(fakeroot);
+					}
+					first = false;
+				}
+				
 				// Candidate selection from axis
 				String axis = ctx.Any() != null ? "descendant-or-self" : "child";
 				if (ctx.axisSpecifier() != null)

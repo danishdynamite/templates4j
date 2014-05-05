@@ -8,7 +8,9 @@ query:
 queryStep:
 		Any name ('[' condition ']')?
 	  | Next axisSpecifier? name ('[' condition ']')?
-	  | Next axisSpecifier;
+	  | Next axisSpecifier
+	  | {_input.index() == 0}?   // relative path; only valid as the first step 
+		axisSpecifier? name ('[' condition ']')?;
 
 axisSpecifier: 
 		axisName '::';
