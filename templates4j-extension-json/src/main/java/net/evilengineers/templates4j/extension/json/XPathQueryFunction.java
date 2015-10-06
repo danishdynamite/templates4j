@@ -40,7 +40,6 @@ public class XPathQueryFunction extends UserFunction {
 	public Object execute(JsonNode model, String query) throws XPathExpressionException {
 		final List<Node> nodes = new ArrayList<>();
 
-		// Add fake root node
 		nodes.add(new Node("", model, null));
 
 		JsonXPathParser xpathParser = createParser(query);
@@ -61,8 +60,8 @@ public class XPathQueryFunction extends UserFunction {
 				} else if ("descendant".equals(axis)) {
 					candidates = getDescendants(nodes);
 				} else if ("descendant-or-self".equals(axis)) {
-					candidates = getDescendants(nodes);
 					candidates.addAll(nodes);
+					candidates.addAll(getDescendants(nodes));
 				}
 
 				// Rule filtering
@@ -124,16 +123,24 @@ public class XPathQueryFunction extends UserFunction {
 	private static List<Node> getChildren(List<Node> nodes) {
 		List<Node> r = new ArrayList<>();
 		for (Node node : nodes) {
-			Iterator<Map.Entry<String, JsonNode>> i = node.node.fields();
-			while (i.hasNext()) {
-				Map.Entry<String, JsonNode> entry = i.next();
-				if (entry.getValue() instanceof ArrayNode) {
-					Iterator<JsonNode> k = entry.getValue().elements();
-					while (k.hasNext()) {
-						r.add(new Node(entry.getKey(), k.next(), node));
+			if (node.node instanceof ArrayNode) {
+				Iterator<JsonNode> k = node.node.elements();
+				while (k.hasNext()) {
+					r.add(new Node("", k.next(), node));
+				}
+				
+			} else {
+				Iterator<Map.Entry<String, JsonNode>> i = node.node.fields();
+				while (i.hasNext()) {
+					Map.Entry<String, JsonNode> entry = i.next();
+					if (entry.getValue() instanceof ArrayNode) {
+						Iterator<JsonNode> k = entry.getValue().elements();
+						while (k.hasNext()) {
+							r.add(new Node(entry.getKey(), k.next(), node));
+						}
+					} else {
+						r.add(new Node(entry.getKey(), entry.getValue(), node));
 					}
-				} else {
-					r.add(new Node(entry.getKey(), entry.getValue(), node));
 				}
 			}
 		}
