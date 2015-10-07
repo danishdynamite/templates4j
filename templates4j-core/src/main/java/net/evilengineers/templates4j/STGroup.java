@@ -144,7 +144,7 @@ public class STGroup {
 	public static boolean verbose = false;
 
 	/**
-	 * For debugging with {@link STViz}. Records where in code an {@link ST} was
+	 * For debugging with STViz. Records where in code an ST was
 	 * created and where code added attributes.
 	 */
 	public static boolean trackCreationEvents = false;

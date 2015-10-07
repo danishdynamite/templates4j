@@ -50,11 +50,11 @@ import java.util.*;
  * an operand stack.</p>
  * <p>
  * If {@link #debug} set, we track interpreter events. For now, I am only
- * tracking instance creation events. These are used by {@link STViz} to pair up
+ * tracking instance creation events. These are used by STViz to pair up
  * output chunks with the template expressions that generate them.</p>
  * <p>
  * We create a new interpreter for each invocation of
- * {@link ST#render}, {@link ST#inspect}, or {@link ST#getEvents}.</p>
+ * ST.render, ST.inspect, or ST.getEvents.</p>
  */
 public class Interpreter {
 	public enum Option { ANCHOR, FORMAT, NULL, SEPARATOR, WRAP }
@@ -872,8 +872,8 @@ public class Interpreter {
 	}
 
 	/**
-	 * Renders expressions of the form {@code <names,phones: n,p | ...}>} or
-	 * {@code <a,b:t()>}.
+	 * Renders expressions of the form {@code &lt; names,phones: n,p | ...} &gt;} or
+	 * {@code &lt; a,b:t() &gt;}.
 	 */
 	// todo: i, i0 not set unless mentioned? map:{k,v | ..}?
 	protected ST.AttributeList zip_map(InstanceScope scope, List<Object> exprs, ST prototype) {
@@ -1476,7 +1476,7 @@ public class Interpreter {
 	 * {@code self}'s {@link InstanceScope#events} list so that each template
 	 * has a list of events used to create it. If {@code e} is an
 	 * {@link EvalTemplateEvent}, store in parent's
-	 * {@link InstanceScope#childEvalTemplateEvents} list for {@link STViz} tree
+	 * {@link InstanceScope#childEvalTemplateEvents} list for STViz tree
 	 * view.
 	 */
 	protected void trackDebugEvent(InstanceScope scope, InterpEvent e) {

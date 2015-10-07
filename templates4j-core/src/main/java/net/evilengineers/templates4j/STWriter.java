@@ -72,7 +72,7 @@ public interface STWriter {
 	 * {@link Interpreter#exec(STWriter, InstanceScope)} again, we can't pass
 	 * options in. So the {@link Bytecode#INSTR_WRITE} instruction of an applied
 	 * template (such as when we wrap in between template applications like
-	 * {@code <data: v|[<v>]}; wrap>}) we need to write the {@code wrap} string
+	 * {@code &lt; data: v|[&lt; v &gt; ]}; wrap&gt;}) we need to write the {@code wrap} string
 	 * before calling {@link Interpreter#exec}. We expose just like for the
 	 * separator. See {@link Interpreter#writeObject} where it checks for ST
 	 * instance. If POJO, {@link Interpreter#writePOJO} passes {@code wrap} to
